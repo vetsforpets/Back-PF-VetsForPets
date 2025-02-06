@@ -3,7 +3,7 @@ import {v4 as uuid} from 'uuid'
 
 @Entity({name: "users"})
 export class Users {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: string = uuid()
 
     @Column({length: 50})
@@ -32,7 +32,6 @@ export class Users {
 
     @Column()
     isPremium: boolean
-
 
 
 }
