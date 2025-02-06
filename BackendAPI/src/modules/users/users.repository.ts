@@ -8,4 +8,9 @@ export class UsersRepository {
     async getUsers(){
         const users = await this.usersRepository.find()
     }
+
+    async createNewUser(user: Partial<Users>): Promise<Partial<Users>> {
+        const newUser = await this.usersRepository.save(user)
+        return newUser
+    }
 }
