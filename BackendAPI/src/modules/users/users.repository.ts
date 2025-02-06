@@ -7,5 +7,6 @@ export class UsersRepository {
 
     async getUsers(){
         const users = await this.usersRepository.find()
+        return users
     }
 }
