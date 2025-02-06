@@ -24,14 +24,13 @@ export class Users {
     @Column({length: 15})
     phoneNumber: string
 
-    @Column({length: 50})
-    createdAt: string
+    @Column({type:'timestamp' , default: () => 'CURRENT_TIMESTAMP'})
+    createdAt: Date
 
     @Column({nullable: true})
     imgProfile: string
 
-    @Column()
+    @Column({type: 'boolean', default: false})
     isPremium: boolean
-
 
 }
