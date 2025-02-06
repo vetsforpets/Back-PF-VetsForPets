@@ -19,10 +19,6 @@ export class AuthService {
         throw new BadRequestException('Credenciales invalidas');
       }
 
-      if (!password || !userDb.password) {
-        throw new Error('Password or stored hash is missing');
-      }
-
       const isPasswordMatching = await bcrypt.compare(password, userDb.password);
       if (!isPasswordMatching) {
         throw new BadRequestException('Credenciales invalidas');
