@@ -12,7 +12,7 @@ export class UsersService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: `No users in found in the db`,
+          error: `No se encontraron usuarios en la base de datos`,
         },
         HttpStatus.NOT_FOUND,
       );

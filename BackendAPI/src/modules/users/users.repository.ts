@@ -14,7 +14,7 @@ export class UsersRepository {
     async getUserByEmail(email: string){
         const userfiltered = await this.usersRepository.findOne({where: {email}})
         if (!userfiltered) {
-            throw new HttpException('User not found' , HttpStatus.NOT_FOUND)
+            throw new HttpException('El usuario no ha sido encontrado' , HttpStatus.NOT_FOUND)
         }
         return userfiltered
     }
