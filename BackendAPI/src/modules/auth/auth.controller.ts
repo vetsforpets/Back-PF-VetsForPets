@@ -19,7 +19,7 @@ export class AuthController {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: `There was an issue with the credentials, please check and try again`,
+          error: `Ha habido un error con las credenciales, por favor intente de nuevo`,
         },
         HttpStatus.BAD_REQUEST,
       );

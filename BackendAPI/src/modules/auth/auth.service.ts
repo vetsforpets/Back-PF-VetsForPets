@@ -13,7 +13,7 @@ export class AuthService {
     try {
       const userDb = await this.usersRepository.getUserByEmail(email);
       if (!userDb || userDb.password !== password) {
-        throw new HttpException('Invalid credentials', HttpStatus.NOT_FOUND);
+        throw new HttpException('Credenciales invalidas', HttpStatus.NOT_FOUND);
       }
 
       const userPayload = {
@@ -23,12 +23,12 @@ export class AuthService {
       };
 
       const token = this.jwtService.sign(userPayload);
-      return { success: 'User has logged in successfully', token };
+      return { success: 'El usuario se ha logueado exitosamente', token };
     } catch (error) {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: `There's an error with your login request to the DB: ${error}`,
+          error: `Ha habido un error con su peticion, esta es la informacion del error: ${error}`,
         },
         HttpStatus.BAD_REQUEST,
       );
