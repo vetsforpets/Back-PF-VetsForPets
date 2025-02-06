@@ -12,10 +12,15 @@ export class AuthService {
   ) {}
 
   async signIn(email: string, password: string) {
+    
     try {
       const userDb = await this.usersRepository.getUserByEmail(email);
-      if (!userDb || userDb.password !== password) {
+      if (!userDb) {
         throw new BadRequestException('Credenciales invalidas');
+      }
+
+      if (!password || !userDb.password) {
+        throw new Error('Password or stored hash is missing');
       }
 
       const isPasswordMatching = await bcrypt.compare(password, userDb.password);
@@ -34,6 +39,7 @@ export class AuthService {
     } catch (error) {
       throw new BadRequestException('Ha habido un error en el servidor');
     }
+
   }
 
   async signUp(newUser: SignUpUserDto) {

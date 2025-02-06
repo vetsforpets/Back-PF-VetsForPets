@@ -12,7 +12,7 @@ import { LoginDTO } from './dto/login.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  @Post('signIn')
+  @Post('signin')
   signIn(@Body() loginDTO: LoginDTO) {
     try {
       return this.authService.signIn(loginDTO.email, loginDTO.password);
