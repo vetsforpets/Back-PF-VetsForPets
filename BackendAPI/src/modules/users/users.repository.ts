@@ -1,7 +1,7 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Users } from "./entity/users.entity";
 import { Repository } from "typeorm";
-import { HttpException, HttpStatus, NotFoundException } from "@nestjs/common";
+import {NotFoundException } from "@nestjs/common";
 
 export class UsersRepository {
     constructor( @InjectRepository(Users) private readonly usersRepository: Repository<Users>){}
