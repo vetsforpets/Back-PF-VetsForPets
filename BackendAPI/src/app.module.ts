@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import typeOrmConfig from './config/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FileUploadModule } from './modules/file-upload/file-upload.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -16,6 +18,7 @@ import { FileUploadModule } from './modules/file-upload/file-upload.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => configService.get('typeorm'),
     }),
+    UsersModule, AuthModule,
     FileUploadModule,
 
   ],
