@@ -44,6 +44,10 @@ export class AuthService {
 
   async signUp(newUser: SignUpUserDto) {
     try {
+        const emailFound = await this.usersRepository.getUserByEmail(newUser.email)
+        if(emailFound) {
+          throw new BadRequestException('El correo electronico ya esta registrado')
+        }
         if(newUser.password !== newUser.confirmPassword) {
             throw new BadRequestException('Las contraseñas no coinciden.');
         }
@@ -54,7 +58,7 @@ export class AuthService {
         await this.usersRepository.createNewUser({...newUser, password: hashedPassword})
         return {success: 'Usuario registrado exitosamente.'}
     } catch (error) {
-
+        console.error("Error during user creation:", error); 
         if (error instanceof BadRequestException) {
             throw error; 
         }

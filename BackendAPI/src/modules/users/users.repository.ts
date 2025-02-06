@@ -13,11 +13,11 @@ export class UsersRepository {
 
     async getUserByEmail(email: string){
         const userfiltered = await this.usersRepository.findOne({where: {email}})
-        if (!userfiltered) {
-            throw new HttpException('El usuario no ha sido encontrado' , HttpStatus.NOT_FOUND)
-        }
+        // if (!userfiltered) {
+        //     throw new HttpException('El usuario no ha sido encontrado' , HttpStatus.NOT_FOUND)
+        // }
         return userfiltered
-    }
+    } 
 
     async createNewUser(user: Partial<Users>): Promise<Partial<Users>> {
         const newUser = await this.usersRepository.save(user)
