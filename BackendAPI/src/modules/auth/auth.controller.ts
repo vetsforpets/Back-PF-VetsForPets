@@ -4,7 +4,9 @@ import {
   Post,
   HttpException,
   HttpStatus,
+
 } from '@nestjs/common';
+import { LoginDTO } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { SignUpUserDto } from './dto/signup.user.dto';
 import { LoginDTO } from './dto/login.dto';
@@ -14,7 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  @Post('signin')
+  @Post('signIn')
   signIn(@Body() loginDTO: LoginDTO) {
     try {
       return this.authService.signIn(loginDTO.email, loginDTO.password);
@@ -28,8 +30,10 @@ export class AuthController {
       );
     }
   }
-  @Post('signup')
-  async saveUser(@Body() newUser: SignUpUserDto) {
-    return await this.authService.signUp(newUser);
+
+    @Post('signup')
+    async saveUser(@Body() newUser: SignUpUserDto) {
+        return await this.authService.signUp(newUser)
+    }
   }
-}
+

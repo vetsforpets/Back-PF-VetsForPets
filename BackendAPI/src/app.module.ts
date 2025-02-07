@@ -20,16 +20,14 @@ import { AuthModule } from './modules/auth/auth.module';
       useFactory: (configService: ConfigService) =>
         configService.get('typeorm'),
     }),
-    UsersModule, 
-    AuthModule,
-    FileUploadModule,
-
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
-
+    UsersModule,
+    AuthModule,
+    FileUploadModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtService],
