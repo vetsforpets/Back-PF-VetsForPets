@@ -4,17 +4,17 @@ import { Repository } from "typeorm";
 import { HttpException, HttpStatus } from "@nestjs/common";
 
 export class UsersRepository {
-    constructor( @InjectRepository(Users) private readonly usersRepository: Repository<Users>){}
+    constructor(@InjectRepository(Users) private readonly usersRepository: Repository<Users>) { }
 
-    async getUsers(){
+    async getUsers() {
         const users = await this.usersRepository.find()
         return users
     }
 
-    async getUserByEmail(email: string){
-        const userfiltered = await this.usersRepository.findOne({where: {email}})
+    async getUserByEmail(email: string) {
+        const userfiltered = await this.usersRepository.findOne({ where: { email } })
         if (!userfiltered) {
-            throw new HttpException('El usuario no ha sido encontrado' , HttpStatus.NOT_FOUND)
+            throw new HttpException('El usuario no ha sido encontrado', HttpStatus.NOT_FOUND)
         }
         return userfiltered
     }
