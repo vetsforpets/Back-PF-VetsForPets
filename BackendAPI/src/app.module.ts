@@ -28,7 +28,6 @@ import { AuthModule } from './modules/auth/auth.module';
     UsersModule,
     AuthModule,
     FileUploadModule,
-
   ],
   controllers: [AppController],
   providers: [AppService, JwtService],

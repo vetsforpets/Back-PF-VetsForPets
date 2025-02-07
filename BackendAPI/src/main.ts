@@ -1,5 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { loggerGlobal } from './middlewares/logger.middleware';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
@@ -17,6 +19,15 @@ async function bootstrap() {
       })
     }
   }))
+  app.use(loggerGlobal)
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('VetsForPets-API DOCS')
+    .setDescription('Api creada y documentada para ser usada en el PF')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('/', app, document);
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
