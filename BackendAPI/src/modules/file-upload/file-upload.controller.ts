@@ -1,7 +1,8 @@
 import { Controller, FileTypeValidator, MaxFileSizeValidator, Param, ParseFilePipe, UploadedFile } from "@nestjs/common";
 import { FileUploadService } from "./file-upload.service";
+import { ApiTags } from "@nestjs/swagger";
 
-
+@ApiTags('Files')
 @Controller('files')
 export class FileUploadController {
 
