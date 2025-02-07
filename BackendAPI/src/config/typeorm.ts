@@ -20,7 +20,7 @@ const config = {
     logging: false,
     dropSchema: false,
     ssl: {
-        rejectUnauthorized: false,
+        rejectUnauthorized: false
     }
 
 }
