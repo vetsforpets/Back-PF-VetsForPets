@@ -12,12 +12,16 @@ const config = {
     port: Number(process.env.DB_PORT),
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
+    url: process.env.DATABASE_URL,
     entities: ['dist/**/*.entity{.ts, .js}'],
     migrations: ['dist/migrations/*{.ts, .js}'],
     autoLoadEntities: true,
     synchronize: true,
     logging: false,
-    dropSchema: false
+    dropSchema: false,
+    ssl: {
+        rejectUnauthorized: false
+    }
 
 }
 
