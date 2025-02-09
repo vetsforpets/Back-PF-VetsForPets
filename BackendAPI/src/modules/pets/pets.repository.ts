@@ -1,16 +1,13 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Pets } from "./entity/pets.entity";
 import { Repository } from "typeorm";
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { Users } from "../users/entity/users.entity";
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 
 @Injectable()
 export class PetsRepository {
     constructor(
         @InjectRepository(Pets)
         private readonly petsRepository: Repository<Pets>,
-        @InjectRepository(Users)
-        private readonly usersRepository: Repository<Users>
     ){}
 
     async getPets(): Promise<Pets[]> {
@@ -25,14 +22,32 @@ export class PetsRepository {
         return petFound
     }
 
-    async createNewPet(pet: Pets, userId: string): Promise<Pets> {
-        const user = await this.usersRepository.findOne(
-            {where: {id: userId}}
-        )
-        if(!user){
-            throw new NotFoundException('Usuario no encontrado')
+    async createNewPet(pet: Pets): Promise<Pets> {
+        try {
+            const newPet = this.petsRepository.create(pet)
+            return await this.petsRepository.save(newPet)
+          } catch (error) {
+            console.error("Error al crear a la mascota:", error)
+            throw new InternalServerErrorException('Registro fallido para la mascota')
+          }
+    }
+
+    async updatePet(petId: string, pet: Partial<Pets>): Promise<Partial<Pets>> {
+       const petFound = await this.petsRepository.findOneBy({id: petId})
+       if(!petFound){
+        throw new NotFoundException('Product not found')
+    }
+    await this.petsRepository.update({id: petId}, pet)
+    const updatedPet = await this.petsRepository.findOneBy({id: petId})
+    return updatedPet
+    }
+
+    async deletePet(petId: string) {
+        const productFound = await this.petsRepository.findOneBy({id: petId})
+        if(!productFound){
+            throw new NotFoundException('La mascota no ha sido encontrada')
         }
-        pet.user = user
-        return await this.petsRepository.save(pet)
+        await this.petsRepository.delete(petId)
+        return 'La mascota ha sido eliminada'
     }
 }

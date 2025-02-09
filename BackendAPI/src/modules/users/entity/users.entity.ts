@@ -33,7 +33,4 @@ export class Users {
 
     @Column({type: 'boolean', default: false})
     isPremium: boolean
-
-    @OneToMany(() => Pets, (pet) => pet.user)
-    pets: Pets[]
 }

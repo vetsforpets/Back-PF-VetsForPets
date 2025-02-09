@@ -1,5 +1,4 @@
-import { Users } from "src/modules/users/entity/users.entity"
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
 import {v4 as uuid} from 'uuid'
 
 @Entity({name: "pets"})
@@ -14,14 +13,23 @@ export class Pets {
     age: number
 
     @Column({type:'varchar'})
-    type: string
+    animalType: string
 
     @Column({type:'varchar'})
-    dateOfBirth: string
+    birthdate: string
+
+    @Column({type:'varchar'})
+    breed:string
+
+    @Column({type:'varchar'})
+    sex: string
+
+    @Column({type:'boolean'})
+    isSterilized: boolean
+
+    @Column({type:'varchar'})
+    notes: string
 
     @Column({type:'varchar'})
     profileImg: string
-
-    @ManyToOne(() => Users, (user) => user.pets)
-    user: Users
 }
