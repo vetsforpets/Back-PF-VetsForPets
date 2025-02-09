@@ -67,7 +67,9 @@ export class AuthService {
         ...newUser,
         password: hashedPassword,
       });
-      return { success: 'Usuario registrado exitosamente.' };
+
+      const {password, ...userWithOutPassword} = newUser
+      return { success: 'Usuario registrado exitosamente:' , userWithOutPassword };
     } catch (error) {
       console.error('Error during user creation:', error);
       if (error instanceof BadRequestException) {
@@ -106,10 +108,10 @@ export class AuthService {
         password: hashedPassword,
       });
 
-      const {password, ...petShopWithOuthPassword} = newPetShop
+      const {password, ...petShopWithOutPassword} = newPetShop
 
 
-      return { success: 'La veterinaria/petshop ha sido creada exitosamente: ', petShopWithOuthPassword };
+      return { success: 'La veterinaria/petshop ha sido creada exitosamente: ', petShopWithOutPassword };
     } catch (error) {
       console.error('Error durante la creacion del usuario:', error);
       if (error instanceof BadRequestException) {
