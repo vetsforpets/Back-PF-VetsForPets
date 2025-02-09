@@ -5,9 +5,11 @@ import { UsersModule } from '../users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from '../users/entity/users.entity';
 import { UsersRepository } from '../users/users.repository';
+import { PetShop } from '../pet-shop/entity/pet-shop.entity';
+import { PetShopModule } from '../pet-shop/pet-shop.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users]), UsersModule],
+  imports: [TypeOrmModule.forFeature([Users, PetShop]), UsersModule, PetShopModule],
   controllers: [AuthController],
   providers: [AuthService, UsersRepository],
   exports: [AuthService],

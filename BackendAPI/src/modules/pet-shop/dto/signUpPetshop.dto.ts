@@ -47,6 +47,23 @@ export class PetShopDto {
   password: string;
 
   /**
+   * La confirmación de contraseña debe coincidir con la contraseña.
+   * @ejemplo Pa$$word1
+   */
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  @MaxLength(15)
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+    {
+      message:
+        'La confirmación de contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.',
+    },
+  )
+  confirmPassword: string;
+
+  /**
    * El número de teléfono debe tener al menos 10 caracteres.
    * @ejemplo +584244257832
    */
@@ -74,7 +91,4 @@ export class PetShopDto {
   @IsString()
   @IsNotEmpty()
   location: string;
-
-
-  
 }

@@ -21,10 +21,10 @@ export class PetShopRepository {
     if (!petshopFiltered) {
       throw new BadRequestException('No se ha encontrado a esta veterinaria, por favor revise nuevamente')
     }
+    return petshopFiltered
   }
 
-  async save(petshopDto: PetShop): Promise <Omit<PetShop,'id'> | PetShopDto>{
-    petshopDto.createdAt = new Date().toLocaleDateString()
+  async save(petshopDto: PetShopDto): Promise <Omit<PetShop,'id'> | PetShopDto>{
     const petshopUser = await this.petshopRepository.save(petshopDto)
     return petshopUser
   }
