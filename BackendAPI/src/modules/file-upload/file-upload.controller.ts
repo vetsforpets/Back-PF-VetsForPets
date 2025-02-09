@@ -1,6 +1,6 @@
 import { Controller, FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, ParseUUIDPipe, Post, Query, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { FileUploadService } from "./file-upload.service";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @ApiTags('Files')
@@ -11,6 +11,20 @@ export class FileUploadController {
 
     @Post('profileImage/user')
     @UseInterceptors(FileInterceptor('file'))
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+        description: 'Archivo a subir',
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                },
+
+            },
+        },
+    })
     uploadImage(@UploadedFile(
         new ParseFilePipe({
             validators: [
