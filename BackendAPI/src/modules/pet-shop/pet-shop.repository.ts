@@ -10,5 +10,6 @@ export class PetShopRepository {
 
   async find() {
     const petshops = await this.petshopRepository.find();
+    return petshops
   }
 }
