@@ -6,6 +6,7 @@ import { FileUploadModule } from './modules/file-upload/file-upload.module';
 import { UsersModule } from './modules/users/users.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthModule } from './modules/auth/auth.module';
+import { PetShopModule } from './modules/pet-shop/pet-shop.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
 
 @Module({
@@ -27,7 +28,8 @@ import { AppointmentModule } from './modules/appointment/appointment.module';
     UsersModule,
     AuthModule,
     FileUploadModule,
-    AppointmentModule
+    AppointmentModule,
+    PetShopModule
   ],
   controllers: [],
   providers: [JwtService],
