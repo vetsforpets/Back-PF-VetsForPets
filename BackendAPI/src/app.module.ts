@@ -7,6 +7,7 @@ import { UsersModule } from './modules/users/users.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthModule } from './modules/auth/auth.module';
 import { PetShopModule } from './modules/pet-shop/pet-shop.module';
+import { AppointmentModule } from './modules/appointment/appointment.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PetShopModule } from './modules/pet-shop/pet-shop.module';
     UsersModule,
     AuthModule,
     FileUploadModule,
+    AppointmentModule,
     PetShopModule
   ],
   controllers: [],

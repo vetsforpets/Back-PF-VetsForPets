@@ -19,9 +19,10 @@ const config = {
     synchronize: true,
     logging: false,
     dropSchema: false,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    // ssl: {
+    //     rejectUnauthorized: false,
+    // }
+
 
 }
 
