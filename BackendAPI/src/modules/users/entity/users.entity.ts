@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Pets } from "src/modules/pets/entity/pets.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import {v4 as uuid} from 'uuid'
 
 @Entity({name: "users"})
@@ -33,4 +34,6 @@ export class Users {
     @Column({type: 'boolean', default: false})
     isPremium: boolean
 
+    @OneToMany(() => Pets, (pet) => pet.user)
+    pets: Pets[]
 }

@@ -6,6 +6,7 @@ import { FileUploadModule } from './modules/file-upload/file-upload.module';
 import { UsersModule } from './modules/users/users.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthModule } from './modules/auth/auth.module';
+import { PetsModule } from './modules/pets/pets.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthModule } from './modules/auth/auth.module';
     UsersModule,
     AuthModule,
     FileUploadModule,
+    PetsModule
   ],
   controllers: [],
   providers: [JwtService],
