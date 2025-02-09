@@ -7,11 +7,12 @@ import { Users } from '../users/entity/users.entity';
 import { UsersRepository } from '../users/users.repository';
 import { PetShop } from '../pet-shop/entity/pet-shop.entity';
 import { PetShopModule } from '../pet-shop/pet-shop.module';
+import { PetShopRepository } from '../pet-shop/pet-shop.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Users, PetShop]), UsersModule, PetShopModule],
   controllers: [AuthController],
-  providers: [AuthService, UsersRepository],
+  providers: [AuthService, UsersRepository, PetShopRepository],
   exports: [AuthService],
 })
 export class AuthModule {}
