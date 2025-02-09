@@ -1,7 +1,7 @@
 import { BadRequestException, Controller, Get } from '@nestjs/common';
 import { PetShopService } from './pet-shop.service';
 
-@Controller('pet-shop')
+@Controller('petshop')
 export class PetShopController {
   constructor(private readonly petShopService: PetShopService) {}
 
