@@ -9,10 +9,10 @@ export class AuthService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async signIn(email: string, password: string) {
-    
+
     try {
       const userDb = await this.usersRepository.getUserByEmail(email);
       if (!userDb) {
@@ -40,26 +40,26 @@ export class AuthService {
 
   async signUp(newUser: SignUpUserDto) {
     try {
-        const emailFound = await this.usersRepository.getUserByEmail(newUser.email)
-        if(emailFound) {
-          throw new BadRequestException('El correo electronico ya esta registrado')
-        }
-        if(newUser.password !== newUser.confirmPassword) {
-            throw new BadRequestException('Las contraseñas no coinciden.');
-        }
-        const hashedPassword = await bcrypt.hash(newUser.password, 10)
-        if(!hashedPassword) {
-            throw new BadRequestException('No se pudo encriptar la contraseña.')
-        }
-        await this.usersRepository.createNewUser({...newUser, password: hashedPassword})
-        return {success: 'Usuario registrado exitosamente.'}
+      const emailFound = await this.usersRepository.getUserByEmail(newUser.email)
+      if (emailFound) {
+        throw new BadRequestException('El correo electronico ya esta registrado')
+      }
+      if (newUser.password !== newUser.confirmPassword) {
+        throw new BadRequestException('Las contraseñas no coinciden.');
+      }
+      const hashedPassword = await bcrypt.hash(newUser.password, 10)
+      if (!hashedPassword) {
+        throw new BadRequestException('No se pudo encriptar la contraseña.')
+      }
+      await this.usersRepository.createNewUser({ ...newUser, password: hashedPassword })
+      return { success: 'Usuario registrado exitosamente.' }
     } catch (error) {
-        console.error("Error during user creation:", error); 
-        if (error instanceof BadRequestException) {
-            throw error; 
-        }
+      console.error("Error during user creation:", error);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
 
-        throw new InternalServerErrorException('Ocurrió un error inesperado durante el registro.')
+      throw new InternalServerErrorException('Ocurrió un error inesperado durante el registro.')
     }
-}
+  }
 }

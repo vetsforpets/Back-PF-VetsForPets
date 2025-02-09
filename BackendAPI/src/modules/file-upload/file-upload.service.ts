@@ -22,6 +22,6 @@ export class FileUploadService {
 
         await this.usersRepository.update(id, { imgProfile: upload.secure_url })
 
-        return await this.usersRepository.findOne({ where: { id } })
+        return { imgUrl: upload.secure_url }
     }
 }
