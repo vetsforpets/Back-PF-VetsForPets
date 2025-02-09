@@ -3,11 +3,14 @@ import { CloudinaryConfig } from "src/config/cloudinary";
 import { FileUploadController } from "./file-upload.controller";
 import { FileUploadService } from "./file-upload.service";
 import { FileUploadRepository } from "./file-upload.repository";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Users } from "../users/entity/users.entity";
 
 
 @Module({
-    imports: [],
+    imports: [TypeOrmModule.forFeature([Users])],
     controllers: [FileUploadController],
-    providers: [CloudinaryConfig, FileUploadService, FileUploadRepository]
+    providers: [CloudinaryConfig, FileUploadService, FileUploadRepository],
+    exports: []
 })
 export class FileUploadModule { }
