@@ -20,7 +20,9 @@ export class AuthService {
 
   async signIn(email: string, password: string) {
     try {
-      const userDb = await this.usersRepository.getUserByEmail(email);
+      const userDb =
+        (await this.usersRepository.getUserByEmail(email)) ||
+        (await this.petShopRepository.getPetShopByEmail(email));
       if (!userDb) {
         throw new BadRequestException('Credenciales invalidas');
       }
@@ -68,8 +70,11 @@ export class AuthService {
         password: hashedPassword,
       });
 
-      const {password, ...userWithOutPassword} = newUser
-      return { success: 'Usuario registrado exitosamente:' , userWithOutPassword };
+      const { password, confirmPassword, ...userWithOutPassword } = newUser;
+      return {
+        success: 'Usuario registrado exitosamente:',
+        userWithOutPassword,
+      };
     } catch (error) {
       console.error('Error during user creation:', error);
       if (error instanceof BadRequestException) {
@@ -108,10 +113,13 @@ export class AuthService {
         password: hashedPassword,
       });
 
-      const {password, ...petShopWithOutPassword} = newPetShop
+      const { password, confirmPassword, ...petShopWithOutPassword } =
+        newPetShop;
 
-
-      return { success: 'La veterinaria/petshop ha sido creada exitosamente: ', petShopWithOutPassword };
+      return {
+        success: 'La veterinaria/petshop ha sido creada exitosamente: ',
+        petShopWithOutPassword,
+      };
     } catch (error) {
       console.error('Error durante la creacion del usuario:', error);
       if (error instanceof BadRequestException) {

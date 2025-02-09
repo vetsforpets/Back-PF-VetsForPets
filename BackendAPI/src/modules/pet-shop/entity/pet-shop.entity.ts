@@ -18,14 +18,14 @@ export class PetShop {
     @Column()
     phoneNumber: string
 
-    @Column()
+    @Column({type: 'boolean'})
     is24Hours: boolean
 
-    @Column()
+    @Column({nullable: true})
     img: string
 
-    @Column()
-    createdAt: string
+    @Column({type:'timestamp' , default: () => 'CURRENT_TIMESTAMP'})
+    createdAt: Date
 
     @Column()
     location: string
