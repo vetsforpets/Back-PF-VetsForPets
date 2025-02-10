@@ -39,6 +39,7 @@ export class AuthService {
         sub: userDb.id,
         id: userDb.id,
         email: userDb.email,
+        rol: userDb.isVet
       };
 
       const token = this.jwtService.sign(userPayload);
@@ -111,6 +112,7 @@ export class AuthService {
       await this.petShopRepository.save({
         ...newPetShop,
         password: hashedPassword,
+
       });
 
       const { password, confirmPassword, ...petShopWithOutPassword } =
