@@ -11,7 +11,7 @@ import { LoginDTO } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { SignUpUserDto } from './dto/signup.user.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { PetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
+import {signUpPetShopDto  } from '../pet-shop/dto/signUpPetshop.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -38,7 +38,7 @@ export class AuthController {
   }
 
   @Post('vetsignup')
-  petShopSignUp(@Body() newPetShop: PetShopDto){
+  petShopSignUp(@Body() newPetShop: signUpPetShopDto){
     try {
       return this.authService.petShopSignUp(newPetShop)
     } catch (error) {

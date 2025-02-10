@@ -1,7 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { PetShop } from './entity/pet-shop.entity';
 import { Repository } from 'typeorm';
-import { PetShopDto } from './dto/signUpPetshop.dto';
 
 
 export class PetShopRepository {
@@ -20,7 +19,7 @@ export class PetShopRepository {
     return petshopFiltered
   }
 
-  async save(petshopDto: PetShopDto){
+  async save(petshopDto: Partial<PetShop>): Promise<Partial<PetShop>>{
     const petshopUser = await this.petshopRepository.save(petshopDto)
     return petshopUser
   }

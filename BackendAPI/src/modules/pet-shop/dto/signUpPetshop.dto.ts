@@ -9,7 +9,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class PetShopDto {
+export class signUpPetShopDto {
   /**
    * El nombre de la veterinaria/petshop debe tener al menos 4 caracteres.
    * @ejemplo Vets
