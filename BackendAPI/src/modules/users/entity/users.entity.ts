@@ -1,41 +1,42 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import {v4 as uuid} from 'uuid'
-import { Appointment } from "src/modules/appointment/entity/appointment.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { v4 as uuid } from 'uuid';
+import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
 
-
-@Entity({ name: "users" })
+@Entity({ name: 'users' })
 export class Users {
-    @PrimaryGeneratedColumn('uuid')
-    id: string = uuid()
+  @PrimaryGeneratedColumn('uuid')
+  id: string = uuid();
 
-    @Column({ length: 50 })
-    name: string
+  @Column({ length: 50 })
+  name: string;
 
-    @Column({ length: 50 })
-    lastName: string
+  @Column({ length: 50 })
+  lastName: string;
 
-    @Column()
-    age: number
+  @Column()
+  age: number;
 
-    @Column({ length: 50 })
-    email: string
+  @Column({ length: 50 })
+  email: string;
 
-    @Column({ nullable: false })
-    password: string
+  @Column({ nullable: false })
+  password: string;
 
-    @Column({ length: 15 })
-    phoneNumber: string
+  @Column({ length: 15 })
+  phoneNumber: string;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    createdAt: Date
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 
-    @Column({ nullable: true })
-    imgProfile: string
+  @Column({ nullable: true })
+  imgProfile: string;
 
-    @Column({ type: 'boolean', default: false })
-    isPremium: boolean
+  @Column({ type: 'boolean', default: false })
+  isPremium: boolean;
 
-    @OneToMany(() => Appointment, (appointment) => appointment.user)
-    appointments: Appointment[]
+  @OneToMany(() => Appointment, (appointment) => appointment.user)
+  appointments: Appointment[];
 
+  @Column({ type: 'boolean', default: false })
+  isVet: boolean;
 }

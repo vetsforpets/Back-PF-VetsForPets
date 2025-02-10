@@ -30,4 +30,7 @@ export class PetShop {
     @Column()
     location: string
 
+    @Column({type: 'boolean', default: true})
+    isVet: boolean
+
 }
