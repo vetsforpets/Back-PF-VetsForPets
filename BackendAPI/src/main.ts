@@ -20,6 +20,7 @@ async function bootstrap() {
     }
   }))
   app.use(loggerGlobal)
+  app.enableCors()
   const swaggerConfig = new DocumentBuilder()
     .setTitle('VetsForPets-API DOCS')
     .setDescription('Api creada y documentada para ser usada en el PF')
