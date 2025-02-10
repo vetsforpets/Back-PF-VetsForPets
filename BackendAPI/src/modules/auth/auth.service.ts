@@ -39,7 +39,7 @@ export class AuthService {
         sub: userDb.id,
         id: userDb.id,
         email: userDb.email,
-        rol: userDb.isVet
+        isVet: userDb.isVet
       };
 
       const token = this.jwtService.sign(userPayload);
