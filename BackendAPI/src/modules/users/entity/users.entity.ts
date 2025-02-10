@@ -1,6 +1,7 @@
-import { Appointment } from "src/modules/appointment/entity/appointment.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { v4 as uuid } from 'uuid'
+import {v4 as uuid} from 'uuid'
+import { Appointment } from "src/modules/appointment/entity/appointment.entity";
+
 
 @Entity({ name: "users" })
 export class Users {
