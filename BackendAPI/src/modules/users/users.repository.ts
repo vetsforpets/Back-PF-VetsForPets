@@ -7,11 +7,16 @@ export class UsersRepository {
 
     async getUsers() {
         const users = await this.usersRepository.find({ relations: { userMembership: { membership: true } } })
-        return users
+
+
+        return users.map(({ password, ...user }) => {
+            return user
+        })
     }
 
     async getUserByEmail(email: string) {
         const userfiltered = await this.usersRepository.findOne({ where: { email } })
+
         return userfiltered
     }
 
