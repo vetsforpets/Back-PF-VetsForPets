@@ -62,16 +62,16 @@ export class MembershipRepository {
         endDate.setMonth(endDate.getMonth() + 1)
 
         const newUserMembership = new UserMembership()
-        newUserMembership.user = user
         newUserMembership.membership = membership
         newUserMembership.startDate = startDate
         newUserMembership.endDate = endDate
         newUserMembership.status = true
 
-
+        console.log(newUserMembership)
         await this.userMembershipRepository.save(newUserMembership)
 
         user.isPremium = true
+        user.userMembership = newUserMembership
 
         await this.usersRepository.save(user)
 

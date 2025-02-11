@@ -23,7 +23,6 @@ const config = {
         rejectUnauthorized: false,
     }
 
-
 }
 
 export default registerAs('typeorm', () => config)
