@@ -40,7 +40,7 @@ export class PetShop {
   licenseNumber: number;
 
   @Column({ type: 'json', default: null })
-  schedule: {
+  businessHours: {
     [day: string]: {
       opening: string;
       closure: string;
