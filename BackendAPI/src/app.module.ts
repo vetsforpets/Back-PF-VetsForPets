@@ -8,6 +8,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthModule } from './modules/auth/auth.module';
 import { PetShopModule } from './modules/pet-shop/pet-shop.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
+import { MembershipModule } from './modules/membership/membership.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { AppointmentModule } from './modules/appointment/appointment.module';
     AuthModule,
     FileUploadModule,
     AppointmentModule,
-    PetShopModule
+    PetShopModule,
+    MembershipModule
   ],
   controllers: [],
   providers: [JwtService],
