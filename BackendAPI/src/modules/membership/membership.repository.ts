@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import { UpdateMembershipDto } from "./dto/update-membership.dto";
 import { Users } from "../users/entity/users.entity";
 import * as data from "../common/seeders/memberships.json";
+import { UserMembership } from "./entity/user-membership.entity";
 
 
 @Injectable()
@@ -12,7 +13,8 @@ export class MembershipRepository {
 
     constructor(
         @InjectRepository(Membership) private membershipRepository: Repository<Membership>,
-        @InjectRepository(Users) private usersRepository: Repository<Users>
+        @InjectRepository(Users) private usersRepository: Repository<Users>,
+        @InjectRepository(UserMembership) private userMembershipRepository: Repository<UserMembership>,
     ) { }
 
 
@@ -47,7 +49,7 @@ export class MembershipRepository {
 
     async addUserMembership(userId: string, membershipId: string) {
 
-        const user: Partial<Users> = await this.usersRepository.findOne({ where: { id: userId }, relations: { membership: true } })
+        const user = await this.usersRepository.findOne({ where: { id: userId }, relations: { userMembership: true } })
 
         if (!user) throw new NotFoundException("ID de usuario inválido, intenta con un ID válido.")
 
@@ -59,14 +61,15 @@ export class MembershipRepository {
         const endDate = new Date(startDate)
         endDate.setMonth(endDate.getMonth() + 1)
 
+        const newUserMembership = new UserMembership()
+        newUserMembership.user = user
+        newUserMembership.membership = membership
+        newUserMembership.startDate = startDate
+        newUserMembership.endDate = endDate
+        newUserMembership.status = true
 
-        user.membership = membership
 
-        user.membership.startDate = startDate
-        user.membership.endDate = endDate
-        user.membership.status = true
-
-        // await this.membershipRepository.save(membership)
+        await this.userMembershipRepository.save(newUserMembership)
 
         user.isPremium = true
 
@@ -74,6 +77,7 @@ export class MembershipRepository {
 
         return { message: "Membresía adquirida con éxito!", user }
     }
+
 
     async findAll() {
         const membership = await this.membershipRepository.find()
@@ -96,27 +100,33 @@ export class MembershipRepository {
 
     }
 
-    async updateUserMembership(id: string, data: UpdateMembershipDto) {
-        const user = await this.usersRepository.findOne({ where: { id } })
+    // async updateUserMembership(id: string, data: UpdateMembershipDto) {
+    //     const user = await this.usersRepository.findOne({ where: { id } })
 
-        if (!user) throw new NotFoundException("ID de usuario inválido, intenta de nuevo con un ID válido")
+    //     if (!user) throw new NotFoundException("ID de usuario inválido, intenta de nuevo con un ID válido")
 
-        await this.usersRepository.update(id, data)
+    //     await this.usersRepository.update(id, data)
 
-        return { message: "Membresía actualizada con éxito!", user: user.membership }
-    }
+    //     return { message: "Membresía actualizada con éxito!", user: user.userMembership }
+    // }
 
 
 
-    async cancelMembership(userId: string) {
+    async cancelMembership(userId: string, membershipId: string) {
 
-        const user = await this.usersRepository.findOne({ where: { id: userId }, relations: { membership: true } })
+        const userMembership = await this.userMembershipRepository.findOne({ where: { id: membershipId }, relations: { user: true } })
 
-        user.membership.status = false
-        user.isPremium = false
+        if (!userMembership) throw new NotFoundException("No se encontró una membresía activa para el usuario.")
 
-        await this.membershipRepository.save(user)
+        userMembership.status = false
 
-        return { message: "Membresía cancelada con éxito." }
+        await this.userMembershipRepository.save(userMembership)
+
+        userMembership.user.isPremium = false
+
+        await this.usersRepository.save(userMembership.user)
+
+        return { message: "Membresía cancelada con éxito!" }
+
     }
 }

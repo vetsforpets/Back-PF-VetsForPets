@@ -1,6 +1,6 @@
 import { Appointment } from "src/modules/appointment/entity/appointment.entity";
-import { Membership } from "src/modules/membership/entity/membership.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { UserMembership } from "src/modules/membership/entity/user-membership.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { v4 as uuid } from 'uuid'
 
 @Entity({ name: "users" })
@@ -26,12 +26,6 @@ export class Users {
     @Column({ length: 15 })
     phoneNumber: string
 
-    @Column({ nullable: true })
-    startDate: Date
-
-    @Column({ nullable: true })
-    endDate: Date
-
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date
 
@@ -44,6 +38,7 @@ export class Users {
     @OneToMany(() => Appointment, (appointment) => appointment.user)
     appointments: Appointment[]
 
-    @ManyToOne(() => Membership, (membership) => membership.users)
-    membership: Membership
+    @OneToOne(() => UserMembership, (userMembership) => userMembership.user)
+    @JoinColumn({ name: "membership" })
+    userMembership: UserMembership
 }

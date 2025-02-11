@@ -1,5 +1,6 @@
 import { Users } from "src/modules/users/entity/users.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { UserMembership } from "./user-membership.entity";
 
 
 @Entity({ name: 'membership' })
@@ -17,16 +18,7 @@ export class Membership {
     @Column('text', { array: true, nullable: false })
     benefits: string[]
 
-    @Column({ nullable: true })
-    startDate?: Date
-
-    @Column({ nullable: true })
-    endDate?: Date
-
-    @Column({ default: false })
-    status: boolean
-
-    @ManyToOne(() => Users, (user) => user.membership, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: "users" })
-    users: Users[]
+    @OneToMany(() => UserMembership, (userMembership) => userMembership.membership, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: "users_membership" })
+    users: UserMembership[];
 }

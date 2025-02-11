@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Param, Post, Put, Query } from "@nestjs/common";
 import { MembershipService } from "./membership.service";
-import { MembershipDto } from "./dto/membership.dto";
 import { UpdateMembershipDto } from "./dto/update-membership.dto";
 import { ApiTags } from "@nestjs/swagger";
 
@@ -32,8 +31,8 @@ export class MembershipController {
     }
 
     @Put('cancel')
-    cancelMembership(@Query('userId') userId: string) {
-        return this.membershipService.cancelMembership(userId)
+    cancelMembership(@Query('userId') userId: string, @Query('membershipId') membershipId: string) {
+        return this.membershipService.cancelMembership(userId, membershipId)
 
     }
 }

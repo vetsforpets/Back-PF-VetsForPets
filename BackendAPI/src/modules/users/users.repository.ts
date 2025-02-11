@@ -6,7 +6,7 @@ export class UsersRepository {
     constructor(@InjectRepository(Users) private readonly usersRepository: Repository<Users>) { }
 
     async getUsers() {
-        const users = await this.usersRepository.find({ relations: { membership: true } })
+        const users = await this.usersRepository.find({ relations: { userMembership: { membership: true } } })
         return users
     }
 
