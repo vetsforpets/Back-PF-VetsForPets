@@ -1,0 +1,81 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUrl, Length, Min } from "class-validator";
+
+enum Sex {
+    Male = 'Male',
+    Female = 'Female',
+    Unknown = 'Unknown',
+  }
+
+export class CreatePetDto {
+
+    @ApiProperty({
+        example: 'Sam',
+        description: 'El nombre de la mascota debe tener al menos 3 caracteres.',
+        minLength: 3
+    })
+    @IsString()
+    @Length(3) 
+    name: string;
+
+    @ApiProperty({
+        example: 3,
+        description: 'La edad de la mascota en años.'
+    })
+    @IsNumber()
+    @Min(0) 
+    age: number;
+
+    @ApiProperty({
+        example: 'Perro',
+        description: 'El tipo de mascota (e.g., Perro, Gato, Pájaro).'
+    })
+    @IsString()
+    animalType: string;
+
+    @ApiProperty({
+        example: '2023-10-26',
+        description: 'La fecha de nacimiento de la mascota (YYYY-MM-DD).'
+    })
+    @IsDateString()
+    birthdate: string;
+
+    @ApiProperty({
+        example: 'Pastor Alemán',
+        description: 'La raza de la mascota. Opcional.'
+    })
+    @IsOptional()
+    @IsString()
+    breed?: string;
+
+    @ApiProperty({
+        example: 'Male',
+        description: 'El sexo de la mascota (Male, Female, Unknown).'
+    })
+    @IsEnum(Sex)
+    sex: Sex;
+
+    @ApiProperty({
+        example: true,
+        description: 'Indica si la mascota está esterilizada.'
+    })
+    @IsOptional()
+    @IsBoolean()
+    isSterilized?: boolean;
+
+    @ApiProperty({
+        example: 'Es muy juguetón y le gusta correr.',
+        description: 'Notas adicionales sobre la mascota. Opcional.'
+    })
+    @IsOptional()
+    @IsString()
+    notes?: string;
+
+    @ApiProperty({
+        example: 'URL de la imagen de perfil',
+        description: 'La URL de la imagen de perfil de la mascota. Opcional.'
+    })
+    @IsOptional()
+    @IsUrl()
+    profileImg?: string;
+}

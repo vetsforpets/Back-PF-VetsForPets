@@ -6,9 +6,11 @@ import { FileUploadModule } from './modules/file-upload/file-upload.module';
 import { UsersModule } from './modules/users/users.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthModule } from './modules/auth/auth.module';
-import { PetShopModule } from './modules/pet-shop/pet-shop.module';
+import { PetsModule } from './modules/pets/pets.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
 import { MembershipModule } from './modules/membership/membership.module';
+import { PetShopModule } from './modules/pet-shop/pet-shop.module';
+
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { MembershipModule } from './modules/membership/membership.module';
     UsersModule,
     AuthModule,
     FileUploadModule,
+    PetsModule,
     AppointmentModule,
     PetShopModule,
     MembershipModule

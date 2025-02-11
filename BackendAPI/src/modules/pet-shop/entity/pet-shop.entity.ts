@@ -1,9 +1,9 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import {v4 as uuid} from 'uuid'
 
-@Entity({ name: 'PetShop' })
+@Entity({ name: 'petShop' })
 export class PetShop {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: string = uuid()
     
     @Column()
@@ -29,5 +29,8 @@ export class PetShop {
 
     @Column()
     location: string
+
+    @Column({type: 'boolean', default: true})
+    isVet: boolean
 
 }
