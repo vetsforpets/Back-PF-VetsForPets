@@ -1,0 +1,32 @@
+[
+    {
+      "name": "Pet Lover",
+      "price": 9.99,
+      "benefits": [
+        "Descuento del 5% en productos de la tienda",
+        "Consulta veterinaria inicial gratuita",
+        "Acceso a contenido exclusivo sobre el cuidado de mascotas"
+      ]
+    },
+    {
+      "name": "Pet Care",
+      "price": 19.99,
+      "benefits": [
+        "Descuento del 10% en productos de la tienda",
+        "Consulta veterinaria gratuita cada 6 meses",
+        "Baño y corte de uñas gratuito una vez al mes",
+        "Atención prioritaria en emergencias"
+      ]
+    },
+    {
+      "name": "Pet VIP",
+      "price": 29.99,
+      "benefits": [
+        "Descuento del 15% en productos de la tienda",
+        "Consulta veterinaria gratuita cada 3 meses",
+        "Baño y peluquería gratis una vez al mes",
+        "Envío gratuito en compras online",
+        "Acceso exclusivo a eventos y talleres para dueños de mascotas"
+      ]
+    }
+  ]
