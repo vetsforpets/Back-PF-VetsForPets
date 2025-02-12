@@ -9,7 +9,6 @@ import {
   Matches,
   MaxLength,
   MinLength,
-  ValidateNested,
 } from 'class-validator';
 
 export class signUpPetShopDto {
