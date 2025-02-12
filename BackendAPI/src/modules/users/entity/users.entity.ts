@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
+import { Pets } from 'src/modules/pets/entity/pets.entity';
 
 @Entity({ name: 'users' })
 export class Users {
@@ -39,4 +40,7 @@ export class Users {
 
   @Column({ type: 'boolean', default: false })
   isVet: boolean;
+
+  @OneToMany(() => Pets, (pet) => pet.user)
+  pets: Pets[]
 }
