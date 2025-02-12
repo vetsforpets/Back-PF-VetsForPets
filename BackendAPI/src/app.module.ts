@@ -10,6 +10,8 @@ import { PetsModule } from './modules/pets/pets.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
 import { MembershipModule } from './modules/membership/membership.module';
 import { PetShopModule } from './modules/pet-shop/pet-shop.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './modules/auth/jwt.strategy';
 
 
 @Module({
@@ -23,6 +25,7 @@ import { PetShopModule } from './modules/pet-shop/pet-shop.module';
       useFactory: (configService: ConfigService) =>
         configService.get('typeorm'),
     }),
+    PassportModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
@@ -37,6 +40,6 @@ import { PetShopModule } from './modules/pet-shop/pet-shop.module';
     MembershipModule
   ],
   controllers: [],
-  providers: [JwtService],
+  providers: [JwtService, JwtStrategy],
 })
 export class AppModule { }

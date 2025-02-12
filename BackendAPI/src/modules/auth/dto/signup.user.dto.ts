@@ -1,99 +1,98 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger"
+import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator"
+
 
 export class SignUpUserDto {
-  /**
-   * El nombre del usuario debe tener al menos 3 caracteres.
-   * @example Sam
-   */
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(3)
-  @MaxLength(80)
-  name: string;
 
-  /**
-   * El apellido del usuario debe tener al menos 6 caracteres.
-   * @example Suarez
-   */
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(6)
-  @MaxLength(80)
-  lastName: string;
+    @ApiProperty({
+        description: "El nombre del usuario",
+        example: "Sam",
+        minLength: 3,
+        maxLength: 80
+    })
+    @IsNotEmpty()
+    @IsString()
+    @MinLength(3)
+    @MaxLength(80)
+    name: string
 
-  /**
-   * La edad del usuario.
-   * @example 25
-   */
-  @IsNotEmpty()
-  @IsNumber()
-  age: number;
+    @ApiProperty({
+        description: "El apellido del usuario",
+        example: "Suarez",
+        minLength: 6,
+        maxLength: 80
+    })
+    @IsNotEmpty()
+    @IsString()
+    @MinLength(6)
+    @MaxLength(80)
+    lastName: string
 
-  /**
-   * El correo electrónico del usuario debe ser único y válido.
-   * @example sam@gmail.com
-   */
-  @IsNotEmpty()
-  @IsString()
-  @IsEmail()
-  email: string;
+    @ApiProperty({
+        description: "La edad del usuario",
+        example: 25
+    })
+    @IsNotEmpty()
+    @IsNumber()
+    age: number
 
-  /**
-   * La contraseña del usuario debe tener un mínimo de 8 caracteres y un máximo de 15, con al menos un carácter especial, una letra minúscula y una mayúscula.
-   * @example Sam1234!
-   */
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(8)
-  @MaxLength(15)
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-    {
-      message:
-        'La contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.',
-    },
-  )
-  password: string;
+    @ApiProperty({
+        description: "El correo electrónico del usuario",
+        example: "sam@gmail.com"
+    })
+    @IsNotEmpty()
+    @IsString()
+    @IsEmail()
+    email: string
 
-  /**
-   * La confirmación de contraseña debe coincidir con la contraseña.
-   * @example Sam1234!
-   */
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(8)
-  @MaxLength(15)
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-    {
-      message:
-        'La confirmación de contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.',
-    },
-  )
-  confirmPassword: string;
+    @ApiProperty({
+        description: "La contraseña del usuario",
+        example: "Sam1234!",
+        minLength: 8,
+        maxLength: 15,
+        pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$",
+    })
+    @IsNotEmpty()
+    @IsString()
+    @MinLength(8)
+    @MaxLength(15)
+    @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        { message: 'La contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.' })
+    password: string
 
-  /**
-   * El número de teléfono debe tener al menos 10 caracteres.
-   * @example +584244258847
-   */
+    @ApiProperty({
+        description: "La confirmación de contraseña",
+        example: "Sam1234!",
+        minLength: 8,
+        maxLength: 15,
+        pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$",
+    })
+    @IsNotEmpty()
+    @IsString()
+    @MinLength(8)
+    @MaxLength(15)
+    @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        { message: 'La confirmación de contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.' })
+    confirmPassword: string
 
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(10)
-  @MaxLength(13)
-  phoneNumber: string;
+    @ApiProperty({
+        description: "El número de teléfono del usuario",
+        example: "+584244258847",
+        minLength: 10,
+        maxLength: 13
+    })
+    @IsNotEmpty()
+    @IsString()
+    @MinLength(10)
+    @MaxLength(13)
+    phoneNumber: string
 
-  @IsOptional()
-  @IsString()
-  imgProfile?: string;
+    @ApiProperty({
+        description: "La URL de la imagen de perfil del usuario (opcional)",
+        example: "https://example.com/profile.jpg",
+        required: false
+    })
+    @IsOptional()
+    @IsString()
+    imgProfile?: string
 }

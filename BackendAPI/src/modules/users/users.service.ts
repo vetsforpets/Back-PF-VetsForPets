@@ -18,4 +18,18 @@ export class UsersService {
       );
     }
   }
+
+  async getUserById(userId: string) {
+    try {
+      return await this.usersRepository.findUserById(userId);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: `No se encontro el usuario en la base de datos`,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
 }
