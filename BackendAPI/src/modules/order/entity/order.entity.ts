@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { OrderDetails } from 'src/modules/order-details/entity/order-details.entity';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
 @Entity({ name: 'order' })
@@ -15,6 +16,6 @@ export class Order {
   @Column()
   userId: string
 
-  @Column()
-  orderDetail: string
+  @OneToOne(()=> OrderDetails, orderDetails => orderDetails.order)
+  orderDetails: string
 }
