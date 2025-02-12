@@ -6,11 +6,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PetShop } from './entity/pet-shop.entity';
 import { Appointment } from '../appointment/entity/appointment.entity';
 import { Membership } from '../membership/entity/membership.entity';
+import { MedicalRecord } from '../medical-record/entity/medical-record.entity';
 
 @Module({
-  imports:[ TypeOrmModule.forFeature([PetShop, Appointment, Membership])],
+  imports: [TypeOrmModule.forFeature([PetShop, Appointment, Membership, MedicalRecord])],
   controllers: [PetShopController],
   providers: [PetShopService, PetShopRepository],
   exports: [PetShopService, PetShopRepository]
 })
-export class PetShopModule {}
+export class PetShopModule { }

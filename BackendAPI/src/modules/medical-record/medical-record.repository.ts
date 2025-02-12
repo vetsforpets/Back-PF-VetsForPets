@@ -1,5 +1,5 @@
 import { InjectRepository } from "@nestjs/typeorm";
-import { MedicalRecord } from "./entities/medical-record.entity";
+import { MedicalRecord } from "./entity/medical-record.entity";
 import { Repository } from "typeorm";
 import { NotFoundException } from "@nestjs/common";
 import { MedicalRecordDto } from "./dto/medical-record.dto";
