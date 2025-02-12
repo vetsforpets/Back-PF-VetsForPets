@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator"
 
+
 export class SignUpUserDto {
 
     @ApiProperty({
