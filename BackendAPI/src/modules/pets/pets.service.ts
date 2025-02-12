@@ -21,20 +21,9 @@ export class PetsService {
         return pet
     }
 
-    async createNewPet(pet: CreatePetDto): Promise<Pets> {
+    async createNewPet(pet: CreatePetDto, userId: string): Promise<Pets> {
         try {
-            const newPet = new Pets()
-            newPet.name = pet.name;
-            newPet.age = pet.age;
-            newPet.animalType = pet.animalType; 
-            newPet.birthdate = pet.birthdate;
-            newPet.breed = pet.breed;
-            newPet.sex = pet.sex;
-            newPet.isSterilized = pet.isSterilized;
-            newPet.notes = pet.notes;
-            newPet.profileImg = pet.profileImg;
-            const registeredPet = await this.petsRepository.createNewPet(newPet)
-            return registeredPet
+          return await this.petsRepository.createNewPet(pet, userId)
         } catch (error) {
             console.error("Error al crear la mascota:", error)
             throw new Error('Error al crear la mascota en la base de datos.')
