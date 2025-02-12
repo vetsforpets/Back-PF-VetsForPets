@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUrl, Length, Min } from "class-validator";
+import { IsArray, IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUrl, Length, Min } from "class-validator";
+import { Appointment } from "src/modules/appointment/entity/appointment.entity";
 
 enum Sex {
     Male = 'Male',
@@ -78,4 +79,8 @@ export class CreatePetDto {
     @IsOptional()
     @IsUrl()
     profileImg?: string
+
+    @IsOptional()
+    @IsArray()
+    appointments?: Appointment[] 
 }

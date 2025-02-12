@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
 @Entity({ name: 'petShop' })
@@ -41,4 +42,7 @@ export class PetShop {
 
   @Column({ type: 'json'})
   businessHours: Record<string, {opening: string; closure: string }>
+
+  @OneToMany(()=> Appointment, (appointment) => appointment.petShop )
+  appointment: Appointment[]
 }
