@@ -12,7 +12,7 @@ export class PetShop {
   @Column()
   email: string;
 
-  @Column({default: null})
+  @Column()
   veterinarian: string;
 
   @Column()
@@ -36,14 +36,9 @@ export class PetShop {
   @Column({ type: 'boolean', default: true })
   isVet: boolean;
 
-  @Column({ type: 'bigint', default: null })
+  @Column({ type: 'bigint'})
   licenseNumber: number;
 
-  @Column({ type: 'json', default: null })
-  businessHours: {
-    [day: string]: {
-      opening: string;
-      closure: string;
-    };
-  };
+  @Column({ type: 'json'})
+  businessHours: Record<string, {opening: string; closure: string }>
 }

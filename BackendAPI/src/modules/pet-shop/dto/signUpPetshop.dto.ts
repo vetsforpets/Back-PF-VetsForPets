@@ -3,11 +3,13 @@ import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
 
 export class signUpPetShopDto {
@@ -108,8 +110,8 @@ export class signUpPetShopDto {
   /**
    * El horario de atencion de la veterinaria/petshop.
    */
-
   @IsNotEmpty()
+  @IsObject()
   businessHours: {
     [day: string]: {
       opening: string;
