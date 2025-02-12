@@ -10,6 +10,7 @@ import { PetsModule } from './modules/pets/pets.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
 import { MembershipModule } from './modules/membership/membership.module';
 import { PetShopModule } from './modules/pet-shop/pet-shop.module';
+import { OrderModule } from './modules/order/order.module';
 
 
 @Module({
@@ -34,7 +35,8 @@ import { PetShopModule } from './modules/pet-shop/pet-shop.module';
     PetsModule,
     AppointmentModule,
     PetShopModule,
-    MembershipModule
+    MembershipModule,
+    OrderModule
   ],
   controllers: [],
   providers: [JwtService],
