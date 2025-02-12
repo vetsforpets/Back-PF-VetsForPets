@@ -1,4 +1,5 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { UserMembership } from "src/modules/membership/entity/user-membership.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
 import { Pets } from 'src/modules/pets/entity/pets.entity';
@@ -43,4 +44,8 @@ export class Users {
 
   @OneToMany(() => Pets, (pet) => pet.user)
   pets: Pets[]
+
+  @OneToOne(() => UserMembership, (userMembership) => userMembership.user)
+  @JoinColumn({ name: "membership" })
+  userMembership: UserMembership
 }

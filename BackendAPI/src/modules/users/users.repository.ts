@@ -8,12 +8,17 @@ export class UsersRepository {
     constructor(@InjectRepository(Users) private readonly usersRepository: Repository<Users>) { }
 
     async getUsers() {
-        const users = await this.usersRepository.find()
-        return users
+        const users = await this.usersRepository.find({ relations: { userMembership: { membership: true } } })
+
+
+        return users.map(({ password, ...user }) => {
+            return user
+        })
     }
 
     async getUserByEmail(email: string) {
         const userfiltered = await this.usersRepository.findOne({ where: { email } })
+
         return userfiltered
     }
 

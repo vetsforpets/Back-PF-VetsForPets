@@ -8,6 +8,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthModule } from './modules/auth/auth.module';
 import { PetsModule } from './modules/pets/pets.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
+import { MembershipModule } from './modules/membership/membership.module';
 import { PetShopModule } from './modules/pet-shop/pet-shop.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './modules/auth/jwt.strategy';
@@ -35,7 +36,8 @@ import { JwtStrategy } from './modules/auth/jwt.strategy';
     FileUploadModule,
     PetsModule,
     AppointmentModule,
-    PetShopModule
+    PetShopModule,
+    MembershipModule
   ],
   controllers: [],
   providers: [JwtService, JwtStrategy],
