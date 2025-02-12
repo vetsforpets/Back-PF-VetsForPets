@@ -1,5 +1,6 @@
+import { Membership } from 'src/modules/membership/entity/membership.entity';
 import { Order } from 'src/modules/order/entity/order.entity';
-import { Column, Entity, JoinTable, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import {v4 as uuid} from 'uuid'
 
 @Entity({name: 'orderDetails'})
@@ -9,10 +10,11 @@ export class OrderDetails {
     
     @OneToOne(()=> Order, order => order.orderDetails)
     @JoinTable()
-    order: string
+    order: Order
 
-    @Column()
-    memberShipId: string
+    @OneToOne(()=> Membership, (membershipId)=> membershipId.orderDetails)
+    @JoinColumn()
+    membershipId: Membership
 
     @Column()
     paymentMethod: string

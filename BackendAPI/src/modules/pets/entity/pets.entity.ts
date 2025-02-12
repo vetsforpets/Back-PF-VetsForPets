@@ -1,5 +1,6 @@
+import { Appointment } from "src/modules/appointment/entity/appointment.entity"
 import { Users } from "src/modules/users/entity/users.entity"
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 import {v4 as uuid} from 'uuid'
 
 @Entity({name: "pets"})
@@ -39,4 +40,7 @@ export class Pets {
 
     @Column()
     userId: string
+
+    @OneToMany(()=> Appointment, appointment => appointment.pets)
+    appointment: Appointment[]
 }
