@@ -1,5 +1,6 @@
 import { OrderDetails } from 'src/modules/order-details/entity/order-details.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Users } from 'src/modules/users/entity/users.entity';
+import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
 @Entity({ name: 'order' })
@@ -13,9 +14,9 @@ export class Order {
   @Column()
   price: number
 
-  @Column()
-  userId: string
+  @ManyToOne(()=> Users, (userId)=> userId.order)
+  userId: Users
 
   @OneToOne(()=> OrderDetails, orderDetails => orderDetails.order)
-  orderDetails: string
+  orderDetails: OrderDetails
 }
