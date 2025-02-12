@@ -2,6 +2,8 @@ import {
   IsBoolean,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   Matches,
@@ -19,6 +21,12 @@ export class signUpPetShopDto {
   @MinLength(4)
   @MaxLength(20)
   name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(4)
+  @MaxLength(20)
+  veterinarian: string;
 
   /**
    * El correo electrónico de la veterinaria/petshop debe ser único y válido.
@@ -91,4 +99,22 @@ export class signUpPetShopDto {
   @IsString()
   @IsNotEmpty()
   location: string;
+
+  /**
+   * El numero de licencia del veterinario.
+   */
+  @IsNumber()
+  licenseNumber: number;
+
+  /**
+   * El horario de atencion de la veterinaria/petshop.
+   */
+  @IsNotEmpty()
+  @IsObject()
+  businessHours: {
+    [day: string]: {
+      opening: string;
+      closure: string;
+    };
+  };
 }
