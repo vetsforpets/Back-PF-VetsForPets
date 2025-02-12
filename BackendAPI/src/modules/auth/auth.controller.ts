@@ -5,18 +5,17 @@ import {
   HttpException,
   HttpStatus,
   BadRequestException,
-
 } from '@nestjs/common';
 import { LoginDTO } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { SignUpUserDto } from './dto/signup.user.dto';
 import { ApiTags } from '@nestjs/swagger';
-import {signUpPetShopDto  } from '../pet-shop/dto/signUpPetshop.dto';
+import { SignUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
   @Post('signIn')
   signIn(@Body() loginDTO: LoginDTO) {
     try {
@@ -34,16 +33,17 @@ export class AuthController {
 
   @Post('signup')
   async saveUser(@Body() newUser: SignUpUserDto) {
-    return await this.authService.signUp(newUser)
+    return await this.authService.signUp(newUser);
   }
 
   @Post('vetsignup')
-  petShopSignUp(@Body() newPetShop: signUpPetShopDto){
+  petShopSignUp(@Body() newPetShop: SignUpPetShopDto) {
     try {
-      return this.authService.petShopSignUp(newPetShop)
+      return this.authService.petShopSignUp(newPetShop);
     } catch (error) {
-      throw new BadRequestException('Ha habido un error con las crendeciales, por favor intente de nuevo')
+      throw new BadRequestException(
+        'Ha habido un error con las crendeciales, por favor intente de nuevo',
+      );
     }
   }
 }
-

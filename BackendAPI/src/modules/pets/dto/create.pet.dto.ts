@@ -1,22 +1,20 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUrl, Length, Min } from "class-validator";
+import { IsArray, IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUrl, Length, Min } from "class-validator";
+import { Appointment } from "src/modules/appointment/entity/appointment.entity";
+import { Sex } from "src/modules/common/enums/petSex.enum";
 
-enum Sex {
-    Male = 'Male',
-    Female = 'Female',
-    Unknown = 'Unknown',
-  }
+
 
 export class CreatePetDto {
 
     @ApiProperty({
-        example: 'Sam',
+        example: 'Polo',
         description: 'El nombre de la mascota debe tener al menos 3 caracteres.',
         minLength: 3
     })
     @IsString()
     @Length(3) 
-    name: string;
+    name: string
 
     @ApiProperty({
         example: 3,
@@ -24,21 +22,21 @@ export class CreatePetDto {
     })
     @IsNumber()
     @Min(0) 
-    age: number;
+    age: number
 
     @ApiProperty({
         example: 'Perro',
         description: 'El tipo de mascota (e.g., Perro, Gato, Pájaro).'
     })
     @IsString()
-    animalType: string;
+    animalType: string
 
     @ApiProperty({
         example: '2023-10-26',
         description: 'La fecha de nacimiento de la mascota (YYYY-MM-DD).'
     })
     @IsDateString()
-    birthdate: string;
+    birthdate: string
 
     @ApiProperty({
         example: 'Pastor Alemán',
@@ -46,14 +44,14 @@ export class CreatePetDto {
     })
     @IsOptional()
     @IsString()
-    breed?: string;
+    breed?: string
 
     @ApiProperty({
         example: 'Male',
         description: 'El sexo de la mascota (Male, Female, Unknown).'
     })
     @IsEnum(Sex)
-    sex: Sex;
+    sex: Sex    
 
     @ApiProperty({
         example: true,
@@ -61,7 +59,7 @@ export class CreatePetDto {
     })
     @IsOptional()
     @IsBoolean()
-    isSterilized?: boolean;
+    isSterilized?: boolean
 
     @ApiProperty({
         example: 'Es muy juguetón y le gusta correr.',
@@ -69,13 +67,17 @@ export class CreatePetDto {
     })
     @IsOptional()
     @IsString()
-    notes?: string;
+    notes?: string
 
     @ApiProperty({
-        example: 'URL de la imagen de perfil',
+        example: 'https://example.com/profile.jpg',
         description: 'La URL de la imagen de perfil de la mascota. Opcional.'
     })
     @IsOptional()
     @IsUrl()
-    profileImg?: string;
+    profileImg?: string
+
+    @IsOptional()
+    @IsArray()
+    appointments?: Appointment[] 
 }

@@ -2,6 +2,8 @@ import {
   IsBoolean,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   Matches,
@@ -9,10 +11,10 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class signUpPetShopDto {
+export class SignUpPetShopDto {
   /**
-   * El nombre de la veterinaria/petshop debe tener al menos 4 caracteres.
-   * @ejemplo Vets
+   * El nombre del veterinario debera por lo menos tener 3 caracteres.
+   * @example Jaime
    */
   @IsString()
   @IsNotEmpty()
@@ -21,8 +23,18 @@ export class signUpPetShopDto {
   name: string;
 
   /**
+   * El nombre de la veterinaria/petshop debe tener al menos 4 caracteres.
+   * @example Vets
+   */
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(4)
+  @MaxLength(20)
+  veterinarian: string;
+
+  /**
    * El correo electrónico de la veterinaria/petshop debe ser único y válido.
-   * @ejemplo vets@gmail.com
+   * @example vets@gmail.com
    */
   @IsNotEmpty()
   @IsString()
@@ -31,7 +43,7 @@ export class signUpPetShopDto {
 
   /**
    * La contraseña de la veterinaria debe tener un mínimo de 8 caracteres y un máximo de 15, con al menos un carácter especial, una letra minúscula y una mayúscula.
-   * @ejemplo Pa$$word1
+   * @example Pa$$word1
    */
   @IsNotEmpty()
   @IsString()
@@ -48,7 +60,7 @@ export class signUpPetShopDto {
 
   /**
    * La confirmación de contraseña debe coincidir con la contraseña.
-   * @ejemplo Pa$$word1
+   * @example Pa$$word1
    */
   @IsNotEmpty()
   @IsString()
@@ -65,7 +77,7 @@ export class signUpPetShopDto {
 
   /**
    * El número de teléfono debe tener al menos 10 caracteres.
-   * @ejemplo +584244257832
+   * @example +584244257832
    */
   @IsNotEmpty()
   @IsString()
@@ -87,8 +99,36 @@ export class signUpPetShopDto {
 
   /**
    * La localizacion donde se encuentra la veterinaria/petshop.
+   * @example Argentina
    */
   @IsString()
   @IsNotEmpty()
   location: string;
+
+  /**
+   * El numero de licencia del veterinario.
+   * @example 1234564789
+   */
+  @IsNumber()
+  licenseNumber: number;
+
+  /**
+   * El horario de atencion de la veterinaria/petshop.
+   * @example        
+   * "monday": {"opening": "08:00","closure": "18:00"},
+   * "tuesday": {"opening": "08:00","closure": "18:00"},
+   * "wednesday": {"opening": "08:00","closure": "18:00"},
+   * "thursday": {"opening": "08:00","closure": "18:00"},
+   * "friday": {"opening": "08:00","closure": "18:00"},
+   * "saturday": {"opening": "10:00","closure": "14:00"},
+   * "sunday": {"opening": "Closed","closure": "Closed"}
+   */
+  @IsNotEmpty()
+  @IsObject()
+  businessHours: {
+    [day: string]: {
+      opening: string;
+      closure: string;
+    };
+  };
 }

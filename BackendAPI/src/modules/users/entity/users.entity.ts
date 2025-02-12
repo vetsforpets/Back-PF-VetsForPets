@@ -2,6 +2,8 @@ import { UserMembership } from "src/modules/membership/entity/user-membership.en
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
+import { Pets } from 'src/modules/pets/entity/pets.entity';
+import { Order } from "src/modules/order/entity/order.entity";
 
 @Entity({ name: 'users' })
 export class Users {
@@ -41,7 +43,13 @@ export class Users {
   @Column({ type: 'boolean', default: false })
   isVet: boolean;
 
+  @OneToMany(() => Pets, (pet) => pet.user)
+  pets: Pets[]
+
   @OneToOne(() => UserMembership, (userMembership) => userMembership.user)
   @JoinColumn({ name: "membership" })
   userMembership: UserMembership
+
+  @OneToMany(()=> Order, (order)=> order.userId )
+  order: Order
 }

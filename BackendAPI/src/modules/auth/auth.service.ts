@@ -7,7 +7,7 @@ import { UsersRepository } from '../users/users.repository';
 import { SignUpUserDto } from './dto/signup.user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { signUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
+import { SignUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
 import { PetShopRepository } from '../pet-shop/pet-shop.repository';
 
 @Injectable()
@@ -88,7 +88,7 @@ export class AuthService {
     }
   }
 
-  async petShopSignUp(newPetShop: signUpPetShopDto) {
+  async petShopSignUp(newPetShop: SignUpPetShopDto) {
     try {
       const emailFound = await this.petShopRepository.getPetShopByEmail(
         newPetShop.email,
