@@ -1,4 +1,5 @@
 import { StatusEnum } from 'src/modules/common/enums/status.enum';
+import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
 import { PetShop } from 'src/modules/pet-shop/entity/pet-shop.entity';
 import { Pets } from 'src/modules/pets/entity/pets.entity';
 import { Users } from 'src/modules/users/entity/users.entity';
@@ -7,6 +8,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -38,6 +40,10 @@ export class Appointment {
   @ManyToOne(() => Pets, (pets) => pets.appointment)
   pets: Pets;
 
-  @ManyToOne(()=> PetShop, (petshop) => petshop.appointment  )
+  @ManyToOne(() => PetShop, (petshop) => petshop.appointment)
   petShop: PetShop
+
+  @OneToOne(() => MedicalRecord, medicalRecord => medicalRecord.appointment)
+  @JoinColumn({ name: "medical_record" })
+  medicalRecord: MedicalRecord
 }

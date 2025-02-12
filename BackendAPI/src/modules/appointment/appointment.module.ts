@@ -7,10 +7,11 @@ import { AppointmentService } from "./appointment.service";
 import { AppointmentRepository } from "./appointment.repository";
 import { Pets } from "../pets/entity/pets.entity";
 import { PetShop } from "../pet-shop/entity/pet-shop.entity";
+import { MedicalRecord } from "../medical-record/entity/medical-record.entity";
 
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Appointment, Users, Pets, PetShop])],
+    imports: [TypeOrmModule.forFeature([Appointment, Users, Pets, PetShop, MedicalRecord])],
     controllers: [AppointmentController],
     providers: [AppointmentService, AppointmentRepository]
 })

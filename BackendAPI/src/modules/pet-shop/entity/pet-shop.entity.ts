@@ -1,4 +1,5 @@
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
+import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
 import { Membership } from 'src/modules/membership/entity/membership.entity';
 import {
   Column,
@@ -57,4 +58,7 @@ export class PetShop {
   @OneToOne(() => Membership, (membership) => membership.petShop)
   @JoinColumn()
   membership: Membership;
+
+  @OneToMany(() => MedicalRecord, medicalRecord => medicalRecord.petshop)
+  medicalRecords: MedicalRecord[]
 }
