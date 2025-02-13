@@ -18,12 +18,13 @@ export class OrderRepository {
   ) {}
 
   async find() {
-    return await this.orderRepository.find();
+    return await this.orderRepository.find({ relations: { userId: true } });
   }
 
   async getOrder(orderId: string) {
     const orderFound = await this.orderRepository.findOne({
       where: { id: orderId },
+      relations: { orderDetails: true },
     });
     if (!orderFound)
       throw new NotFoundException(
@@ -62,6 +63,16 @@ export class OrderRepository {
     orderDetail.order = newOrder;
 
     return await this.orderDetailsService.createOrderDetail(orderDetail);
+  }
+
+  async deleteOrder(orderId: string) {
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+    });
+    await this.orderRepository.delete(order);
+    return {
+      mensaje: `La orden del usuario ${order.userId.id} ha sido eliminada`,
+    };
   }
 
   async calculateTotal(products: Array<PartialProductDto>) {
