@@ -1,3 +1,4 @@
+import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
 import { PetShop } from '../../../modules/pet-shop/entity/pet-shop.entity';
 import { Users } from '../../../modules/users/entity/users.entity';
 import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
@@ -31,5 +32,8 @@ export class Location {
 
   @ManyToOne(()=> PetShop, (petShop)=> petShop.location)
   petShop: PetShop
+
+  @OneToOne(()=> Appointment, (appoinment)=> appoinment.location)
+  appointment: Appointment
 
 }
