@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { PetShop } from '../../../modules/pet-shop/entity/pet-shop.entity';
+import { Users } from '../../../modules/users/entity/users.entity';
+import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
 @Entity({ name: 'location' })
@@ -23,5 +25,11 @@ export class Location {
 
   @Column()
   longitude: string
+
+  @OneToOne(()=> Users, (user)=> user.location)
+  user: Users
+
+  @ManyToOne(()=> PetShop, (petShop)=> petShop.location)
+  petShop: PetShop
 
 }
