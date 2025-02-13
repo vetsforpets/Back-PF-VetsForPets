@@ -22,7 +22,6 @@ const config = {
     ssl: {
         rejectUnauthorized: false,
     }
-
 }
 
 export default registerAs('typeorm', () => config)

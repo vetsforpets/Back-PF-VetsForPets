@@ -31,7 +31,7 @@ export class AuthController {
     }
   }
 
-  @Post('signup')
+  @Post('signUp')
   async saveUser(@Body() newUser: SignUpUserDto) {
     return await this.authService.signUp(newUser);
   }
