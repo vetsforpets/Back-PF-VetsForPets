@@ -34,7 +34,7 @@ export class Pets {
     @Column({type:'varchar', nullable: true})
     profileImg?: string
 
-    @ManyToOne(() => Users,  (user) => user.pets)
+    @ManyToOne(() => Users,  (user) => user.pets, {cascade: true} )
     user: Users
 
     @Column()
