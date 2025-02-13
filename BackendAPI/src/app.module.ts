@@ -15,6 +15,7 @@ import { OrderDetailsModule } from './modules/order-details/order-details.module
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './modules/auth/jwt.strategy';
 import { MedicalRecordModule } from './modules/medical-record/medical-record.module';
+import { LocationModule } from './modules/location/location.module';
 
 
 @Module({
@@ -43,7 +44,8 @@ import { MedicalRecordModule } from './modules/medical-record/medical-record.mod
     MembershipModule,
     OrderModule,
     OrderDetailsModule,
-    MedicalRecordModule
+    MedicalRecordModule,
+    LocationModule
   ],
   controllers: [],
   providers: [JwtService, JwtStrategy],
