@@ -12,7 +12,7 @@ import { OrderDetails } from "../order-details/entity/order-details.entity";
 
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Membership, Users, UserMembership, PetShop, OrderDetails])],
+    imports: [TypeOrmModule.forFeature([Membership, Users, UserMembership, PetShop, OrderDetails, OrderDetails])],
     controllers: [MembershipController],
     providers: [MembershipService, MembershipRepository],
     exports: [MembershipService, MembershipRepository]

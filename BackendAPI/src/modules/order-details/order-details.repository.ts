@@ -17,7 +17,7 @@ export class OrderDetailsRepository {
   }
 
   async createOrderDetail(orderDetail: CreateOrderDetailDto) {
-    return this.orderDetailsRepository.save(orderDetail);
+    return await this.orderDetailsRepository.save(orderDetail);
   }
 
   async findDetaildOrderById(id: string) {

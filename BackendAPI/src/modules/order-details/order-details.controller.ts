@@ -1,9 +1,12 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Get,
   InternalServerErrorException,
   NotFoundException,
+  Param,
+  ParseUUIDPipe,
   Post,
 } from '@nestjs/common';
 import { OrderDetailsService } from './order-details.service';
@@ -16,7 +19,7 @@ export class OrderDetailsController {
   constructor(private readonly orderDetailsService: OrderDetailsService) {}
 
   @Get(':id')
-  findOneOrderDetailBy(orderId: string) {
+  findOneOrderDetailBy(@Param('id', ParseUUIDPipe)orderId: string) {
     try {
       return this.orderDetailsService.findDetaildOrderById(orderId);
     } catch (error) {
@@ -31,7 +34,7 @@ export class OrderDetailsController {
   }
 
   @Post()
-  createOrderDetail(orderDetail: CreateOrderDetailDto) {
+  createOrderDetail(@Body() orderDetail: CreateOrderDetailDto) {
     try {
         return this.orderDetailsService.createOrderDetail(orderDetail)
     } catch (error) {

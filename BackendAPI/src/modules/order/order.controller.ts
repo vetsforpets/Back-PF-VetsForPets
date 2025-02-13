@@ -1,10 +1,13 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Delete,
   Get,
   InternalServerErrorException,
   NotFoundException,
+  Param,
+  ParseUUIDPipe,
   Post,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
@@ -32,7 +35,7 @@ export class OrderController {
   }
 
   @Post()
-  addOrder(orderDto: CreateOrderDto) {
+  addOrder(@Body() orderDto: CreateOrderDto) {
     try {
       return this.orderService.addOrder(orderDto);
     } catch (error) {
@@ -47,7 +50,7 @@ export class OrderController {
   }
 
   @Delete(':id')
-  deleteOrder(orderId: string) {
+  deleteOrder(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
       return this.orderService.deleteOrder(orderId);
     } catch (error) {
@@ -62,7 +65,7 @@ export class OrderController {
   }
 
   @Get(':id')
-  getOneOrderBy(orderId: string) {
+  getOneOrderBy(@Param('id', ParseUUIDPipe)  orderId: string) {
     try {
       return this.orderService.getOrderById(orderId);
     } catch (error) {

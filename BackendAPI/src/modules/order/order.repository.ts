@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { OrderDetailsService } from '../order-details/order-details.service';
 import { NotFoundException } from '@nestjs/common';
-import { CreateOrderDto, PartialProductDto } from './dto/createOrder.dto';
+import { CreateOrderDto, MembershipProductDto } from './dto/createOrder.dto';
 import { MembershipService } from '../membership/membership.service';
 import { CreateOrderDetailDto } from '../order-details/dto/createOrderDetail.dto';
 
@@ -45,22 +45,26 @@ export class OrderRepository {
   }
 
   async addOrder(orderDto: CreateOrderDto) {
-    const { userId, product } = orderDto;
+    const { userId, membership, paymentMethod } = orderDto;
     const foundUser = await this.userService.getUserById(userId);
     if (!foundUser) {
       throw new NotFoundException('El usuario no ha sido encontrado');
     }
 
+    console.log('Products passed to calculateTotal:', membership);
+
     const order = new Order();
     order.userId = foundUser;
+    order.orderDate = new Date()
 
     const newOrder = await this.orderRepository.save(order);
-    const total = await this.calculateTotal(product);
+    const total = await this.calculateTotal(membership);
 
     const orderDetail = new CreateOrderDetailDto();
     orderDetail.price = total;
-    orderDetail.product = product;
-    orderDetail.order = newOrder;
+    orderDetail.membership = membership;
+    orderDetail.paymentMethod = paymentMethod;
+    
 
     return await this.orderDetailsService.createOrderDetail(orderDetail);
   }
@@ -75,19 +79,19 @@ export class OrderRepository {
     };
   }
 
-  async calculateTotal(products: Array<PartialProductDto>) {
-    let total = 0;
-    for (const product of products) {
-      if (product.id) {
-        throw new NotFoundException('Falta el id del producto');
-      }
+  async calculateTotal(memberships: MembershipProductDto[]) {
 
+    let total = 0;
+
+    for (const membership of memberships) {
+      if (!membership) {
+        throw new NotFoundException('Missing membership id');
+      }
       const productPrice = await this.membershipService.purchaseMembership(
-        product.id,
+        membership.id,
       );
       total += productPrice;
     }
-
     return total;
   }
 }

@@ -3,6 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -37,6 +38,6 @@ export class Membership {
   @OneToOne(() => PetShop, (petShop) => petShop.membership)
   petShop: PetShop;
 
-  @OneToOne(()=> OrderDetails, orderDetails => orderDetails.membershipId )
+  @ManyToMany(()=> OrderDetails, orderDetails => orderDetails.membership )
   orderDetails: OrderDetails
 }

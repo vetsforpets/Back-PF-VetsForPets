@@ -1,7 +1,8 @@
 export class CreateOrderDetailDto {
     price: number
 
-    order: object
+    membership: Array<Object>
 
-    product: Array<Object>
+    paymentMethod: string
+
 }

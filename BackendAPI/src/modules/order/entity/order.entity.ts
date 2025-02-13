@@ -11,9 +11,6 @@ export class Order {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   orderDate: Date;
 
-  @Column()
-  price: number
-
   @ManyToOne(()=> Users, (userId)=> userId.order)
   userId: Users
 
