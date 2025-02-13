@@ -1,11 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUrl, Length, Min } from "class-validator";
+import { IsArray, IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUrl, Length, Min } from "class-validator";
+import { Appointment } from "src/modules/appointment/entity/appointment.entity";
+import { Sex } from "src/modules/common/enums/petSex.enum";
 
-enum Sex {
-    Male = 'Male',
-    Female = 'Female',
-    Unknown = 'Unknown',
-  }
+
 
 export class CreatePetDto {
 
@@ -53,7 +51,7 @@ export class CreatePetDto {
         description: 'El sexo de la mascota (Male, Female, Unknown).'
     })
     @IsEnum(Sex)
-    sex: Sex
+    sex: Sex    
 
     @ApiProperty({
         example: true,
@@ -78,4 +76,8 @@ export class CreatePetDto {
     @IsOptional()
     @IsUrl()
     profileImg?: string
+
+    @IsOptional()
+    @IsArray()
+    appointments?: Appointment[] 
 }

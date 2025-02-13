@@ -1,4 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
+import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
+import { Membership } from 'src/modules/membership/entity/membership.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
 @Entity({ name: 'petShop' })
@@ -36,9 +46,19 @@ export class PetShop {
   @Column({ type: 'boolean', default: true })
   isVet: boolean;
 
-  @Column({ type: 'bigint'})
+  @Column({ type: 'bigint' })
   licenseNumber: number;
 
-  @Column({ type: 'json'})
-  businessHours: Record<string, {opening: string; closure: string }>
+  @Column({ type: 'json' })
+  businessHours: Record<string, { opening: string; closure: string }>;
+
+  @OneToMany(() => Appointment, (appointment) => appointment.petShop)
+  appointment: Appointment[];
+
+  @OneToOne(() => Membership, (membership) => membership.petShop)
+  @JoinColumn()
+  membership: Membership;
+
+  @OneToMany(() => MedicalRecord, medicalRecord => medicalRecord.petshop)
+  medicalRecords: MedicalRecord[]
 }

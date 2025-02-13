@@ -6,11 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from '../users/entity/users.entity';
 import { Pets } from './entity/pets.entity';
 import { PetsRepository } from './pets.repository';
+import { Appointment } from '../appointment/entity/appointment.entity';
+import { MedicalRecord } from '../medical-record/entity/medical-record.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Users, Pets])],
+  imports: [TypeOrmModule.forFeature([Users, Pets, Appointment, MedicalRecord])],
   controllers: [PetsController],
-  providers: [PetsService,PetsRepository, UsersRepository],
-  exports:[PetsService, PetsRepository]
+  providers: [PetsService, PetsRepository, UsersRepository],
+  exports: [PetsService, PetsRepository]
 })
-export class PetsModule {}
+export class PetsModule { }

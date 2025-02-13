@@ -5,9 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './entity/users.entity';
 import { UsersRepository } from './users.repository';
 import { Pets } from '../pets/entity/pets.entity';
+import { Order } from '../order/entity/order.entity';
+import { Appointment } from '../appointment/entity/appointment.entity';
+import { UserMembership } from '../membership/entity/user-membership.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users, Pets])],
+  imports: [TypeOrmModule.forFeature([Users, Order, Appointment, UserMembership, Pets])],
   providers: [UsersService, UsersRepository],
   controllers: [UsersController],
   exports: [UsersService, UsersRepository]
