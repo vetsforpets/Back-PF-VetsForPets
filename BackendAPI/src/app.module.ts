@@ -14,6 +14,7 @@ import { OrderModule } from './modules/order/order.module';
 import { OrderDetailsModule } from './modules/order-details/order-details.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './modules/auth/jwt.strategy';
+import { MedicalRecordModule } from './modules/medical-record/medical-record.module';
 
 
 @Module({
@@ -41,7 +42,8 @@ import { JwtStrategy } from './modules/auth/jwt.strategy';
     PetShopModule,
     MembershipModule,
     OrderModule,
-    OrderDetailsModule
+    OrderDetailsModule,
+    MedicalRecordModule
   ],
   controllers: [],
   providers: [JwtService, JwtStrategy],
