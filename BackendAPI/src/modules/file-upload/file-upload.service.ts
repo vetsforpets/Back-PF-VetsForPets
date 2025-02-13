@@ -15,6 +15,7 @@ export class FileUploadService {
 
     ) { }
 
+
     async uploadUserImage(file: Express.Multer.File, id: string) {
 
         const user = this.usersRepository.findOne({ where: { id } })
@@ -28,6 +29,7 @@ export class FileUploadService {
         return { imgUrl: upload.secure_url }
     }
 
+
     async uploadMedicalRecordImage(file: Express.Multer.File, id: string) {
 
         const record = await this.medicalRecordRepository.findOne({ where: { id } })
@@ -36,8 +38,20 @@ export class FileUploadService {
 
         const upload = await this.fileUploadRepository.uploadImage(file)
 
+        if (file.mimetype === 'application/pdf') {
+
+            await this.medicalRecordRepository.update(id, { examResults: [upload.secure_url] })
+        }
+
         await this.medicalRecordRepository.update(id, { image: [upload.secure_url] })
 
-        return { imgUrl: upload.secure_url }
+        return {
+            fileUrl: upload.secure_url,
+            public_id: upload.public_id,
+            format: upload.format,
+            resource_type: upload.resource_type
+        }
     }
+
+
 }

@@ -9,8 +9,8 @@ export class MedicalRecordService {
   constructor(private medicalRecordRepository: MedicalRecordRepository) { }
 
 
-  addRecord(record: MedicalRecordDto, petId: string) {
-    return this.medicalRecordRepository.addRecord(record, petId)
+  addRecord(record: MedicalRecordDto, petId: string, petshopId: string) {
+    return this.medicalRecordRepository.addRecord(record, petId, petshopId)
   }
 
   findById(id: string) {

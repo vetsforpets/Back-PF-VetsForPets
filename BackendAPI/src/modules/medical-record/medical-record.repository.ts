@@ -6,6 +6,7 @@ import { MedicalRecordDto } from "./dto/medical-record.dto";
 import { UpdateMedicalRecordDto } from "./dto/update-medical-record.dto";
 import { FileUploadService } from "../file-upload/file-upload.service";
 import { Pets } from "../pets/entity/pets.entity";
+import { PetShop } from "../pet-shop/entity/pet-shop.entity";
 
 
 
@@ -15,6 +16,7 @@ export class MedicalRecordRepository {
     constructor(
         @InjectRepository(MedicalRecord) private readonly medicalRecordRepository: Repository<MedicalRecord>,
         @InjectRepository(Pets) private readonly petsRepository: Repository<Pets>,
+        @InjectRepository(PetShop) private readonly petshopRepository: Repository<PetShop>,
         private fileUploadService: FileUploadService,
 
     ) { }
@@ -22,13 +24,15 @@ export class MedicalRecordRepository {
 
 
 
-    async addRecord(record: MedicalRecordDto, petId: string) {
+    async addRecord(record: MedicalRecordDto, petId: string, petshopId: string) {
 
         const petExists = await this.petsRepository.findOne({ where: { id: petId }, relations: ['medicalRecord'] })
 
         if (!petExists) throw new BadRequestException("ID de mascota inválido, intenta de nuevo con un ID válido")
 
-        const newRecord = this.medicalRecordRepository.create({ ...record, pet: petExists })
+        const petshop = await this.petshopRepository.findOne({ where: { id: petshopId } })
+
+        const newRecord = this.medicalRecordRepository.create({ ...record, pet: petExists, petshop: petshop })
 
         await this.medicalRecordRepository.save(newRecord)
 
@@ -39,7 +43,7 @@ export class MedicalRecordRepository {
 
     async findById(recordId: string) {
 
-        const recordFound = await this.medicalRecordRepository.findOne({ where: { id: recordId } })
+        const recordFound = await this.medicalRecordRepository.findOne({ where: { id: recordId }, relations: ['pet', 'petshop'] })
 
         if (!recordFound) throw new NotFoundException("ID inválido o registro médico no existe, intenta con un ID válido")
 

@@ -11,8 +11,8 @@ export class MedicalRecordController {
   constructor(private readonly medicalRecordService: MedicalRecordService) { }
 
   @Post('addRecord')
-  addRecord(@Body() medicalRecord: MedicalRecordDto, @Query('petId') petId: string) {
-    return this.medicalRecordService.addRecord(medicalRecord, petId);
+  addRecord(@Body() medicalRecord: MedicalRecordDto, @Query('petId') petId: string, @Query('petshopId') petshopId: string) {
+    return this.medicalRecordService.addRecord(medicalRecord, petId, petshopId);
   }
 
   @Get(':id')
