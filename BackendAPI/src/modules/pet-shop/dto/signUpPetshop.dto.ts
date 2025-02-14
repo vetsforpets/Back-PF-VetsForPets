@@ -98,14 +98,6 @@ export class SignUpPetShopDto {
   is24Hours: boolean;
 
   /**
-   * La localizacion donde se encuentra la veterinaria/petshop.
-   * @example Argentina
-   */
-  @IsString()
-  @IsNotEmpty()
-  location: string;
-
-  /**
    * El numero de licencia del veterinario.
    * @example 1234564789
    */

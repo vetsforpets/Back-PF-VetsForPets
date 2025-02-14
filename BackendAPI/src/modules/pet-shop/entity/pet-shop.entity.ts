@@ -1,4 +1,5 @@
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
+import { Location } from 'src/modules/location/entity/location.entity';
 import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
 import { Membership } from 'src/modules/membership/entity/membership.entity';
 import {
@@ -40,9 +41,6 @@ export class PetShop {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column()
-  location: string;
-
   @Column({ type: 'boolean', default: true })
   isVet: boolean;
 
@@ -59,6 +57,9 @@ export class PetShop {
   @JoinColumn()
   membership: Membership;
 
-  @OneToMany(() => MedicalRecord, medicalRecord => medicalRecord.petshop)
-  medicalRecords: MedicalRecord[]
+  @OneToMany(() => MedicalRecord, (medicalRecord) => medicalRecord.petshop)
+  medicalRecords: MedicalRecord[];
+
+  @OneToMany(() => Location, (location) => location.user)
+  location: Location[];
 }
