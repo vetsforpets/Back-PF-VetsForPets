@@ -43,7 +43,7 @@ export class PetShop {
   @Column({default:null})
   location: string;
 
-  @Column({type:'varchar'})
+  @Column({type:'varchar', default: null})
   foundation: string
 
   @Column({ type: 'boolean', default: true })
