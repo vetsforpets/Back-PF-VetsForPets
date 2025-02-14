@@ -7,11 +7,12 @@ import { MembershipRepository } from "./membership.repository";
 import { Users } from "../users/entity/users.entity";
 import { UserMembership } from "./entity/user-membership.entity";
 import { PetShop } from "../pet-shop/entity/pet-shop.entity";
+import { OrderDetails } from "../order-details/entity/order-details.entity";
 
 
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Membership, Users, UserMembership, PetShop])],
+    imports: [TypeOrmModule.forFeature([Membership, Users, UserMembership, PetShop, OrderDetails, OrderDetails])],
     controllers: [MembershipController],
     providers: [MembershipService, MembershipRepository],
     exports: [MembershipService, MembershipRepository]
