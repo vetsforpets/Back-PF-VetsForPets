@@ -40,7 +40,7 @@ export class PetShop {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column()
+  @Column({default:null})
   location: string;
 
   @Column({type:'varchar'})
