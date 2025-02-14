@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsEmail,
@@ -12,39 +13,27 @@ import {
 } from 'class-validator';
 
 export class SignUpPetShopDto {
-  /**
-   * El nombre del veterinario debera por lo menos tener 3 caracteres.
-   * @example Jaime
-   */
+  @ApiProperty({ description: 'Nombre de la veterinaria', example: 'Vets', minLength: 4, maxLength: 20 })
   @IsString()
   @IsNotEmpty()
   @MinLength(4)
   @MaxLength(20)
   name: string;
 
-  /**
-   * El nombre de la veterinaria/petshop debe tener al menos 4 caracteres.
-   * @example Vets
-   */
+  @ApiProperty({ description: 'Nombre del veterinario', example: 'Jaime', minLength: 4, maxLength: 20 })
   @IsString()
   @IsNotEmpty()
   @MinLength(4)
   @MaxLength(20)
   veterinarian: string;
 
-  /**
-   * El correo electrónico de la veterinaria/petshop debe ser único y válido.
-   * @example vets@gmail.com
-   */
+  @ApiProperty({ description: 'Correo electrónico de la veterinaria', example: 'vets@gmail.com' })
   @IsNotEmpty()
   @IsString()
   @IsEmail()
   email: string;
 
-  /**
-   * La contraseña de la veterinaria debe tener un mínimo de 8 caracteres y un máximo de 15, con al menos un carácter especial, una letra minúscula y una mayúscula.
-   * @example Pa$$word1
-   */
+  @ApiProperty({ description: 'Contraseña de la veterinaria', example: 'Pa$$word1', minLength: 8, maxLength: 15 })
   @IsNotEmpty()
   @IsString()
   @MinLength(8)
@@ -58,10 +47,7 @@ export class SignUpPetShopDto {
   )
   password: string;
 
-  /**
-   * La confirmación de contraseña debe coincidir con la contraseña.
-   * @example Pa$$word1
-   */
+  @ApiProperty({ description: 'Confirmación de contraseña', example: 'Pa$$word1', minLength: 8, maxLength: 15 })
   @IsNotEmpty()
   @IsString()
   @MinLength(8)
@@ -75,60 +61,57 @@ export class SignUpPetShopDto {
   )
   confirmPassword: string;
 
-  /**
-   * El número de teléfono debe tener al menos 10 caracteres.
-   * @example +584244257832
-   */
+  @ApiProperty({ description: 'Número de teléfono', example: '+584244257832', minLength: 10, maxLength: 13 })
   @IsNotEmpty()
   @IsString()
   @MinLength(10)
   @MaxLength(13)
   phoneNumber: string;
 
+  @ApiProperty({ description: 'URL de la imagen de perfil', example: 'http://example.com/image.jpg', required: false })
   @IsOptional()
   @IsString()
   imgProfile?: string;
 
-  /**
-   * Marcar si tiene disponible el servicio de urgencias 24/7.
-   */
 
+  @ApiProperty({ description: '¿Está abierto 24 horas?', example: true })
   @IsNotEmpty()
   @IsBoolean()
   is24Hours: boolean;
 
-  /**
-   * La localizacion donde se encuentra la veterinaria/petshop.
-   * @example Argentina
-   */
+
+  @ApiProperty({ description: 'Ubicación de la veterinaria', example: 'Caracas, Venezuela' })
   @IsString()
   @IsNotEmpty()
   location: string;
 
-  /**
-   * El numero de licencia del veterinario.
-   * @example 1234564789
-   */
+  @ApiProperty({ description: 'Número de licencia del veterinario', example: 1234567890 })
   @IsNumber()
   licenseNumber: number;
-
-  /**
-   * El horario de atencion de la veterinaria/petshop.
-   * @example        
-   * "monday": {"opening": "08:00","closure": "18:00"},
-   * "tuesday": {"opening": "08:00","closure": "18:00"},
-   * "wednesday": {"opening": "08:00","closure": "18:00"},
-   * "thursday": {"opening": "08:00","closure": "18:00"},
-   * "friday": {"opening": "08:00","closure": "18:00"},
-   * "saturday": {"opening": "10:00","closure": "14:00"},
-   * "sunday": {"opening": "Closed","closure": "Closed"}
-   */
+  
+  @ApiProperty({ description: 'Año de fundación (YYYY)', example: '2005', pattern: '^\\d{4}$' }) // ApiProperty for Swagger
   @IsNotEmpty()
-  @IsObject()
-  businessHours: {
-    [day: string]: {
-      opening: string;
-      closure: string;
-    };
-  };
+  @IsString()
+  @Matches(/^\d{4}$/, { message: 'El año de fundación debe tener 4 dígitos (YYYY).' }) // Validation for YYYY format
+  foundation: string;
+
+  // /**
+  //  * El horario de atencion de la veterinaria/petshop.
+  //  * @example        
+  //  * "monday": {"opening": "08:00","closure": "18:00"},
+  //  * "tuesday": {"opening": "08:00","closure": "18:00"},
+  //  * "wednesday": {"opening": "08:00","closure": "18:00"},
+  //  * "thursday": {"opening": "08:00","closure": "18:00"},
+  //  * "friday": {"opening": "08:00","closure": "18:00"},
+  //  * "saturday": {"opening": "10:00","closure": "14:00"},
+  //  * "sunday": {"opening": "Closed","closure": "Closed"}
+  //  */
+  // @IsNotEmpty()
+  // @IsObject()
+  // businessHours: {
+  //   [day: string]: {
+  //     opening: string;
+  //     closure: string;
+  //   };
+  // };
 }

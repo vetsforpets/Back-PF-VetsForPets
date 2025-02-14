@@ -43,13 +43,16 @@ export class PetShop {
   @Column()
   location: string;
 
+  @Column({type:'varchar'})
+  foundation: string
+
   @Column({ type: 'boolean', default: true })
   isVet: boolean;
 
   @Column({ type: 'bigint' })
   licenseNumber: number;
 
-  @Column({ type: 'json' })
+  @Column({ type: 'json', default: null})
   businessHours: Record<string, { opening: string; closure: string }>;
 
   @OneToMany(() => Appointment, (appointment) => appointment.petShop)
