@@ -109,7 +109,7 @@ export class AuthService {
         throw new BadRequestException('No se pudo encriptar la contraseña.');
       }
 
-      await this.petShopRepository.save({
+      await this.petShopRepository.savePetshop({
         ...newPetShop,
         password: hashedPassword,
 

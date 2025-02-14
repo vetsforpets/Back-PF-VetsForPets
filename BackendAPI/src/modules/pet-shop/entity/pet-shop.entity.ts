@@ -1,5 +1,4 @@
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
-import { Location } from 'src/modules/location/entity/location.entity';
 import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
 import { Membership } from 'src/modules/membership/entity/membership.entity';
 import {
@@ -41,13 +40,19 @@ export class PetShop {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
+  @Column()
+  location: string;
+
+  @Column({type:'varchar'})
+  foundation: string
+
   @Column({ type: 'boolean', default: true })
   isVet: boolean;
 
   @Column({ type: 'bigint' })
   licenseNumber: number;
 
-  @Column({ type: 'json' })
+  @Column({ type: 'json', default: null})
   businessHours: Record<string, { opening: string; closure: string }>;
 
   @OneToMany(() => Appointment, (appointment) => appointment.petShop)
@@ -60,6 +65,6 @@ export class PetShop {
   @OneToMany(() => MedicalRecord, (medicalRecord) => medicalRecord.petshop)
   medicalRecords: MedicalRecord[];
 
-  @OneToMany(() => Location, (location) => location.user)
-  location: Location[];
+  // @OneToMany(() => Location, (location) => location.user)
+  // location: Location[];
 }

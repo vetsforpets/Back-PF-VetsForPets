@@ -36,7 +36,7 @@ export class AuthController {
     return await this.authService.signUp(newUser);
   }
 
-  @Post('vetsignup')
+  @Post('vetSignUp')
   petShopSignUp(@Body() newPetShop: SignUpPetShopDto) {
     try {
       return this.authService.petShopSignUp(newPetShop);
