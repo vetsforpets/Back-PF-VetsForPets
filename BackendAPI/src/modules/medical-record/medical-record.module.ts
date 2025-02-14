@@ -7,9 +7,10 @@ import { MedicalRecord } from './entity/medical-record.entity';
 import { Pets } from '../pets/entity/pets.entity';
 import { PetShop } from '../pet-shop/entity/pet-shop.entity';
 import { Appointment } from '../appointment/entity/appointment.entity';
+import { FileUploadModule } from '../file-upload/file-upload.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MedicalRecord, Pets, PetShop, Appointment])],
+  imports: [TypeOrmModule.forFeature([MedicalRecord, Pets, PetShop, Appointment]), FileUploadModule],
   controllers: [MedicalRecordController],
   providers: [MedicalRecordService, MedicalRecordRepository],
 })
