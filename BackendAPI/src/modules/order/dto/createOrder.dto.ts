@@ -21,9 +21,18 @@ export class CreateOrderDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => MembershipProductDto)
+  @ApiProperty({
+    description: 'Informacion de la membresia o ID',
+    example: '456d2b9c-cbca-4cb9-a90f-b403fb5770f4',
+  })
   membership: MembershipProductDto[];
 
   @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'El metodo de pago usado para la compra de la membresia',
+    example: 'Debit card',
+  })
   paymentMethod: string;
 }
 

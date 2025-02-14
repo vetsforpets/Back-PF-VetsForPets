@@ -9,7 +9,7 @@ export class OrderDetails {
     id: string = uuid()
     
     @OneToOne(()=> Order, order => order.orderDetails)
-    @JoinTable()
+    @JoinColumn()
     order: Order
 
     @ManyToMany(()=> Membership)

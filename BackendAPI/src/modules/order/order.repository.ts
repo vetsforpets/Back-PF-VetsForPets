@@ -32,7 +32,7 @@ export class OrderRepository {
       );
 
     const { orderDetails, ...orderQuery } = orderFound;
-
+    
     const foundOrderDetails = await this.orderDetailsService.findOneBy(
       orderQuery,
       ['order', 'membershipId'],
@@ -51,16 +51,14 @@ export class OrderRepository {
       throw new NotFoundException('El usuario no ha sido encontrado');
     }
 
-    console.log('Products passed to calculateTotal:', membership);
-
     const order = new Order();
     order.userId = foundUser;
-    order.orderDate = new Date()
 
     const newOrder = await this.orderRepository.save(order);
     const total = await this.calculateTotal(membership);
 
     const orderDetail = new CreateOrderDetailDto();
+    orderDetail.order = newOrder
     orderDetail.price = total;
     orderDetail.membership = membership;
     orderDetail.paymentMethod = paymentMethod;
