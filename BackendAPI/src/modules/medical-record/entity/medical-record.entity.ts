@@ -15,11 +15,11 @@ export class MedicalRecord {
     @Column()
     date: Date
 
-    @Column()
-    examResults: string
+    @Column("text", { array: true, nullable: true })
+    examResults?: string[]
 
-    @Column({ nullable: true })
-    image: string
+    @Column('text', { nullable: true, array: true })
+    image?: string[]
 
     @OneToOne(() => Pets, pet => pet.medicalRecord)
     pet: Pets
