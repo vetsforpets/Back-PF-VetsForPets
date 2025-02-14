@@ -6,10 +6,11 @@ import { FileUploadRepository } from "./file-upload.repository";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "../users/entity/users.entity";
 import { MedicalRecord } from "../medical-record/entity/medical-record.entity";
+import { Pets } from "../pets/entity/pets.entity";
 
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Users, MedicalRecord])],
+    imports: [TypeOrmModule.forFeature([Users, MedicalRecord, Pets])],
     controllers: [FileUploadController],
     providers: [CloudinaryConfig, FileUploadService, FileUploadRepository],
     exports: [FileUploadService, FileUploadRepository]
