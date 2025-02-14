@@ -34,4 +34,8 @@ export class MembershipService {
     async cancelMembership(userId: string, membershipId: string) {
         return this.membershipRepository.cancelMembership(userId, membershipId)
     }
+
+    async purchaseMembership(membershipId: string){
+        return this.membershipRepository.purchaseMembership(membershipId)
+    }
 }

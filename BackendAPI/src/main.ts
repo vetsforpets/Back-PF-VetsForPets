@@ -7,6 +7,7 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({
+    transform: true,
     whitelist: true,
     exceptionFactory: (errors) => {
       const cleanErrors = errors.map((error) => {

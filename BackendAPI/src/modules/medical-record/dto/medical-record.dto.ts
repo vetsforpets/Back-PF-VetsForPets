@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsDate, IsDateString, IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator"
+import { IsArray, IsDate, IsDateString, IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator"
 
 export class MedicalRecordDto {
 
@@ -22,16 +22,18 @@ export class MedicalRecordDto {
 
     @IsString()
     @IsOptional()
+    @IsArray()
     @ApiProperty({
         "description": "Archivo cargado del resultado del examen médico"
     })
-    examResults: string
+    examResults?: string[]
 
     @IsString()
     @IsOptional()
+    @IsArray()
     @ApiProperty({
         "description": "Imagen que se quiera adjuntar al registro médico",
         "examples": ["Radiografía", "Ecografía"]
     })
-    image: string
+    image?: string[]
 }

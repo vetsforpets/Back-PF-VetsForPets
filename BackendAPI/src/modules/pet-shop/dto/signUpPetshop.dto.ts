@@ -86,6 +86,10 @@ export class SignUpPetShopDto {
   location: string;
 
   @ApiProperty({ description: 'Número de licencia del veterinario', example: 1234567890 })
+  /**
+   * El numero de licencia del veterinario.
+   * @example 1234564789
+   */
   @IsNumber()
   licenseNumber: number;
   

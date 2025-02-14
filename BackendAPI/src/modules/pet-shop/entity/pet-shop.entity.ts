@@ -62,6 +62,9 @@ export class PetShop {
   @JoinColumn()
   membership: Membership;
 
-  @OneToMany(() => MedicalRecord, medicalRecord => medicalRecord.petshop)
-  medicalRecords: MedicalRecord[]
+  @OneToMany(() => MedicalRecord, (medicalRecord) => medicalRecord.petshop)
+  medicalRecords: MedicalRecord[];
+
+  // @OneToMany(() => Location, (location) => location.user)
+  // location: Location[];
 }

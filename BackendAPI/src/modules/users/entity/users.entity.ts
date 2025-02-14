@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
 import { Pets } from 'src/modules/pets/entity/pets.entity';
 import { Order } from "src/modules/order/entity/order.entity";
+import { Location } from "src/modules/location/entity/location.entity";
 
 @Entity({ name: 'users' })
 export class Users {
@@ -52,4 +53,8 @@ export class Users {
 
   @OneToMany(()=> Order, (order)=> order.userId )
   order: Order
+
+  @OneToOne(()=> Location, (location)=> location.user)
+  @JoinColumn()
+  location: Location
 }

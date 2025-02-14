@@ -1,8 +1,9 @@
-import { StatusEnum } from 'src/modules/common/enums/status.enum';
-import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
-import { PetShop } from 'src/modules/pet-shop/entity/pet-shop.entity';
-import { Pets } from 'src/modules/pets/entity/pets.entity';
-import { Users } from 'src/modules/users/entity/users.entity';
+import { StatusEnum } from '../../../modules/common/enums/status.enum';
+import { Location } from '../../../modules/location/entity/location.entity';
+import { MedicalRecord } from '../../../modules/medical-record/entity/medical-record.entity';
+import { PetShop } from '../../../modules/pet-shop/entity/pet-shop.entity';
+import { Pets } from '../../../modules/pets/entity/pets.entity';
+import { Users } from '../../../modules/users/entity/users.entity';
 import {
   Column,
   Entity,
@@ -46,4 +47,8 @@ export class Appointment {
   @OneToOne(() => MedicalRecord, medicalRecord => medicalRecord.appointment)
   @JoinColumn({ name: "medical_record" })
   medicalRecord: MedicalRecord
+
+  @OneToOne(()=> Location, (location)=> location.appointment)
+  @JoinColumn()
+  location: Location
 }
