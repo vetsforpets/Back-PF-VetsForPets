@@ -7,6 +7,7 @@ import { NotFoundException } from '@nestjs/common';
 import { CreateOrderDto, MembershipProductDto } from './dto/createOrder.dto';
 import { MembershipService } from '../membership/membership.service';
 import { CreateOrderDetailDto } from '../order-details/dto/createOrderDetail.dto';
+import { PaymentService } from '../payment/payment.service';
 
 export class OrderRepository {
   constructor(
@@ -15,6 +16,7 @@ export class OrderRepository {
     private readonly userService: UsersService,
     private readonly orderDetailsService: OrderDetailsService,
     private readonly membershipService: MembershipService,
+    private readonly paymentService: PaymentService
   ) {}
 
   async find() {
@@ -51,20 +53,34 @@ export class OrderRepository {
       throw new NotFoundException('El usuario no ha sido encontrado');
     }
 
+    const membershipEntities = await Promise.all(
+      membership.map((item)=> this.membershipService.findOneMembership(item.id)),
+    )
+    
+    
+
     const order = new Order();
     order.userId = foundUser;
 
+
     const newOrder = await this.orderRepository.save(order);
-    const total = await this.calculateTotal(membership);
+    const total = await this.calculateTotal(membershipEntities);
 
     const orderDetail = new CreateOrderDetailDto();
     orderDetail.order = newOrder
     orderDetail.price = total;
-    orderDetail.membership = membership;
+    orderDetail.membership = membershipEntities;
     orderDetail.paymentMethod = paymentMethod;
     
+    const createdOrderDetail = await this.orderDetailsService.createOrderDetail(orderDetail);
+    const checkoutSession = await this.paymentService.createCheckoutSession(newOrder, membershipEntities)
 
-    return await this.orderDetailsService.createOrderDetail(orderDetail);
+
+    return {
+      order: newOrder,
+      orderDetails: createdOrderDetail,
+      checkoutSessionUrl: checkoutSession.url
+    }
   }
 
   async deleteOrder(orderId: string) {

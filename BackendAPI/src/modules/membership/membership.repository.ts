@@ -153,4 +153,11 @@ export class MembershipRepository {
 
     return membership.price;
   }
+
+  async findOneMembership(membershipId: string) {
+    const membershipFound = await this.membershipRepository.findOne({
+      where: { id: membershipId },
+    });
+    return membershipFound
+  }
 }

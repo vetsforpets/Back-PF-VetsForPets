@@ -33,5 +33,5 @@ export class MembershipDto {
     @ApiProperty({
         "description": "Es definido por default, no se puede recibir en la petición.",
     })
-    status: boolean
+    status?: boolean
 } 
