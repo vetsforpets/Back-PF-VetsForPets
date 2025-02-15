@@ -5,26 +5,26 @@ export class UpdateUserDto {
     @ApiProperty({
         description: "El nombre del usuario",
         example: "Sam",
-        minLength: 3,
+        minLength: 2,
         maxLength: 80,
-        required: false 
+        required: false
     })
-    @IsOptional() 
+    @IsOptional()
     @IsString()
-    @MinLength(3)
+    @MinLength(2)
     @MaxLength(80)
     name?: string
 
     @ApiProperty({
         description: "El apellido del usuario",
         example: "Suarez",
-        minLength: 6,
+        minLength: 2,
         maxLength: 80,
         required: false
     })
     @IsOptional()
     @IsString()
-    @MinLength(6)
+    @MinLength(2)
     @MaxLength(80)
     lastName?: string
 
