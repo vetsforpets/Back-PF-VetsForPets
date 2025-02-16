@@ -68,4 +68,7 @@ export class UpdateUserDto {
     @IsOptional()
     @IsString()
     imgProfile?: string
+    
+    @IsOptional()
+    isPremium?: boolean
 }
