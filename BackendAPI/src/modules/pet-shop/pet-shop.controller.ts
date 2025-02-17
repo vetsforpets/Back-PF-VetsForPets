@@ -4,26 +4,30 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { PetShop } from './entity/pet-shop.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdatePetShopDto } from './dto/updatePetShop.dto';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from 'src/decorators/roles/roles.decorator';
+import { Role } from '../common/enums/roles.enum';
 
 @ApiTags('PetShop')
+@UseGuards(RolesGuard)
 @Controller('petshop')
 export class PetShopController {
-  constructor(private readonly petShopService: PetShopService) {}
+  constructor(private readonly petShopService: PetShopService) { }
 
   @ApiOperation({ summary: 'Obtener todas las veterinarias' })
   @ApiResponse({ status: 200, description: 'Lista de veterinarias' })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(Role.ADMIN)
   @Get()
   async getAllPetshops(): Promise<PetShop[]> {
-      return await this.petShopService.getAllPetShops();
+    return await this.petShopService.getAllPetShops();
   }
 
   @ApiOperation({ summary: 'Obtener una veterinaria por ID' })
   @ApiResponse({ status: 200, description: 'Veterinaria encontrada' })
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(Role.ADMIN)
   @Get(':id')
   async findPetShopById(@Param('id') id: string): Promise<PetShop> {
     try {
@@ -41,7 +45,7 @@ export class PetShopController {
   @ApiResponse({ status: 200, description: 'Veterinaria actualizada' })
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(Role.ADMIN, Role.PETSHOP)
   @Put(':id')
   async updatePetShop(@Param('id') id: string, @Body() petShopData: UpdatePetShopDto): Promise<PetShop | undefined> {
     try {
@@ -59,7 +63,7 @@ export class PetShopController {
   @ApiResponse({ status: 200, description: 'Veterinaria eliminada' })
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(Role.ADMIN)
   @Delete(':id')
   async deletePetShop(@Param('id') id: string): Promise<void> {
     try {

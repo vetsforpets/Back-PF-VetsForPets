@@ -1,9 +1,13 @@
-import { Controller, FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, ParseUUIDPipe, Post, Query, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Controller, FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, ParseUUIDPipe, Post, Query, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FileUploadService } from "./file-upload.service";
 import { ApiBody, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { RolesGuard } from "../common/guards/roles.guard";
+import { Roles } from "src/decorators/roles/roles.decorator";
+import { Role } from "../common/enums/roles.enum";
 
 @ApiTags('Files')
+@UseGuards(RolesGuard)
 @Controller('files')
 export class FileUploadController {
 
@@ -25,6 +29,7 @@ export class FileUploadController {
             },
         },
     })
+    @Roles(Role.ADMIN, Role.USER)
     uploadImage(@UploadedFile(
         new ParseFilePipe({
             validators: [
@@ -60,6 +65,7 @@ export class FileUploadController {
             },
         },
     })
+    @Roles(Role.ADMIN, Role.PETSHOP)
     uploadMedicalRecordImage(@UploadedFile(
         new ParseFilePipe({
             validators: [
@@ -95,6 +101,7 @@ export class FileUploadController {
             },
         },
     })
+    @Roles(Role.USER)
     uploadPetImage(@UploadedFile(
         new ParseFilePipe({
             validators: [

@@ -11,11 +11,15 @@ import { AuthService } from './auth.service';
 import { SignUpUserDto } from './dto/signup.user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { SignUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
+import { Public } from 'src/decorators/public-routes/public-routes.decorator';
 
 @ApiTags('Auth')
+@Public()
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
+
+
   @Post('signIn')
   signIn(@Body() loginDTO: LoginDTO) {
     try {
@@ -31,10 +35,12 @@ export class AuthController {
     }
   }
 
+
   @Post('signUp')
   async saveUser(@Body() newUser: SignUpUserDto) {
     return await this.authService.signUp(newUser);
   }
+
 
   @Post('vetSignUp')
   petShopSignUp(@Body() newPetShop: SignUpPetShopDto) {

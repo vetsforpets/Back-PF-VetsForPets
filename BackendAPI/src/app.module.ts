@@ -17,6 +17,8 @@ import { JwtStrategy } from './modules/auth/jwt.strategy';
 import { MedicalRecordModule } from './modules/medical-record/medical-record.module';
 import { LocationModule } from './modules/location/location.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { JwtAuthGuard } from './modules/common/guards/auth.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 
 @Module({
@@ -51,6 +53,11 @@ import { PaymentModule } from './modules/payment/payment.module';
 
   ],
   controllers: [],
-  providers: [JwtService, JwtStrategy],
+  providers: [JwtService, JwtStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard
+    },
+  ],
 })
 export class AppModule { }

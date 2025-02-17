@@ -9,17 +9,23 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateOrderDto } from './dto/createOrder.dto';
+import { Roles } from 'src/decorators/roles/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Role } from '../common/enums/roles.enum';
 
 @ApiTags('Order')
+@UseGuards(RolesGuard)
 @Controller('order')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(private readonly orderService: OrderService) { }
 
   @Get()
+  @Roles(Role.ADMIN)
   findAll() {
     try {
       return this.orderService.find();
@@ -35,6 +41,7 @@ export class OrderController {
   }
 
   @Post()
+  @Roles(Role.USER, Role.ADMIN, Role.PETSHOP)
   addOrder(@Body() orderDto: CreateOrderDto) {
     try {
       return this.orderService.addOrder(orderDto);
@@ -50,6 +57,7 @@ export class OrderController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN, Role.USER, Role.PETSHOP)
   deleteOrder(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
       return this.orderService.deleteOrder(orderId);
@@ -65,7 +73,8 @@ export class OrderController {
   }
 
   @Get(':id')
-  getOneOrderBy(@Param('id', ParseUUIDPipe)  orderId: string) {
+  @Roles(Role.ADMIN)
+  getOneOrderBy(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
       return this.orderService.getOrderById(orderId);
     } catch (error) {
