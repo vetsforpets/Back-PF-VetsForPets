@@ -62,4 +62,12 @@ export class MembershipService {
   async findOneMembership(membershipId: string) {
     return this.membershipRepository.findOneMembership(membershipId);
   }
+
+  async cancelMembership(userId: string, membershipId: string) {
+    return this.membershipRepository.cancelMembership(userId, membershipId);
+  }
+
+  async purchaseMembership(membershipId: string) {
+    return this.membershipRepository.purchaseMembership(membershipId);
+  }
 }
