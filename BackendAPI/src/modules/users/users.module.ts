@@ -9,10 +9,12 @@ import { Order } from '../order/entity/order.entity';
 import { Appointment } from '../appointment/entity/appointment.entity';
 import { UserMembership } from '../membership/entity/user-membership.entity';
 import { Location } from '../location/entity/location.entity';
+import { EmailModule } from '../common/email/email.module';
+import { EmailService } from '../common/email/email.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users, Order, Appointment, UserMembership, Pets, Location])],
-  providers: [UsersService, UsersRepository],
+  imports: [TypeOrmModule.forFeature([Users, Order, Appointment, UserMembership, Pets, Location]), EmailModule],
+  providers: [UsersService, UsersRepository, EmailService],
   controllers: [UsersController],
   exports: [UsersService, UsersRepository]
 })

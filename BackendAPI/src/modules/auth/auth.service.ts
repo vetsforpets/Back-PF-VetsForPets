@@ -9,6 +9,8 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
 import { PetShopRepository } from '../pet-shop/pet-shop.repository';
+import { EmailService } from '../common/email/email.service';
+import { sendEmailDto } from '../common/email/dto/create.email.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +18,7 @@ export class AuthService {
     private readonly usersRepository: UsersRepository,
     private readonly petShopRepository: PetShopRepository,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService
   ) {}
 
   async signIn(email: string, password: string) {
@@ -72,12 +75,27 @@ export class AuthService {
       });
 
       const { password, confirmPassword, ...userWithOutPassword } = newUser;
+      try {
+        const emailDto: sendEmailDto = {
+          recipients: newUser.email,
+          subject: '¡Bienvenido(a) a VetsForPets!', 
+          html: `
+            <p>¡Hola ${newUser.name}!</p>  
+            <p>¡Gracias por registrarte en VetsForPets!</p>
+            <p>¡Esperamos verte pronto!</p>
+            <p>Atentamente,<br>El equipo de VetsForPets</p>
+          `, 
+        };
+        await this.emailService.sendEmail(emailDto)
+      } catch (error) {
+        console.error("Error al enviar el email:", error);
+      }
       return {
         success: 'Usuario registrado exitosamente:',
         userWithOutPassword,
       };
     } catch (error) {
-      console.error('Error during user creation:', error);
+      console.error('Error en la creacion del usuario: ', error);
       if (error instanceof BadRequestException) {
         throw error;
       }
@@ -118,6 +136,20 @@ export class AuthService {
       const { password, confirmPassword, ...petShopWithOutPassword } =
         newPetShop;
 
+      try {
+        const emailDto: sendEmailDto = {
+          recipients: newPetShop.email,
+          subject: '¡Bienvenido(a) a VetsForPets!', 
+          html: `
+            <p>¡Hola ${newPetShop.name}!</p>
+            <p>¡Gracias por registrar tu veterinaria/petShop en VetsForPets!</p>
+            <p>¡Esperamos verte pronto!</p>
+            <p>Atentamente,<br>El equipo de VetsForPets</p>
+          `}
+          await this.emailService.sendEmail(emailDto)
+      } catch (error) {
+        console.error('Error al enviar el email:', error)
+      }
       return {
         success: 'La veterinaria/petshop ha sido creada exitosamente: ',
         petShopWithOutPassword,

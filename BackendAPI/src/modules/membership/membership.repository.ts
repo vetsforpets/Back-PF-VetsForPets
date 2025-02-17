@@ -106,16 +106,6 @@ export class MembershipRepository {
     return { message: 'Membresía actualizada con éxito!' };
   }
 
-  // async updateUserMembership(id: string, data: UpdateMembershipDto) {
-  //     const user = await this.usersRepository.findOne({ where: { id } })
-
-  //     if (!user) throw new NotFoundException("ID de usuario inválido, intenta de nuevo con un ID válido")
-
-  //     await this.usersRepository.update(id, data)
-
-  //     return { message: "Membresía actualizada con éxito!", user: user.userMembership }
-  // }
-
   async cancelMembership(userId: string, membershipId: string) {
     const userMembership = await this.userMembershipRepository.findOne({
       where: { id: membershipId },

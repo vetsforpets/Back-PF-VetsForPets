@@ -25,12 +25,12 @@ export class SignUpUserDto {
   @ApiProperty({
     description: 'El apellido del usuario',
     example: 'Suarez',
-    minLength: 10,
+    minLength: 3,
     maxLength: 80,
   })
   @IsNotEmpty()
   @IsString()
-  @MinLength(10)
+  @MinLength(3)
   @MaxLength(80)
   lastName: string;
 
