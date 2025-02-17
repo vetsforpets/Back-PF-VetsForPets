@@ -29,6 +29,9 @@ export class Users {
   @Column({ length: 15 })
   phoneNumber: string;
 
+  @Column({default: false})
+  isAdmin: boolean
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
