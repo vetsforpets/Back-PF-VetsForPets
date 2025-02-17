@@ -16,6 +16,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './modules/auth/jwt.strategy';
 import { MedicalRecordModule } from './modules/medical-record/medical-record.module';
 import { LocationModule } from './modules/location/location.module';
+import { EmailModule } from './modules/common/email/email.module';
 
 
 @Module({
@@ -35,6 +36,7 @@ import { LocationModule } from './modules/location/location.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
+    
     UsersModule,
     AuthModule,
     FileUploadModule,
@@ -45,9 +47,10 @@ import { LocationModule } from './modules/location/location.module';
     OrderModule,
     OrderDetailsModule,
     MedicalRecordModule,
-    LocationModule
+    LocationModule,
+    EmailModule
   ],
   controllers: [],
   providers: [JwtService, JwtStrategy],
 })
-export class AppModule { }
+export class AppModule {}
