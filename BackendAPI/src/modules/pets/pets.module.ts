@@ -8,11 +8,13 @@ import { Pets } from './entity/pets.entity';
 import { PetsRepository } from './pets.repository';
 import { Appointment } from '../appointment/entity/appointment.entity';
 import { MedicalRecord } from '../medical-record/entity/medical-record.entity';
+import { EmailModule } from '../common/email/email.module';
+import { EmailService } from '../common/email/email.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users, Pets, Appointment, MedicalRecord])],
+  imports: [TypeOrmModule.forFeature([Users, Pets, Appointment, MedicalRecord]), EmailModule],
   controllers: [PetsController],
-  providers: [PetsService, PetsRepository, UsersRepository],
+  providers: [PetsService, PetsRepository, UsersRepository, EmailService],
   exports: [PetsService, PetsRepository]
 })
 export class PetsModule { }

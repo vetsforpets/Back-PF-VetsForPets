@@ -17,6 +17,7 @@ import { JwtStrategy } from './modules/auth/jwt.strategy';
 import { MedicalRecordModule } from './modules/medical-record/medical-record.module';
 import { LocationModule } from './modules/location/location.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { EmailModule } from './modules/common/email/email.module';
 
 
 @Module({
@@ -36,6 +37,7 @@ import { PaymentModule } from './modules/payment/payment.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
+    
     UsersModule,
     AuthModule,
     FileUploadModule,
@@ -47,10 +49,10 @@ import { PaymentModule } from './modules/payment/payment.module';
     OrderDetailsModule,
     MedicalRecordModule,
     LocationModule,
-    PaymentModule
-
+    PaymentModule,
+    EmailModule
   ],
   controllers: [],
   providers: [JwtService, JwtStrategy],
 })
-export class AppModule { }
+export class AppModule {}

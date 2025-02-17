@@ -18,7 +18,7 @@ export class Users {
   lastName: string;
 
   @Column()
-  age: number;
+  age: string;
 
   @Column({ length: 50 })
   email: string;

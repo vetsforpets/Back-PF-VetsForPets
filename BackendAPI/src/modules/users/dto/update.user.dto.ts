@@ -1,12 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsEmail,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
-  IsNumber,
-  IsBoolean,
 } from 'class-validator'; // Removed password-related validators
 
 export class UpdateUserDto {
@@ -38,12 +37,12 @@ export class UpdateUserDto {
 
   @ApiProperty({
     description: 'La edad del usuario',
-    example: 25,
+    example: '25',
     required: false,
   })
   @IsOptional()
-  @IsNumber()
-  age?: number;
+  @IsString()
+  age?: string;
 
   @ApiProperty({
     description: 'El correo electrónico del usuario',

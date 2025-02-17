@@ -17,8 +17,8 @@ const config = {
     migrations: ['dist/migrations/*{.ts, .js}'],
     autoLoadEntities: true,
     synchronize: true,
-    logging: true,
-    dropSchema: false,
+    logging: false,
+    dropSchema: true,
     ssl: {
         rejectUnauthorized: false,
     }
