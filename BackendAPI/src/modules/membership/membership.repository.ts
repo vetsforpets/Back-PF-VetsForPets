@@ -74,7 +74,6 @@ export class MembershipRepository {
     newUserMembership.endDate = endDate;
     newUserMembership.status = true;
 
-    console.log(newUserMembership);
     await this.userMembershipRepository.save(newUserMembership);
 
     user.isPremium = true;
@@ -139,8 +138,17 @@ export class MembershipRepository {
       id: membershipId,
     });
 
+
+
     await this.membershipRepository.save(membership);
 
     return membership.price;
+  }
+
+  async findOneMembership(membershipId: string) {
+    const membershipFound = await this.membershipRepository.findOne({
+      where: { id: membershipId },
+    });
+    return membershipFound
   }
 }

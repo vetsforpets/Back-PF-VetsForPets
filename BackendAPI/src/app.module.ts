@@ -16,6 +16,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './modules/auth/jwt.strategy';
 import { MedicalRecordModule } from './modules/medical-record/medical-record.module';
 import { LocationModule } from './modules/location/location.module';
+import { PaymentModule } from './modules/payment/payment.module';
 import { EmailModule } from './modules/common/email/email.module';
 
 
@@ -48,6 +49,7 @@ import { EmailModule } from './modules/common/email/email.module';
     OrderDetailsModule,
     MedicalRecordModule,
     LocationModule,
+    PaymentModule,
     EmailModule
   ],
   controllers: [],

@@ -10,13 +10,15 @@ import { UsersModule } from '../users/users.module';
 import { OrderDetailsModule } from '../order-details/order-details.module';
 import { Membership } from '../membership/entity/membership.entity';
 import { MembershipModule } from '../membership/membership.module';
+import { PaymentModule } from '../payment/payment.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Order, OrderDetails, Users, Membership]),
+    TypeOrmModule.forFeature([Order, OrderDetails, Users, Membership,]),
     UsersModule,
     OrderDetailsModule,
     MembershipModule,
+    PaymentModule
   ],
   controllers: [OrderController],
   providers: [OrderService, OrderRepository],

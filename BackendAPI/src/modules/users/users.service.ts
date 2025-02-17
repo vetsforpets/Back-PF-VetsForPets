@@ -36,7 +36,7 @@ export class UsersService {
       return user;
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw error; // Re-throw NotFoundException
+        throw error; 
       }
       console.error(error)
       throw new HttpException(
