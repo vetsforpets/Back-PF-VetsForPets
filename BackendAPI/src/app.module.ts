@@ -19,6 +19,7 @@ import { LocationModule } from './modules/location/location.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { JwtAuthGuard } from './modules/common/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { EmailModule } from './modules/common/email/email.module';
 
 
 @Module({
@@ -38,6 +39,7 @@ import { APP_GUARD } from '@nestjs/core';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
+
     UsersModule,
     AuthModule,
     FileUploadModule,
@@ -49,8 +51,8 @@ import { APP_GUARD } from '@nestjs/core';
     OrderDetailsModule,
     MedicalRecordModule,
     LocationModule,
-    PaymentModule
-
+    PaymentModule,
+    EmailModule
   ],
   controllers: [],
   providers: [JwtService, JwtStrategy,

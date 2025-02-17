@@ -36,7 +36,7 @@ export class Pets {
     @Column({ type: 'varchar', nullable: true })
     profileImg?: string
 
-    @ManyToOne(() => Users, (user) => user.pets)
+    @ManyToOne(() => Users, (user) => user.pets, { eager: true })
     user: Users
 
     @Column()

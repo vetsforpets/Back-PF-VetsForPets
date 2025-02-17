@@ -74,6 +74,7 @@ export class OrderRepository {
     
     const createdOrderDetail = await this.orderDetailsService.createOrderDetail(orderDetail);
     const checkoutSession = await this.paymentService.createCheckoutSession(newOrder, membershipEntities)
+    await this.userService.updateUser(foundUser.id, {isPremium: true})
 
 
     return {
