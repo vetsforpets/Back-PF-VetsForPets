@@ -26,7 +26,7 @@ export class OrderRepository {
   async getOrder(orderId: string) {
     const orderFound = await this.orderRepository.findOne({
       where: { id: orderId },
-      relations: { orderDetails: true },
+      relations: ['userId', 'orderDetails'],
     });
     if (!orderFound)
       throw new NotFoundException(
@@ -79,8 +79,6 @@ export class OrderRepository {
       newOrder,
       membershipEntities,
     );
-    await this.userService.updateUser(foundUser.id, { isPremium: true });
-
     return {
       order: newOrder,
       orderDetails: createdOrderDetail,
