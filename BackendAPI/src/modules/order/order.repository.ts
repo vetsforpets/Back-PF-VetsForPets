@@ -46,7 +46,7 @@ export class OrderRepository {
     };
   }
 
-  async addOrder(orderDto: CreateOrderDto) {
+  async addOrder(orderDto: CreateOrderDto) {    
     const { userId, membership, paymentMethod } = orderDto;
     const foundUser = await this.userService.getUserById(userId);
     if (!foundUser) {

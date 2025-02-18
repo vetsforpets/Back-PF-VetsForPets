@@ -8,7 +8,7 @@ export class PaymentController {
 
     @Post('webhook')
     async handleStripeWebhook(@Req()req: RawBodyRequest<Request>, @Res() res: Response){
-        console.log('Stripe-Signature:', req.headers['stripe-signature']);
+        console.log('Webhook endpoint reached');
 
         const sig = req.headers['stripe-signature']
         let event;
