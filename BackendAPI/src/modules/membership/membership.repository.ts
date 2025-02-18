@@ -138,10 +138,6 @@ export class MembershipRepository {
       id: membershipId,
     });
 
-
-
-    await this.membershipRepository.save(membership);
-
     return membership.price;
   }
 
