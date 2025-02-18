@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersRepository } from '../users/users.repository';
 import { SignUpUserDto } from './dto/signup.user.dto';
@@ -11,6 +12,8 @@ import { SignUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
 import { PetShopRepository } from '../pet-shop/pet-shop.repository';
 import { EmailService } from '../common/email/email.service';
 import { sendEmailDto } from '../common/email/dto/create.email.dto';
+import { Users } from '../users/entity/users.entity';
+import { PetShop } from '../pet-shop/entity/pet-shop.entity';
 
 @Injectable()
 export class AuthService {
@@ -19,37 +22,36 @@ export class AuthService {
     private readonly petShopRepository: PetShopRepository,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService
-  ) {}
+  ) { }
 
   async signIn(email: string, password: string) {
     try {
-      const userDb =
-        (await this.usersRepository.getUserByEmail(email)) ||
-        (await this.petShopRepository.getPetShopByEmail(email));
-      if (!userDb) {
-        throw new BadRequestException('Credenciales invalidas');
+      const user = await this.usersRepository.getUserByEmail(email)
+      if (user && await bcrypt.compare(password, user.password)) {
+        const token = this.generateJwt(user)
+        return { success: 'El usuario se ha logueado exitosamente', user, token }
       }
 
-      const isPasswordMatching = await bcrypt.compare(
-        password,
-        userDb.password,
-      );
-      if (!isPasswordMatching) {
-        throw new BadRequestException('Credenciales invalidas');
+      const petShop = await this.petShopRepository.getPetShopByEmail(email)
+      if (petShop && await bcrypt.compare(password, petShop.password)) {
+        const token = this.generateJwt(petShop)
+        return { success: 'El usuario se ha logueado exitosamente', user: petShop, token }
       }
+      throw new UnauthorizedException('Credenciales inválidas');
 
-      const userPayload = {
-        sub: userDb.id,
-        id: userDb.id,
-        email: userDb.email,
-        isVet: userDb.isVet
-      };
-
-      const token = this.jwtService.sign(userPayload);
-      return { success: 'El usuario se ha logueado exitosamente', token };
     } catch (error) {
-      throw new BadRequestException('Ha habido un error en el servidor');
+      console.error("Error en signIn:", error);
+      throw new UnauthorizedException('Credenciales inválidas');
     }
+  }
+
+  generateJwt(user: Users | PetShop): string {
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      userType: user instanceof Users ? 'user' : 'petShop',
+    }
+    return this.jwtService.sign(payload)
   }
 
   async signUp(newUser: SignUpUserDto) {
@@ -69,22 +71,30 @@ export class AuthService {
       if (!hashedPassword) {
         throw new BadRequestException('No se pudo encriptar la contraseña.');
       }
-      await this.usersRepository.createNewUser({
-        ...newUser,
-        password: hashedPassword,
-      });
+
+      const userEntity = new Users();
+      userEntity.email = newUser.email;
+      userEntity.name = newUser.name;
+      userEntity.lastName = newUser.lastName;
+      userEntity.password = hashedPassword;
+      userEntity.age = newUser.age;
+      userEntity.phoneNumber = newUser.phoneNumber;
+      userEntity.imgProfile = newUser.imgProfile;
+
+      await this.usersRepository.createNewUser(userEntity);
 
       const { password, confirmPassword, ...userWithOutPassword } = newUser;
+
       try {
         const emailDto: sendEmailDto = {
           recipients: newUser.email,
-          subject: '¡Bienvenido(a) a VetsForPets!', 
+          subject: '¡Bienvenido(a) a VetsForPets!',
           html: `
             <p>¡Hola ${newUser.name}!</p>  
             <p>¡Gracias por registrarte en VetsForPets!</p>
             <p>¡Esperamos verte pronto!</p>
             <p>Atentamente,<br>El equipo de VetsForPets</p>
-          `, 
+          `,
         };
         await this.emailService.sendEmail(emailDto)
       } catch (error) {
@@ -108,11 +118,14 @@ export class AuthService {
 
   async petShopSignUp(newPetShop: SignUpPetShopDto) {
     try {
-      const emailFound = await this.petShopRepository.getPetShopByEmail(
+      const existingPetshopEmailFound = await this.petShopRepository.getPetShopByEmail(
         newPetShop.email,
       );
+      const existingUserEmailFound = await this.usersRepository.getUserByEmail(
+        newPetShop.email
+      )
 
-      if (emailFound) {
+      if (existingPetshopEmailFound || existingUserEmailFound) {
         throw new BadRequestException(
           'El correo electronico ya esta registrado',
         );
@@ -139,14 +152,14 @@ export class AuthService {
       try {
         const emailDto: sendEmailDto = {
           recipients: newPetShop.email,
-          subject: '¡Bienvenido(a) a VetsForPets!', 
+          subject: '¡Bienvenido(a) a VetsForPets!',
           html: `
             <p>¡Hola ${newPetShop.name}!</p>
             <p>¡Gracias por registrar tu veterinaria/petShop en VetsForPets!</p>
             <p>¡Esperamos verte pronto!</p>
             <p>Atentamente,<br>El equipo de VetsForPets</p>
           `}
-          await this.emailService.sendEmail(emailDto)
+        await this.emailService.sendEmail(emailDto)
       } catch (error) {
         console.error('Error al enviar el email:', error)
       }
