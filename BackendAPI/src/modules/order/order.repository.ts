@@ -53,9 +53,9 @@ export class OrderRepository {
       throw new NotFoundException('El usuario no ha sido encontrado');
     }
 
-    const membershipEntities = await Promise.all(
-      membership.map((item)=> this.membershipService.findOneMembership(item.id)),
-    )
+    // const membershipEntities = await Promise.all(
+    //   membership.map((item)=> this.membershipService.findOneMembership(item.id)),
+    // )
     
     
 
@@ -64,12 +64,12 @@ export class OrderRepository {
 
 
     const newOrder = await this.orderRepository.save(order);
-    const total = await this.calculateTotal(membershipEntities);
+    const total = await this.calculateTotal(membership);
 
     const orderDetail = new CreateOrderDetailDto();
     orderDetail.order = newOrder
     orderDetail.price = total;
-    orderDetail.membership = membershipEntities;
+    orderDetail.membership = membership;
     orderDetail.paymentMethod = paymentMethod;
     
     const createdOrderDetail = await this.orderDetailsService.createOrderDetail(orderDetail);
