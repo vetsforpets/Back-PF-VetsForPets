@@ -12,7 +12,7 @@ export class OrderDetails {
     @JoinColumn()
     order: Order
 
-    @ManyToMany(()=> Membership)
+    @ManyToMany(()=> Membership, membership=> membership.orderDetails) 
     @JoinTable()
     membership: Membership[]
 
