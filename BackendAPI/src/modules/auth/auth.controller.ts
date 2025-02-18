@@ -5,17 +5,25 @@ import {
   HttpException,
   HttpStatus,
   BadRequestException,
+  Get,
+  UseGuards,
+  Req,
+  Res,
 } from '@nestjs/common';
+import { Response, Request } from 'Express';
 import { LoginDTO } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { SignUpUserDto } from './dto/signup.user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { SignUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
 
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+
   @Post('signIn')
   signIn(@Body() loginDTO: LoginDTO) {
     try {
