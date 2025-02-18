@@ -39,5 +39,5 @@ export class Membership {
   petShop: PetShop;
 
   @ManyToMany(()=> OrderDetails, orderDetails => orderDetails.membership )
-  orderDetails: OrderDetails
+  orderDetails: OrderDetails[]
 }
