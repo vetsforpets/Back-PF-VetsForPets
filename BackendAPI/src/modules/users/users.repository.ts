@@ -25,9 +25,10 @@ export class UsersRepository {
         return userfiltered
     }
 
-    async createNewUser(user: Partial<Users>): Promise<Partial<Users>> {
-        const newUser = await this.usersRepository.save(user)
-        return newUser
+    async createNewUser(user: Users): Promise<Users>{
+        const newUser = await this.usersRepository.create(user)
+        await this.usersRepository.save(newUser)
+        return this.usersRepository.findOne({where: {email: user.email}})
     }
 
     async updateUser(id: string, userData: Partial<Users>): Promise<Partial<Users>>{
