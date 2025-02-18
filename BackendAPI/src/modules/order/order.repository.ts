@@ -79,6 +79,8 @@ export class OrderRepository {
       newOrder,
       membershipEntities,
     );
+
+    await this.userService.updateUser(foundUser.id,{isPremium: true})
     return {
       order: newOrder,
       orderDetails: createdOrderDetail,

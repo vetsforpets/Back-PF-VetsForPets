@@ -8,7 +8,6 @@ import * as bodyParser from 'body-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use('/payments/webhook', bodyParser.raw({ type: '*/*' }));
-
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -34,7 +33,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('/', app, document);
-
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
