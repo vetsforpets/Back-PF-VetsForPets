@@ -1,4 +1,5 @@
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
+import { Role } from 'src/modules/common/enums/roles.enum';
 import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
 import { Membership } from 'src/modules/membership/entity/membership.entity';
 import {
@@ -40,19 +41,22 @@ export class PetShop {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({default:null})
+  @Column({ default: null })
   location: string;
 
-  @Column({type:'varchar', default: null})
+  @Column({ type: 'varchar', default: null })
   foundation: string
 
-  @Column({ type: 'boolean', default: true })
-  isVet: boolean;
+  @Column({ type: 'enum', enum: [Role.PETSHOP, Role.USER], default: Role.PETSHOP })
+  role: Role
+
+  @Column({ type: 'boolean', default: false })
+  isAdmin: boolean;
 
   @Column({ type: 'bigint' })
   licenseNumber: number;
 
-  @Column({ type: 'json', default: null})
+  @Column({ type: 'json', default: null })
   businessHours: Record<string, { opening: string; closure: string }>;
 
   @OneToMany(() => Appointment, (appointment) => appointment.petShop)

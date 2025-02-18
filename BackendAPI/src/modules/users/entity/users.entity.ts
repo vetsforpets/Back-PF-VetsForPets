@@ -5,6 +5,7 @@ import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
 import { Pets } from 'src/modules/pets/entity/pets.entity';
 import { Order } from "src/modules/order/entity/order.entity";
 import { Location } from "src/modules/location/entity/location.entity";
+import { Role } from "src/modules/common/enums/roles.enum";
 
 @Entity({ name: 'users' })
 export class Users {
@@ -29,8 +30,8 @@ export class Users {
   @Column({ length: 15 })
   phoneNumber: string;
 
-  @Column({default: false})
-  isAdmin: boolean
+  @Column({ type: 'boolean', default: false })
+  isAdmin?: boolean
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
@@ -44,8 +45,8 @@ export class Users {
   @OneToMany(() => Appointment, (appointment) => appointment.user)
   appointments: Appointment[];
 
-  @Column({ type: 'boolean', default: false })
-  isVet: boolean;
+  @Column({ type: 'enum', enum: [Role.PETSHOP, Role.USER], default: Role.USER })
+  role: Role
 
   @OneToMany(() => Pets, (pet) => pet.user)
   pets: Pets[]
@@ -54,10 +55,10 @@ export class Users {
   @JoinColumn({ name: "membership" })
   userMembership: UserMembership
 
-  @OneToMany(()=> Order, (order)=> order.userId )
+  @OneToMany(() => Order, (order) => order.userId)
   order: Order
 
-  @OneToOne(()=> Location, (location)=> location.user)
+  @OneToOne(() => Location, (location) => location.user)
   @JoinColumn()
   location: Location
 }

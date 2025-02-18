@@ -6,11 +6,13 @@ import { ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { Role } from '../common/enums/roles.enum';
+import { Admin } from 'src/decorators/roles/admin.decorator';
 
 
 @ApiTags("MedicalRecord")
 @UseGuards(RolesGuard)
-@Roles(Role.ADMIN, Role.PETSHOP)
+@Admin()
+@Roles(Role.PETSHOP)
 @Controller('medicalRecord')
 export class MedicalRecordController {
   constructor(private readonly medicalRecordService: MedicalRecordService) { }

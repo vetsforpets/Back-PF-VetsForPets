@@ -2,6 +2,8 @@ import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 import { Role } from "../enums/roles.enum";
+import { IS_ADMIN_KEY } from "src/decorators/roles/admin.decorator";
+import { IS_PUBLIC_KEY } from "src/decorators/public-routes/public-routes.decorator";
 
 
 @Injectable()
@@ -12,13 +14,35 @@ export class RolesGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
 
         const requiredRoles = this.reflector.getAllAndOverride<Role[]>('roles', [context.getHandler(), context.getClass()])
+        const isAdminRoute = this.reflector.getAllAndOverride<boolean>(IS_ADMIN_KEY, [context.getHandler(), context.getClass()])
+        const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
 
-        if (!requiredRoles || requiredRoles.length === 0) return true
+
+        if (isPublic) return true
+
+
+        if (isAdminRoute) {
+            const request = context.switchToHttp().getRequest()
+            const user = request.user;
+            return user.isAdmin === true
+
+        }
+
+
+
+        if (!requiredRoles || requiredRoles.length === 0) throw new ForbiddenException("No tienes acceso a esta ruta")
 
         const request = context.switchToHttp().getRequest()
         const user = request.user
 
-        const isValid = user?.role && requiredRoles.includes(user.role);
+        const hasRole = () => requiredRoles.some((rol) => user?.role?.includes(rol))
+
+        if (user.isAdmin) return true
+
+        const isValid = user && user.role && hasRole();
 
         if (!isValid) throw new ForbiddenException("No tienes autorización para acceder a esta ruta.")
 

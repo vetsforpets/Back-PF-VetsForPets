@@ -7,6 +7,7 @@ import { UpdatePetShopDto } from './dto/updatePetShop.dto';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { Role } from '../common/enums/roles.enum';
+import { Admin } from 'src/decorators/roles/admin.decorator';
 
 @ApiTags('PetShop')
 @UseGuards(RolesGuard)
@@ -17,7 +18,7 @@ export class PetShopController {
   @ApiOperation({ summary: 'Obtener todas las veterinarias' })
   @ApiResponse({ status: 200, description: 'Lista de veterinarias' })
   @ApiBearerAuth()
-  @Roles(Role.ADMIN)
+  @Admin()
   @Get()
   async getAllPetshops(): Promise<PetShop[]> {
     return await this.petShopService.getAllPetShops();
@@ -27,7 +28,7 @@ export class PetShopController {
   @ApiResponse({ status: 200, description: 'Veterinaria encontrada' })
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
-  @Roles(Role.ADMIN)
+  @Admin()
   @Get(':id')
   async findPetShopById(@Param('id') id: string): Promise<PetShop> {
     try {
@@ -45,7 +46,8 @@ export class PetShopController {
   @ApiResponse({ status: 200, description: 'Veterinaria actualizada' })
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
-  @Roles(Role.ADMIN, Role.PETSHOP)
+  @Roles(Role.PETSHOP)
+  @Admin()
   @Put(':id')
   async updatePetShop(@Param('id') id: string, @Body() petShopData: UpdatePetShopDto): Promise<PetShop | undefined> {
     try {
@@ -63,7 +65,7 @@ export class PetShopController {
   @ApiResponse({ status: 200, description: 'Veterinaria eliminada' })
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
-  @Roles(Role.ADMIN)
+  @Admin()
   @Delete(':id')
   async deletePetShop(@Param('id') id: string): Promise<void> {
     try {

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { UsersRepository } from '../users/users.repository';
 import { SignUpUserDto } from './dto/signup.user.dto';
@@ -11,6 +12,11 @@ import { SignUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
 import { PetShopRepository } from '../pet-shop/pet-shop.repository';
 import { EmailService } from '../common/email/email.service';
 import { sendEmailDto } from '../common/email/dto/create.email.dto';
+import { Role } from '../common/enums/roles.enum';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Users } from '../users/entity/users.entity';
+import { Repository } from 'typeorm';
+import { PetShop } from '../pet-shop/entity/pet-shop.entity';
 
 @Injectable()
 export class AuthService {
@@ -18,8 +24,10 @@ export class AuthService {
     private readonly usersRepository: UsersRepository,
     private readonly petShopRepository: PetShopRepository,
     private readonly jwtService: JwtService,
-    private readonly emailService: EmailService
-  ) {}
+    private readonly emailService: EmailService,
+    @InjectRepository(Users) private readonly usersDbRepository: Repository<Users>,
+    @InjectRepository(PetShop) private readonly petshopDbRepository: Repository<PetShop>
+  ) { }
 
   async signIn(email: string, password: string) {
     try {
@@ -40,9 +48,9 @@ export class AuthService {
 
       const userPayload = {
         sub: userDb.id,
-        id: userDb.id,
         email: userDb.email,
-        isVet: userDb.isVet
+        role: [userDb.role],
+        isAdmin: userDb.isAdmin
       };
 
       const token = this.jwtService.sign(userPayload);
@@ -78,13 +86,13 @@ export class AuthService {
       try {
         const emailDto: sendEmailDto = {
           recipients: newUser.email,
-          subject: '¡Bienvenido(a) a VetsForPets!', 
+          subject: '¡Bienvenido(a) a VetsForPets!',
           html: `
             <p>¡Hola ${newUser.name}!</p>  
             <p>¡Gracias por registrarte en VetsForPets!</p>
             <p>¡Esperamos verte pronto!</p>
             <p>Atentamente,<br>El equipo de VetsForPets</p>
-          `, 
+          `,
         };
         await this.emailService.sendEmail(emailDto)
       } catch (error) {
@@ -139,14 +147,14 @@ export class AuthService {
       try {
         const emailDto: sendEmailDto = {
           recipients: newPetShop.email,
-          subject: '¡Bienvenido(a) a VetsForPets!', 
+          subject: '¡Bienvenido(a) a VetsForPets!',
           html: `
             <p>¡Hola ${newPetShop.name}!</p>
             <p>¡Gracias por registrar tu veterinaria/petShop en VetsForPets!</p>
             <p>¡Esperamos verte pronto!</p>
             <p>Atentamente,<br>El equipo de VetsForPets</p>
           `}
-          await this.emailService.sendEmail(emailDto)
+        await this.emailService.sendEmail(emailDto)
       } catch (error) {
         console.error('Error al enviar el email:', error)
       }
@@ -165,4 +173,43 @@ export class AuthService {
       );
     }
   }
+
+
+  async assignRole(userId: string) {
+
+    const user = await this.petShopRepository.getPetShopById(userId);
+
+    if (!user) throw new NotFoundException("ID de usuario inválido")
+
+    if (user.role === Role.USER) {
+      user.role = Role.PETSHOP
+      await this.petshopDbRepository.save(user)
+    } else {
+      return { message: "Este usuario ya es veterinario!" }
+    }
+
+    return { message: "Rol de veterinario asignado con éxito!" }
+  }
+
+
+  async assignAdmin(userId: string) {
+    const user = await this.usersDbRepository.findOne({ where: { id: userId }, })
+
+    if (!user) throw new NotFoundException("ID de usuario inválido")
+
+    if (user.isAdmin) {
+      user.isAdmin = false
+      await this.usersDbRepository.save(user)
+
+      return { message: `Se han quitado los permisos de administrador al usuario ${user.name}`, isAdmin: user.isAdmin }
+    }
+
+    user.isAdmin = true
+
+    await this.usersDbRepository.save(user)
+
+    return { message: `Se han otorgado/quitado permisos de administrador al usuario ${user.name}!`, isAdmin: user.isAdmin }
+  }
+
+
 }

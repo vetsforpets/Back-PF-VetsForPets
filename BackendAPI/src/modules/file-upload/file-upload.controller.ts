@@ -5,6 +5,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "src/decorators/roles/roles.decorator";
 import { Role } from "../common/enums/roles.enum";
+import { Admin } from "src/decorators/roles/admin.decorator";
 
 @ApiTags('Files')
 @UseGuards(RolesGuard)
@@ -29,7 +30,8 @@ export class FileUploadController {
             },
         },
     })
-    @Roles(Role.ADMIN, Role.USER)
+    @Roles(Role.USER)
+    @Admin()
     uploadImage(@UploadedFile(
         new ParseFilePipe({
             validators: [
@@ -65,7 +67,8 @@ export class FileUploadController {
             },
         },
     })
-    @Roles(Role.ADMIN, Role.PETSHOP)
+    @Roles(Role.PETSHOP)
+    @Admin()
     uploadMedicalRecordImage(@UploadedFile(
         new ParseFilePipe({
             validators: [
@@ -102,6 +105,7 @@ export class FileUploadController {
         },
     })
     @Roles(Role.USER)
+    @Admin()
     uploadPetImage(@UploadedFile(
         new ParseFilePipe({
             validators: [

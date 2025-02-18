@@ -17,6 +17,7 @@ import { CreateOrderDto } from './dto/createOrder.dto';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Role } from '../common/enums/roles.enum';
+import { Admin } from 'src/decorators/roles/admin.decorator';
 
 @ApiTags('Order')
 @UseGuards(RolesGuard)
@@ -25,7 +26,8 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) { }
 
   @Get()
-  @Roles(Role.ADMIN)
+  @Admin()
+  @Roles(Role.USER)
   findAll() {
     try {
       return this.orderService.find();
@@ -41,7 +43,7 @@ export class OrderController {
   }
 
   @Post()
-  @Roles(Role.USER, Role.ADMIN, Role.PETSHOP)
+  @Roles(Role.USER, Role.PETSHOP)
   addOrder(@Body() orderDto: CreateOrderDto) {
     try {
       return this.orderService.addOrder(orderDto);
@@ -57,7 +59,7 @@ export class OrderController {
   }
 
   @Delete(':id')
-  @Roles(Role.ADMIN, Role.USER, Role.PETSHOP)
+  @Admin()
   deleteOrder(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
       return this.orderService.deleteOrder(orderId);
@@ -73,7 +75,7 @@ export class OrderController {
   }
 
   @Get(':id')
-  @Roles(Role.ADMIN)
+  @Admin()
   getOneOrderBy(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
       return this.orderService.getOrderById(orderId);

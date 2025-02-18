@@ -16,10 +16,11 @@ import { CreateOrderDetailDto } from './dto/createOrderDetail.dto';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { Role } from '../common/enums/roles.enum';
+import { Admin } from 'src/decorators/roles/admin.decorator';
 
 @ApiTags('Order-details')
 @UseGuards(RolesGuard)
-@Roles(Role.ADMIN, Role.USER)
+@Admin()
 @Controller('order-details')
 export class OrderDetailsController {
   constructor(private readonly orderDetailsService: OrderDetailsService) { }

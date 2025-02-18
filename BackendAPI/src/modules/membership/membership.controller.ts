@@ -5,6 +5,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "src/decorators/roles/roles.decorator";
 import { Role } from "../common/enums/roles.enum";
+import { Admin } from "src/decorators/roles/admin.decorator";
 
 @ApiTags('Membership')
 @UseGuards(RolesGuard)
@@ -15,31 +16,32 @@ export class MembershipController {
 
 
     @Get('seeder')
-    @Roles(Role.ADMIN)
+    @Admin()
     addMembershipSeeder() {
         return this.membershipService.addMembershipSeeder()
     }
 
     @Post('user/addMembership')
-    @Roles(Role.ADMIN)
+    @Admin()
     addUserMembership(@Query('userId') userId: string, @Query('membershipId') membershipId: string) {
         return this.membershipService.addUserMembership(userId, membershipId)
     }
 
     @Get()
-    @Roles(Role.ADMIN)
+    @Admin()
     findAll() {
         return this.membershipService.findAll()
     }
 
     @Put('update')
-    @Roles(Role.ADMIN)
+    @Admin()
     updateMembership(@Query('id') id: string, data: UpdateMembershipDto) {
         return this.membershipService.updateMembership(id, data)
     }
 
     @Put('cancel')
-    @Roles(Role.ADMIN, Role.USER)
+    @Admin()
+    @Roles(Role.USER)
     cancelMembership(@Query('userId') userId: string, @Query('membershipId') membershipId: string) {
         return this.membershipService.cancelMembership(userId, membershipId)
 

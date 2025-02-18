@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Put, Request, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiConflictResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse, getSchemaPath } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { Users } from './entity/users.entity';
 import { Request as ExpressRequest } from 'express'
 import { UpdateUserDto } from './dto/update.user.dto';
@@ -9,6 +8,7 @@ import { PetsAssociatedException } from '../common/petAssociatedException';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { Role } from '../common/enums/roles.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
+import { Admin } from 'src/decorators/roles/admin.decorator';
 
 
 @ApiTags('Users')
@@ -22,7 +22,7 @@ export class UsersController {
   @ApiUnauthorizedResponse({ description: 'No autorizado' })
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBearerAuth()
-  @Roles(Role.ADMIN)
+  @Admin()
   @Get()
   getAllUsers(@Request() req: ExpressRequest & { user: Users }) {
     return this.usersService.getAllUsers()
@@ -34,7 +34,7 @@ export class UsersController {
   @ApiUnauthorizedResponse({ description: 'No autorizado' })
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBearerAuth()
-  @Roles(Role.ADMIN)
+  @Admin()
   @Get(':id')
   getUserById(@Param('id', ParseUUIDPipe) id: string, @Request() req: ExpressRequest & { user: Users }) {
     console.log(req.user);
@@ -66,7 +66,7 @@ export class UsersController {
     }
   })
   @ApiBearerAuth()
-  @Roles(Role.ADMIN)
+  @Admin()
   @Delete(':id')
   deleteUser(@Param('id', ParseUUIDPipe) id: string, @Request() req: ExpressRequest & { user: Users }) {
     console.log(req.user);
