@@ -3,7 +3,7 @@ import { Order } from './entity/order.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { OrderDetailsService } from '../order-details/order-details.service';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto, MembershipProductDto } from './dto/createOrder.dto';
 import { MembershipService } from '../membership/membership.service';
 import { CreateOrderDetailDto } from '../order-details/dto/createOrderDetail.dto';
@@ -74,8 +74,11 @@ export class OrderRepository {
     
     const createdOrderDetail = await this.orderDetailsService.createOrderDetail(orderDetail);
     const checkoutSession = await this.paymentService.createCheckoutSession(newOrder, membershipEntities)
-    await this.userService.updateUser(foundUser.id, {isPremium: true})
+    if (!checkoutSession) {
+      throw new BadRequestException('Hubo un error al iniciar stripe')
+    }
 
+    foundUser.isPremium = true
 
     return {
       order: newOrder,
