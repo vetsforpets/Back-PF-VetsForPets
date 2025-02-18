@@ -26,7 +26,6 @@ export class OrderRepository {
   async getOrder(orderId: string) {
     const orderFound = await this.orderRepository.findOne({
       where: { id: orderId },
-      relations: { orderDetails: true },
     });
     if (!orderFound)
       throw new NotFoundException(
@@ -37,7 +36,7 @@ export class OrderRepository {
     
     const foundOrderDetails = await this.orderDetailsService.findOneBy(
       orderQuery,
-      ['order', 'membershipId'],
+      ['order'],
     );
 
     return {
@@ -78,7 +77,7 @@ export class OrderRepository {
     //   throw new BadRequestException('Hubo un error al iniciar stripe')
     // }
 
-    foundUser.isPremium = true
+    // foundUser.isPremium = true
 
     return {
       order: newOrder,
