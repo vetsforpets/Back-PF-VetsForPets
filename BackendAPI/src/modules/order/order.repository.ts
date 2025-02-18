@@ -52,9 +52,9 @@ export class OrderRepository {
       throw new NotFoundException('El usuario no ha sido encontrado');
     }
 
-    // const membershipEntities = await Promise.all(
-    //   membership.map((item)=> this.membershipService.findOneMembership(item.id)),
-    // )
+    const membershipEntities = await Promise.all(
+      membership.map((item)=> this.membershipService.findOneMembership(item.id)),
+    )
     
     
 
@@ -72,17 +72,17 @@ export class OrderRepository {
     orderDetail.paymentMethod = paymentMethod;
     
     const createdOrderDetail = await this.orderDetailsService.createOrderDetail(orderDetail);
-    // const checkoutSession = await this.paymentService.createCheckoutSession(newOrder, membershipEntities)
-    // if (!checkoutSession) {
-    //   throw new BadRequestException('Hubo un error al iniciar stripe')
-    // }
+    const checkoutSession = await this.paymentService.createCheckoutSession(newOrder, membershipEntities)
+    if (!checkoutSession) {
+      throw new BadRequestException('Hubo un error al iniciar stripe')
+    }
 
-    // foundUser.isPremium = true
+    foundUser.isPremium = true
 
     return {
       order: newOrder,
       orderDetails: createdOrderDetail,
-      // checkoutSessionUrl: checkoutSession.url
+      checkoutSessionUrl: checkoutSession.url
     }
   }
 
