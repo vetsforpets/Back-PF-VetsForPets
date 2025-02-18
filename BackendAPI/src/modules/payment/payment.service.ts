@@ -1,12 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import Stripe from 'stripe';
 import { MembershipDto } from '../membership/dto/membership.dto';
 import { Order } from '../order/entity/order.entity';
+import { OrderService } from '../order/order.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class PaymentService {
   private stripe: Stripe;
-  constructor() {
+  constructor(
+    @Inject(forwardRef(() => OrderService))
+    private readonly orderService: OrderService,
+    private readonly usersService: UsersService,
+  ) {
     this.stripe = new Stripe(process.env.STRIPE_ACCESS_KEY, {
       apiVersion: '2025-01-27.acacia',
     });
@@ -33,8 +45,8 @@ export class PaymentService {
         mode: 'payment',
         line_items: lineItems,
         success_url:
-          'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url: 'https://example.com/cancel',
+          'https://front-pf-vets-for-pets.vercel.app/success-transaction',
+        cancel_url: 'https://front-pf-vets-for-pets.vercel.app/canceled-transaction',
         metadata: {
           orderId: order.id,
         },
@@ -43,6 +55,38 @@ export class PaymentService {
     } catch (error) {
       console.error('Error creating Stripe session:', error);
       throw error;
+    }
+  }
+
+  async constructStripeEvent(
+    payload: Buffer,
+    signature: string | string[],
+  ): Promise <Stripe.Event> {
+    try {
+      console.log(process.env.STRIPE_WEBHOOK_SECRET);
+      return  this.stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET,
+      );
+    } catch (error) {
+      throw new BadRequestException(`Error con el webhook: ${error.message}`);
+    }
+  }
+
+  async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+    const orderId = session.metadata.orderId;
+    if (!orderId) {
+      throw new BadRequestException(
+        'No se ha encontrado el id en la sesion metadata',
+      );
+    }
+    const order = await this.orderService.getOrderById(orderId);
+    if (order) {
+      const userId = typeof order.userId === 'object' ? order.userId.id : order.userId;
+      await this.usersService.updateUser(userId, { isPremium: true });
+    } else {
+      throw new NotFoundException('No se ha encontrado la orden');
     }
   }
 }

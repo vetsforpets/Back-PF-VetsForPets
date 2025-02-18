@@ -3,7 +3,7 @@ import { Order } from './entity/order.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { OrderDetailsService } from '../order-details/order-details.service';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto, MembershipProductDto } from './dto/createOrder.dto';
 import { MembershipService } from '../membership/membership.service';
 import { CreateOrderDetailDto } from '../order-details/dto/createOrderDetail.dto';
@@ -16,7 +16,7 @@ export class OrderRepository {
     private readonly userService: UsersService,
     private readonly orderDetailsService: OrderDetailsService,
     private readonly membershipService: MembershipService,
-    private readonly paymentService: PaymentService
+    private readonly paymentService: PaymentService,
   ) {}
 
   async find() {
@@ -26,7 +26,7 @@ export class OrderRepository {
   async getOrder(orderId: string) {
     const orderFound = await this.orderRepository.findOne({
       where: { id: orderId },
-      relations: { orderDetails: true },
+      relations: ['userId', 'orderDetails'],
     });
     if (!orderFound)
       throw new NotFoundException(
@@ -34,7 +34,7 @@ export class OrderRepository {
       );
 
     const { orderDetails, ...orderQuery } = orderFound;
-    
+
     const foundOrderDetails = await this.orderDetailsService.findOneBy(
       orderQuery,
       ['order', 'membershipId'],
@@ -51,37 +51,39 @@ export class OrderRepository {
     const foundUser = await this.userService.getUserById(userId);
     if (!foundUser) {
       throw new NotFoundException('El usuario no ha sido encontrado');
+    } else if (foundUser.isPremium === true) {
+      throw new BadRequestException('El usuario ya tiene una membresia activa');
     }
 
     const membershipEntities = await Promise.all(
-      membership.map((item)=> this.membershipService.findOneMembership(item.id)),
-    )
-    
-    
+      membership.map((item) =>
+        this.membershipService.findOneMembership(item.id),
+      ),
+    );
 
     const order = new Order();
     order.userId = foundUser;
-
 
     const newOrder = await this.orderRepository.save(order);
     const total = await this.calculateTotal(membershipEntities);
 
     const orderDetail = new CreateOrderDetailDto();
-    orderDetail.order = newOrder
+    orderDetail.order = newOrder;
     orderDetail.price = total;
     orderDetail.membership = membershipEntities;
     orderDetail.paymentMethod = paymentMethod;
-    
-    const createdOrderDetail = await this.orderDetailsService.createOrderDetail(orderDetail);
-    const checkoutSession = await this.paymentService.createCheckoutSession(newOrder, membershipEntities)
-    await this.userService.updateUser(foundUser.id, {isPremium: true})
 
-
+    const createdOrderDetail =
+      await this.orderDetailsService.createOrderDetail(orderDetail);
+    const checkoutSession = await this.paymentService.createCheckoutSession(
+      newOrder,
+      membershipEntities,
+    );
     return {
       order: newOrder,
       orderDetails: createdOrderDetail,
-      checkoutSessionUrl: checkoutSession.url
-    }
+      checkoutSessionUrl: checkoutSession.url,
+    };
   }
 
   async deleteOrder(orderId: string) {
@@ -95,7 +97,6 @@ export class OrderRepository {
   }
 
   async calculateTotal(memberships: MembershipProductDto[]) {
-
     let total = 0;
 
     for (const membership of memberships) {
