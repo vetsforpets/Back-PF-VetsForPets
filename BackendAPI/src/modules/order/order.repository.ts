@@ -3,7 +3,7 @@ import { Order } from './entity/order.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { OrderDetailsService } from '../order-details/order-details.service';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { CreateOrderDto, MembershipProductDto } from './dto/createOrder.dto';
 import { MembershipService } from '../membership/membership.service';
 import { CreateOrderDetailDto } from '../order-details/dto/createOrderDetail.dto';
@@ -26,6 +26,7 @@ export class OrderRepository {
   async getOrder(orderId: string) {
     const orderFound = await this.orderRepository.findOne({
       where: { id: orderId },
+      relations: { orderDetails: true },
     });
     if (!orderFound)
       throw new NotFoundException(
@@ -36,7 +37,7 @@ export class OrderRepository {
     
     const foundOrderDetails = await this.orderDetailsService.findOneBy(
       orderQuery,
-      ['order'],
+      ['order', 'membershipId'],
     );
 
     return {
@@ -63,21 +64,18 @@ export class OrderRepository {
 
 
     const newOrder = await this.orderRepository.save(order);
-    const total = await this.calculateTotal(membership);
+    const total = await this.calculateTotal(membershipEntities);
 
     const orderDetail = new CreateOrderDetailDto();
     orderDetail.order = newOrder
     orderDetail.price = total;
-    orderDetail.membership = membership;
+    orderDetail.membership = membershipEntities;
     orderDetail.paymentMethod = paymentMethod;
     
     const createdOrderDetail = await this.orderDetailsService.createOrderDetail(orderDetail);
     const checkoutSession = await this.paymentService.createCheckoutSession(newOrder, membershipEntities)
-    if (!checkoutSession) {
-      throw new BadRequestException('Hubo un error al iniciar stripe')
-    }
+    await this.userService.updateUser(foundUser.id, {isPremium: true})
 
-    foundUser.isPremium = true
 
     return {
       order: newOrder,
