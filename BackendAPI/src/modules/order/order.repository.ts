@@ -37,7 +37,7 @@ export class OrderRepository {
     
     const foundOrderDetails = await this.orderDetailsService.findOneBy(
       orderQuery,
-      ['order', 'membershipId'],
+      ['order'],
     );
 
     return {
@@ -78,7 +78,7 @@ export class OrderRepository {
     //   throw new BadRequestException('Hubo un error al iniciar stripe')
     // }
 
-    foundUser.isPremium = true
+    // foundUser.isPremium = true
 
     return {
       order: newOrder,
