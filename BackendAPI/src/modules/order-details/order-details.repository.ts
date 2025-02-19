@@ -23,6 +23,7 @@ export class OrderDetailsRepository {
   async findDetaildOrderById(id: string) {
     return await this.orderDetailsRepository.findOne({
       where: { id },
+      relations: ['membership', 'order']
     });
   }
 }

@@ -46,7 +46,8 @@ export class PaymentService {
         line_items: lineItems,
         success_url:
           'https://front-pf-vets-for-pets.vercel.app/success-transaction',
-        cancel_url: 'https://front-pf-vets-for-pets.vercel.app/canceled-transaction',
+        cancel_url:
+          'https://front-pf-vets-for-pets.vercel.app/canceled-transaction',
         metadata: {
           orderId: order.id,
         },
@@ -58,24 +59,28 @@ export class PaymentService {
     }
   }
 
-  async constructStripeEvent(
+  constructStripeEvent(
     payload: Buffer,
     signature: string | string[],
-  ): Promise <Stripe.Event> {
+  ): Stripe.Event {
+
     try {
-      console.log(process.env.STRIPE_WEBHOOK_SECRET);
-      return  this.stripe.webhooks.constructEvent(
+      return this.stripe.webhooks.constructEvent(
         payload,
         signature,
         process.env.STRIPE_WEBHOOK_SECRET,
       );
+
     } catch (error) {
       throw new BadRequestException(`Error con el webhook: ${error.message}`);
     }
   }
 
   async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+    console.log('Session metadata:', session.metadata);
+
     const orderId = session.metadata.orderId;
+    
     if (!orderId) {
       throw new BadRequestException(
         'No se ha encontrado el id en la sesion metadata',
@@ -83,7 +88,8 @@ export class PaymentService {
     }
     const order = await this.orderService.getOrderById(orderId);
     if (order) {
-      const userId = typeof order.userId === 'object' ? order.userId.id : order.userId;
+      const userId =
+        typeof order.userId === 'object' ? order.userId.id : order.userId;
       await this.usersService.updateUser(userId, { isPremium: true });
     } else {
       throw new NotFoundException('No se ha encontrado la orden');
