@@ -37,7 +37,7 @@ export class OrderRepository {
 
     const foundOrderDetails = await this.orderDetailsService.findOneBy(
       orderQuery,
-      ['order', 'membershipId'],
+      ['order', 'membership'],
     );
 
     return {
@@ -80,7 +80,6 @@ export class OrderRepository {
       membershipEntities,
     );
 
-    await this.userService.updateUser(foundUser.id,{isPremium: true})
     return {
       order: newOrder,
       orderDetails: createdOrderDetail,
