@@ -20,7 +20,7 @@ import { Role } from '../common/enums/roles.enum';
 import { Admin } from 'src/decorators/roles/admin.decorator';
 
 @ApiTags('Order')
-@UseGuards(RolesGuard)
+// @UseGuards(RolesGuard)
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) { }
@@ -43,7 +43,7 @@ export class OrderController {
   }
 
   @Post()
-  @Roles(Role.USER, Role.PETSHOP)
+  // @Roles(Role.USER, Role.PETSHOP)
   addOrder(@Body() orderDto: CreateOrderDto) {
     try {
       return this.orderService.addOrder(orderDto);
