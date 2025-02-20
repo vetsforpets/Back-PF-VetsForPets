@@ -10,10 +10,7 @@ async function bootstrap() {
   app.use(
     '/payments/webhook',
     bodyParser.raw({
-      type: '*/*',
-      verify: (req: any, res, buf) => {
-        req.rawBody = buf;
-      },
+      type: 'application/json',
     }),
   );
   app.useGlobalPipes(
