@@ -3,16 +3,21 @@ import { AppModule } from './app.module';
 import { loggerGlobal } from './middlewares/logger.middleware';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import * as bodyParser from 'body-parser';
+import  bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(
     '/payments/webhook',
     bodyParser.raw({
-      type: 'application/json',
+      type: 'application/*+json',
+      verify: (req: any, res, buf) => {
+        console.log('Raw buffer length:', buf.length); // Log buffer length
+        req.rawBody = buf;
+      },
     }),
   );
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
