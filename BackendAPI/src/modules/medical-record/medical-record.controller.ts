@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Put, Query, UseGuards } from '@nest
 import { MedicalRecordDto } from './dto/medical-record.dto';
 import { UpdateMedicalRecordDto } from './dto/update-medical-record.dto';
 import { MedicalRecordService } from './medical-record.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { Role } from '../common/enums/roles.enum';
@@ -13,6 +13,8 @@ import { Admin } from 'src/decorators/roles/admin.decorator';
 @UseGuards(RolesGuard)
 @Admin()
 @Roles(Role.PETSHOP)
+@ApiBearerAuth()
+
 @Controller('medicalRecord')
 export class MedicalRecordController {
   constructor(private readonly medicalRecordService: MedicalRecordService) { }

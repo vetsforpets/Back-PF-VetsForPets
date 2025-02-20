@@ -11,21 +11,22 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { OrderDetailsService } from './order-details.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateOrderDetailDto } from './dto/createOrderDetail.dto';
 import { RolesGuard } from '../common/guards/roles.guard';
-import { Roles } from 'src/decorators/roles/roles.decorator';
-import { Role } from '../common/enums/roles.enum';
 import { Admin } from 'src/decorators/roles/admin.decorator';
 
 @ApiTags('Order-details')
 @UseGuards(RolesGuard)
 @Admin()
+
 @Controller('order-details')
 export class OrderDetailsController {
   constructor(private readonly orderDetailsService: OrderDetailsService) { }
 
   @Get(':id')
+  @ApiBearerAuth()
+
   findOneOrderDetailBy(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
       return this.orderDetailsService.findDetaildOrderById(orderId);
@@ -41,6 +42,7 @@ export class OrderDetailsController {
   }
 
   @Post()
+  @ApiBearerAuth()
   createOrderDetail(@Body() orderDetail: CreateOrderDetailDto) {
     try {
       return this.orderDetailsService.createOrderDetail(orderDetail)
