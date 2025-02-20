@@ -55,11 +55,11 @@ import { EmailModule } from './modules/common/email/email.module';
     EmailModule
   ],
   controllers: [],
-  // providers: [JwtService, JwtStrategy,
-  //   {
-  //     provide: APP_GUARD,
-  //     useClass: JwtAuthGuard
-  //   },
-  // ],
+  providers: [JwtService, JwtStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard
+    },
+  ],
 })
 export class AppModule { }
