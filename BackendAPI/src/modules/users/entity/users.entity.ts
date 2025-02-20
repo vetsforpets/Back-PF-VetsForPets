@@ -17,16 +17,16 @@ export class Users {
   @Column({ length: 50 })
   lastName: string;
 
-  @Column()
+  @Column({nullable: true })
   age: string;
 
   @Column({ length: 50 })
   email: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   password: string;
 
-  @Column({ length: 15 })
+  @Column({ length: 15, nullable: true })
   phoneNumber: string;
 
   @Column({default: false})

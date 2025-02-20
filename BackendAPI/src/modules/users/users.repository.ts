@@ -2,7 +2,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Users } from "./entity/users.entity";
 import { Repository } from "typeorm";
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { PetsAssociatedException } from "../common/petAssociatedException";
+import { PetsAssociatedException } from "../common/exceptions/petAssociatedException";
 
 @Injectable()
 export class UsersRepository {

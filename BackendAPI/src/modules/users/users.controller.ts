@@ -5,7 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Users } from './entity/users.entity';
 import {Request as ExpressRequest} from 'express'
 import { UpdateUserDto } from './dto/update.user.dto';
-import { PetsAssociatedException } from '../common/petAssociatedException';
+import { PetsAssociatedException } from '../common/exceptions/petAssociatedException';
 
 
 @ApiTags('Users')

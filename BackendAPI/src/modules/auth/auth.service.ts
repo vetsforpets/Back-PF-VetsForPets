@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -14,6 +16,8 @@ import { EmailService } from '../common/email/email.service';
 import { sendEmailDto } from '../common/email/dto/create.email.dto';
 import { Users } from '../users/entity/users.entity';
 import { PetShop } from '../pet-shop/entity/pet-shop.entity';
+import axios from 'axios';
+import { GoogleUserDto } from './dto/signup.google';
 
 @Injectable()
 export class AuthService {
@@ -52,6 +56,102 @@ export class AuthService {
       userType: user instanceof Users ? 'user' : 'petShop',
     }
     return this.jwtService.sign(payload)
+  }
+
+  async exchangeCodeForToken(code: string): Promise<{ token: string }> {
+    try {
+      console.log('Exchanging code for token. Code:', code);
+  
+      const clientId = process.env.GOOGLE_CLIENT_ID;
+      const clientSecret = process.env.GOOGLE_SECRET;
+      const redirectUri = process.env.GOOGLE_CALLBACK_URL;
+  
+      const tokenResponse = await axios.post(
+        'https://oauth2.googleapis.com/token',
+        {
+          code,
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+          grant_type: 'authorization_code',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
+  
+      const accessToken = tokenResponse.data.access_token;
+  
+      const userInfo = await this.getUserInfo(accessToken);
+  
+      const signedInUser = await this.oAuthSignIn(userInfo);
+  
+      const jwtToken = this.generateJwt(signedInUser);
+  
+      return { token: jwtToken };
+    } catch (error) {
+
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('OAuth Error Details:', error.response.data);
+  
+        if (error.response.data.error === 'invalid_grant') {
+          throw new BadRequestException('Invalid authorization code or redirect URI.');
+        } else if (error.response.data.error === 'invalid_client') {
+          throw new UnauthorizedException('Invalid client credentials.');
+        } else if (error.response.data.error === 'redirect_uri_mismatch') {
+          throw new BadRequestException('Redirect URI mismatch.');
+        }
+      } else {
+        console.error('General Error:', error);
+      }
+        throw new InternalServerErrorException('Failed to exchange code for token.');
+    }
+  }
+
+  async getUserInfo(accessToken: string) {
+    try {
+      const userInfoResponse = await axios.get(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      return userInfoResponse.data;
+    } catch (error) {
+      console.error(
+        'Error en obtener la informacion del usuario:',
+        error.response ? error.response.data : error.message,
+      );
+      throw new HttpException(
+        'Failed to get user info',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async oAuthSignIn(oAuthUser: GoogleUserDto) { 
+    if (!oAuthUser || !oAuthUser.email || !oAuthUser.given_name || !oAuthUser.family_name) {
+      throw new BadRequestException('Invalid user information from Google.');
+    }
+    try {
+      let user = await this.usersRepository.getUserByEmail(oAuthUser.email);
+      if (!user) {
+        const newUser = new Users();
+        newUser.email = oAuthUser.email;
+        newUser.name = oAuthUser.given_name;
+        newUser.lastName = oAuthUser.family_name || "";
+        newUser.imgProfile = oAuthUser.picture || null;
+        user = await this.usersRepository.createNewUser(newUser);
+      }
+      return user;
+    } catch (error) {
+      console.error('Error in oAuthSignIn:', error);
+      throw new InternalServerErrorException('Error during OAuth sign-in.');
+    }
   }
 
   async signUp(newUser: SignUpUserDto) {
