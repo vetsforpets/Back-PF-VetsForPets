@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateOrderDto } from './dto/createOrder.dto';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
@@ -20,14 +20,15 @@ import { Role } from '../common/enums/roles.enum';
 import { Admin } from 'src/decorators/roles/admin.decorator';
 
 @ApiTags('Order')
-// @UseGuards(RolesGuard)
+@UseGuards(RolesGuard)
 @Controller('order')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) { }
+  constructor(private readonly orderService: OrderService) {}
 
   @Get()
   @Admin()
   @Roles(Role.USER)
+  @ApiBearerAuth()
   findAll() {
     try {
       return this.orderService.find();
@@ -43,7 +44,8 @@ export class OrderController {
   }
 
   @Post()
-  // @Roles(Role.USER, Role.PETSHOP)
+  @ApiBearerAuth()
+  @Roles(Role.USER, Role.PETSHOP)
   addOrder(@Body() orderDto: CreateOrderDto) {
     try {
       return this.orderService.addOrder(orderDto);
@@ -59,6 +61,7 @@ export class OrderController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @Admin()
   deleteOrder(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
@@ -75,6 +78,7 @@ export class OrderController {
   }
 
   @Get(':id')
+  @ApiBearerAuth()
   @Admin()
   getOneOrderBy(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
