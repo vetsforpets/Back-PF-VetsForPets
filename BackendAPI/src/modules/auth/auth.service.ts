@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersRepository } from '../users/users.repository';
@@ -12,7 +13,10 @@ import { SignUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
 import { PetShopRepository } from '../pet-shop/pet-shop.repository';
 import { EmailService } from '../common/email/email.service';
 import { sendEmailDto } from '../common/email/dto/create.email.dto';
+import { Role } from '../common/enums/roles.enum';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../users/entity/users.entity';
+import { Repository } from 'typeorm';
 import { PetShop } from '../pet-shop/entity/pet-shop.entity';
 
 @Injectable()
@@ -21,7 +25,9 @@ export class AuthService {
     private readonly usersRepository: UsersRepository,
     private readonly petShopRepository: PetShopRepository,
     private readonly jwtService: JwtService,
-    private readonly emailService: EmailService
+    private readonly emailService: EmailService,
+    @InjectRepository(Users) private readonly usersDbRepository: Repository<Users>,
+    @InjectRepository(PetShop) private readonly petshopDbRepository: Repository<PetShop>
   ) { }
 
   async signIn(email: string, password: string) {
@@ -50,6 +56,8 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       userType: user instanceof Users ? 'user' : 'petShop',
+      role: user.role,
+      isAdmin: user.isAdmin
     }
     return this.jwtService.sign(payload)
   }
@@ -178,4 +186,43 @@ export class AuthService {
       );
     }
   }
+
+
+  async assignRole(userId: string) {
+
+    const user = await this.petShopRepository.getPetShopById(userId);
+
+    if (!user) throw new NotFoundException("ID de usuario inválido")
+
+    if (user.role === Role.USER) {
+      user.role = Role.PETSHOP
+      await this.petshopDbRepository.save(user)
+    } else {
+      throw new BadRequestException("Este usuario ya es veterinario!")
+    }
+
+    return { message: "Rol de veterinario asignado con éxito!" }
+  }
+
+
+  async assignAdmin(userId: string) {
+    const user = await this.usersDbRepository.findOne({ where: { id: userId }, })
+
+    if (!user) throw new NotFoundException("ID de usuario inválido")
+
+    if (user.isAdmin) {
+      user.isAdmin = false
+      await this.usersDbRepository.save(user)
+
+      return { message: `Se han quitado los permisos de administrador al usuario ${user.name}`, isAdmin: user.isAdmin }
+    }
+
+    user.isAdmin = true
+
+    await this.usersDbRepository.save(user)
+
+    return { message: `Se han otorgado permisos de administrador al usuario ${user.name}!`, isAdmin: user.isAdmin }
+  }
+
+
 }

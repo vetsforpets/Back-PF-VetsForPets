@@ -13,7 +13,7 @@ export class PetShopRepository {
   async getAllPetshops(): Promise<PetShop[]> {
     try {
       return await this.petshopRepository.find({
-        select: { 
+        select: {
           id: true,
           name: true,
           veterinarian: true,
@@ -24,6 +24,7 @@ export class PetShopRepository {
           location: true,
           licenseNumber: true,
           foundation: true,
+          role: true
         },
       });
     } catch (error) {
@@ -35,7 +36,7 @@ export class PetShopRepository {
   async getPetShopById(id: string): Promise<PetShop> {
     const petShopFound = await this.petshopRepository.findOne({ where: { id } });
     if (!petShopFound) {
-      throw new NotFoundException('Veterinaria no encontrada'); 
+      throw new NotFoundException('Veterinaria no encontrada');
     }
     return petShopFound
   }
@@ -46,7 +47,7 @@ export class PetShopRepository {
       return petshopFiltered
     } catch (error) {
       console.error('Error al conseguir la veterinaria:', error)
-      if(error instanceof NotFoundException){
+      if (error instanceof NotFoundException) {
         throw error
       }
       throw new InternalServerErrorException('Se generó un error al obtener la veterinaria en la base de datos.')
@@ -65,20 +66,20 @@ export class PetShopRepository {
 
   async updatePetshop(id: string, petshopData: Partial<PetShop>): Promise<PetShop | undefined> {
     try {
-      if (petshopData.email) { 
+      if (petshopData.email) {
         const existingPetShop = await this.getPetShopByEmail(petshopData.email);
-        if (existingPetShop && existingPetShop.id !== id) { 
+        if (existingPetShop && existingPetShop.id !== id) {
           throw new ConflictException('El correo electrónico ya está en uso.');
         }
       }
-  
+
       const result = await this.petshopRepository.update(id, petshopData);
       if (result.affected === 0) {
-        return undefined; 
+        return undefined;
       }
       return await this.getPetShopById(id);
     } catch (error) {
-      if (error instanceof ConflictException) { 
+      if (error instanceof ConflictException) {
         throw error;
       }
       console.error('Error al actualizar la veterinaria:', error);
@@ -94,11 +95,11 @@ export class PetShopRepository {
       }
     } catch (error) {
       console.error('Error en eliminar una veterinaria:', error)
-      if(error instanceof NotFoundException){
+      if (error instanceof NotFoundException) {
         throw error
       }
       throw new InternalServerErrorException('Se generó un error al eliminar la veterinaria en la base de datos.')
     }
-  } 
+  }
 
 }
