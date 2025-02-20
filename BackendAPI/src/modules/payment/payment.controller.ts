@@ -20,6 +20,16 @@ export class PaymentController {
     @Req() req: RawBodyRequest<Request>,
     @Res() res: Response,
   ) {
+    let rawBody: string;
+    if (Buffer.isBuffer(req.rawBody)) {
+      rawBody = req.rawBody.toString();
+    } else {
+      rawBody = req.rawBody as string;
+    }
+    if (!req.rawBody) {
+      console.error('No rawBody found on request!');
+      throw new BadRequestException('No raw body available');
+    }
     const sigHeader = req.headers['stripe-signature'];
     if (!sigHeader) {
       throw new BadRequestException('Missing stripe-signature header');
@@ -28,12 +38,12 @@ export class PaymentController {
     let event;
     try {
       event = this.paymentService.constructStripeEvent(req.rawBody, sig);
+      if (event.type === 'checkout.session.completed') {
+        const session = event.data.object as any;
+        await this.paymentService.handleCheckoutSessionCompleted(session);
+      }
     } catch (error) {
       throw new BadRequestException(`Error en el webhook: ${error.message}`);
-    }
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as any;
-      await this.paymentService.handleCheckoutSessionCompleted(session);
     }
 
     res.status(200).json({ received: true });

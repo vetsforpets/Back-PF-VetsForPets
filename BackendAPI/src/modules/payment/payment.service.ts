@@ -64,8 +64,6 @@ export class PaymentService {
   }
 
   constructStripeEvent(payload: Buffer, signature: string): Stripe.Event {
-    console.log(`Payment service`, payload, signature);
-
     try {
       return this.stripe.webhooks.constructEvent(
         payload,
@@ -78,13 +76,12 @@ export class PaymentService {
   }
 
   async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-    console.log('Processing webhook for session ID:', session.id);
+    console.log(session);
+    
     let orderId = session.metadata.orderId;
-    console.log('Metadata orderId:', orderId);
 
     if (!orderId) {
       const order = await this.orderService.findOrderBySessionId(session.id);
-      console.log('Order found by sessionId:', order);
 
       if (!order) {
         throw new BadRequestException(
@@ -93,13 +90,9 @@ export class PaymentService {
       }
       orderId = order.id;
     }
-    console.log('Using orderId:', orderId);
 
     const order = await this.orderService.getOrderById(orderId);
-    console.log(
-      '🚀 ~ PaymentService ~ handleCheckoutSessionCompleted ~ order:',
-      order,
-    );
+
 
     if (order) {
       const userId =
