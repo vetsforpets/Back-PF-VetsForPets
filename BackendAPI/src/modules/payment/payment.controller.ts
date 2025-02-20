@@ -8,12 +8,14 @@ import {
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Request, Response } from 'express';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('payments')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @Post('webhook')
+  @ApiBearerAuth()
   async handleStripeWebhook(
     @Req() req: RawBodyRequest<Request>,
     @Res() res: Response,
