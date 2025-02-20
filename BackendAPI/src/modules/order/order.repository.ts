@@ -21,7 +21,7 @@ export class OrderRepository {
     private readonly orderDetailsService: OrderDetailsService,
     private readonly membershipService: MembershipService,
     private readonly paymentService: PaymentService,
-  ) {}
+  ) { }
 
   async find() {
     return await this.orderRepository.find({ relations: { userId: true } });
@@ -64,6 +64,7 @@ export class OrderRepository {
         this.membershipService.findOneMembership(item.id),
       ),
     );
+
 
     const order = new Order();
     order.userId = foundUser;

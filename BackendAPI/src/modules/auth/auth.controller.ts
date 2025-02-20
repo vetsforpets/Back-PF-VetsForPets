@@ -12,7 +12,7 @@ import {
 import { LoginDTO } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { SignUpUserDto } from './dto/signup.user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SignUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
 import { Public } from 'src/decorators/public-routes/public-routes.decorator';
 import { Admin } from 'src/decorators/roles/admin.decorator';
@@ -62,6 +62,7 @@ export class AuthController {
     }
   }
 
+  @ApiBearerAuth()
   @Put('assignRole')
   @Admin()
   assignRole(@Query("id") id: string) {
@@ -70,6 +71,7 @@ export class AuthController {
 
   }
 
+  @ApiBearerAuth()
   @Put('assignAdmin')
   @Admin()
   assignAdmin(@Query("id") id: string) {

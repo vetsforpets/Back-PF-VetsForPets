@@ -33,10 +33,13 @@ export class UsersService {
       if (!user) {
         throw new NotFoundException('Usuario no encontrado')
       }
-      return user;
+
+      const { password, ...rest } = user
+
+      return rest;
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw error; 
+        throw error;
       }
       console.error(error)
       throw new HttpException(
@@ -52,7 +55,7 @@ export class UsersService {
   async updateUser(id: string, userData: UpdateUserDto): Promise<Partial<Users>> {
     try {
       const updatedUser = await this.usersRepository.updateUser(id, userData);
-      if (updatedUser) { 
+      if (updatedUser) {
         try {
           const emailDto: sendEmailDto = {
             recipients: updatedUser.email,
