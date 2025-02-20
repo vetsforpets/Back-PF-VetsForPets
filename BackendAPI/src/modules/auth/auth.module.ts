@@ -12,8 +12,9 @@ import { JwtStrategy } from './jwt.strategy';
 import { EmailModule } from '../common/email/email.module';
 import { EmailService } from '../common/email/email.service';
 
+
 @Module({
-  imports: [TypeOrmModule.forFeature([Users, PetShop]), UsersModule, PetShopModule, EmailModule],
+  imports: [TypeOrmModule.forFeature([Users, PetShop]), UsersModule, PetShopModule, EmailModule],   
   controllers: [AuthController],
   providers: [AuthService, UsersRepository, PetShopRepository, JwtStrategy, EmailService],
   exports: [AuthService],

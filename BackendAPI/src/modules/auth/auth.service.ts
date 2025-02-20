@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersRepository } from '../users/users.repository';
 import { SignUpUserDto } from './dto/signup.user.dto';
@@ -31,33 +32,34 @@ export class AuthService {
 
   async signIn(email: string, password: string) {
     try {
-      const userDb =
-        (await this.usersRepository.getUserByEmail(email)) ||
-        (await this.petShopRepository.getPetShopByEmail(email));
-      if (!userDb) {
-        throw new BadRequestException('Credenciales invalidas');
+      const user = await this.usersRepository.getUserByEmail(email)
+      if (user && await bcrypt.compare(password, user.password)) {
+        const token = this.generateJwt(user)
+        return { success: 'El usuario se ha logueado exitosamente', user, token }
       }
 
-      const isPasswordMatching = await bcrypt.compare(
-        password,
-        userDb.password,
-      );
-      if (!isPasswordMatching) {
-        throw new BadRequestException('Credenciales invalidas');
+      const petShop = await this.petShopRepository.getPetShopByEmail(email)
+      if (petShop && await bcrypt.compare(password, petShop.password)) {
+        const token = this.generateJwt(petShop)
+        return { success: 'El usuario se ha logueado exitosamente', user: petShop, token }
       }
+      throw new UnauthorizedException('Credenciales inválidas');
 
-      const userPayload = {
-        sub: userDb.id,
-        email: userDb.email,
-        role: [userDb.role],
-        isAdmin: userDb.isAdmin
-      };
-
-      const token = this.jwtService.sign(userPayload);
-      return { success: 'El usuario se ha logueado exitosamente', token };
     } catch (error) {
-      throw new BadRequestException('Ha habido un error en el servidor');
+      console.error("Error en signIn:", error);
+      throw new UnauthorizedException('Credenciales inválidas');
     }
+  }
+
+  generateJwt(user: Users | PetShop): string {
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      userType: user instanceof Users ? 'user' : 'petShop',
+      role: user.role,
+      isAdmin: user.isAdmin
+    }
+    return this.jwtService.sign(payload)
   }
 
   async signUp(newUser: SignUpUserDto) {
@@ -77,12 +79,20 @@ export class AuthService {
       if (!hashedPassword) {
         throw new BadRequestException('No se pudo encriptar la contraseña.');
       }
-      await this.usersRepository.createNewUser({
-        ...newUser,
-        password: hashedPassword,
-      });
+
+      const userEntity = new Users();
+      userEntity.email = newUser.email;
+      userEntity.name = newUser.name;
+      userEntity.lastName = newUser.lastName;
+      userEntity.password = hashedPassword;
+      userEntity.age = newUser.age;
+      userEntity.phoneNumber = newUser.phoneNumber;
+      userEntity.imgProfile = newUser.imgProfile;
+
+      await this.usersRepository.createNewUser(userEntity);
 
       const { password, confirmPassword, ...userWithOutPassword } = newUser;
+
       try {
         const emailDto: sendEmailDto = {
           recipients: newUser.email,
@@ -116,11 +126,14 @@ export class AuthService {
 
   async petShopSignUp(newPetShop: SignUpPetShopDto) {
     try {
-      const emailFound = await this.petShopRepository.getPetShopByEmail(
+      const existingPetshopEmailFound = await this.petShopRepository.getPetShopByEmail(
         newPetShop.email,
       );
+      const existingUserEmailFound = await this.usersRepository.getUserByEmail(
+        newPetShop.email
+      )
 
-      if (emailFound) {
+      if (existingPetshopEmailFound || existingUserEmailFound) {
         throw new BadRequestException(
           'El correo electronico ya esta registrado',
         );
@@ -185,7 +198,7 @@ export class AuthService {
       user.role = Role.PETSHOP
       await this.petshopDbRepository.save(user)
     } else {
-      return { message: "Este usuario ya es veterinario!" }
+      throw new BadRequestException("Este usuario ya es veterinario!")
     }
 
     return { message: "Rol de veterinario asignado con éxito!" }
@@ -208,7 +221,7 @@ export class AuthService {
 
     await this.usersDbRepository.save(user)
 
-    return { message: `Se han otorgado/quitado permisos de administrador al usuario ${user.name}!`, isAdmin: user.isAdmin }
+    return { message: `Se han otorgado permisos de administrador al usuario ${user.name}!`, isAdmin: user.isAdmin }
   }
 
 

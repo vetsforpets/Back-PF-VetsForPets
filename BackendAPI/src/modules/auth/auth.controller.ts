@@ -7,7 +7,6 @@ import {
   BadRequestException,
   Put,
   Query,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { LoginDTO } from './dto/login.dto';
@@ -18,6 +17,7 @@ import { SignUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
 import { Public } from 'src/decorators/public-routes/public-routes.decorator';
 import { Admin } from 'src/decorators/roles/admin.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
+
 
 @ApiTags('Auth')
 @Controller('auth')

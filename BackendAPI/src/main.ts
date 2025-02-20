@@ -3,25 +3,36 @@ import { AppModule } from './app.module';
 import { loggerGlobal } from './middlewares/logger.middleware';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-    exceptionFactory: (errors) => {
-      const cleanErrors = errors.map((error) => {
-        return { property: error.property, constraints: error.constraints }
-      })
-      return new BadRequestException({
-        alert:
-          'Errores detectados: ',
-        errors: cleanErrors
-      })
-    }
-  }))
-  app.use(loggerGlobal)
-  app.enableCors()
+  app.use(
+    '/payments/webhook',
+    bodyParser.raw({
+      type: '*/*',
+      verify: (req: any, res, buf) => {
+        req.rawBody = buf;
+      },
+    }),
+  );
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      exceptionFactory: (errors) => {
+        const cleanErrors = errors.map((error) => {
+          return { property: error.property, constraints: error.constraints };
+        });
+        return new BadRequestException({
+          alert: 'Errores detectados: ',
+          errors: cleanErrors,
+        });
+      },
+    }),
+  );
+  app.use(loggerGlobal);
+  app.enableCors();
   const swaggerConfig = new DocumentBuilder()
     .setTitle('VetsForPets-API DOCS')
     .setDescription('Api creada y documentada para ser usada en el PF')
