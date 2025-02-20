@@ -30,7 +30,7 @@ export class FileUploadController {
             },
         },
     })
-    @Roles(Role.USER)
+    @Roles(Role.USER, Role.PETSHOP)
     @Admin()
     uploadImage(@UploadedFile(
         new ParseFilePipe({

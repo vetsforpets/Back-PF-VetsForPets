@@ -25,18 +25,15 @@ export class RolesGuard implements CanActivate {
 
 
         if (isAdminRoute) {
-            const request = context.switchToHttp().getRequest()
-            const user = request.user;
+            const { user } = context.switchToHttp().getRequest()
             return user.isAdmin === true
 
         }
 
 
+        if (!requiredRoles || requiredRoles.length === 0) return true
 
-        if (!requiredRoles || requiredRoles.length === 0) throw new ForbiddenException("No tienes acceso a esta ruta")
-
-        const request = context.switchToHttp().getRequest()
-        const user = request.user
+        const { user } = context.switchToHttp().getRequest()
 
         const hasRole = () => requiredRoles.some((rol) => user?.role?.includes(rol))
 
