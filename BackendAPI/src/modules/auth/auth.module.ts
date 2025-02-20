@@ -12,7 +12,7 @@ import { EmailModule } from '../common/email/email.module';
 import { EmailService } from '../common/email/email.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtGuardStrategy } from '../common/strategies/jwt.auth.strategy';
-import { JwtGuard } from '../common/jwt.auth.guard';
+import { JwtGuard } from '../common/guards/jwt.auth.guard';
 import { GoogleStrategy } from '../common/strategies/google.oauth.strategy';
 
 

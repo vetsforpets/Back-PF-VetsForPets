@@ -1,4 +1,3 @@
-// google-user.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
@@ -36,4 +35,5 @@ export class GoogleUserDto {
   @ApiProperty({ description: 'Is the email verified.', example: true })
   @IsNotEmpty()
   email_verified: boolean;
+
 }

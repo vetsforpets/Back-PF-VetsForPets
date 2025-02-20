@@ -17,7 +17,7 @@ import { AuthService } from './auth.service';
 import { SignUpUserDto } from './dto/signup.user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SignUpPetShopDto } from '../pet-shop/dto/signUpPetshop.dto';
-import { GoogleOauthGuard } from '../common/google.0auth.guard';
+import { GoogleOauthGuard } from '../common/guards/google.0auth.guard';
 import { Response } from 'express';
 import { Public } from 'src/decorators/public-routes/public-routes.decorator';
 import { Admin } from 'src/decorators/roles/admin.decorator';
@@ -30,10 +30,12 @@ import { RolesGuard } from '../common/guards/roles.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
+  @Public()
   @Get('google/signIn')
   @UseGuards(GoogleOauthGuard)
   async googleAuthCallback(@Req() req, @Res() res: Response) {}
 
+  @Public()
   @Get('google/callback')
   async googleRedirect(@Req() req, @Res() res: Response) {
     try {
