@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
-import { CreateOrderDto } from './dto/createOrder.dto';
+import { CreateOrderDto, OrderDto } from './dto/createOrder.dto';
 
 @Injectable()
 export class OrderService {
@@ -26,20 +26,6 @@ export class OrderService {
     }
   }
 
-  getOrderById(orderId: string) {
-    try {
-      const order = this.orderRepository.getOrder(orderId);
-      return order;
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      console.error(error);
-      throw new InternalServerErrorException(
-        'Error al traer la orden de la base de datos',
-      );
-    }
-  }
 
   addOrder(orderDto: CreateOrderDto) {
     try {
@@ -69,4 +55,49 @@ export class OrderService {
       );
     }
   }
+
+  getOrderById(orderId: string) {
+    try {
+      const order = this.orderRepository.getOrder(orderId);
+      return order;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Error al traer la orden de la base de datos',
+      );
+    }
+  }
+
+  updateOrder(orderId: string, orderDto: OrderDto){
+    try {
+      const updatedOrder = this.orderRepository.updateOrder(orderId, orderDto)
+      return updatedOrder
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Error al realizar la operacion desde la base de datos',
+      );
+    }
+  }
+
+  findOrderBySessionId(sessionId: string){
+    try {
+      return this.orderRepository.findOrderBySessionId(sessionId)
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Error al buscar la session en la base de datos',
+      );
+    }
+  }
+
 }

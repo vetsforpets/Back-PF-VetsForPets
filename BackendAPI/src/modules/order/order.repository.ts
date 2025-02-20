@@ -4,7 +4,11 @@ import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { OrderDetailsService } from '../order-details/order-details.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { CreateOrderDto, MembershipProductDto } from './dto/createOrder.dto';
+import {
+  CreateOrderDto,
+  MembershipProductDto,
+  OrderDto,
+} from './dto/createOrder.dto';
 import { MembershipService } from '../membership/membership.service';
 import { CreateOrderDetailDto } from '../order-details/dto/createOrderDetail.dto';
 import { PaymentService } from '../payment/payment.service';
@@ -17,7 +21,7 @@ export class OrderRepository {
     private readonly orderDetailsService: OrderDetailsService,
     private readonly membershipService: MembershipService,
     private readonly paymentService: PaymentService,
-  ) {}
+  ) { }
 
   async find() {
     return await this.orderRepository.find({ relations: { userId: true } });
@@ -37,7 +41,7 @@ export class OrderRepository {
 
     const foundOrderDetails = await this.orderDetailsService.findOneBy(
       orderQuery,
-      ['order', 'membershipId'],
+      ['order', 'membership'],
     );
 
     return {
@@ -46,7 +50,7 @@ export class OrderRepository {
     };
   }
 
-  async addOrder(orderDto: CreateOrderDto) {    
+  async addOrder(orderDto: CreateOrderDto) {
     const { userId, membership, paymentMethod } = orderDto;
     const foundUser = await this.userService.getUserById(userId);
     if (!foundUser) {
@@ -60,6 +64,7 @@ export class OrderRepository {
         this.membershipService.findOneMembership(item.id),
       ),
     );
+
 
     const order = new Order();
     order.userId = foundUser;
@@ -80,7 +85,6 @@ export class OrderRepository {
       membershipEntities,
     );
 
-    await this.userService.updateUser(foundUser.id,{isPremium: true})
     return {
       order: newOrder,
       orderDetails: createdOrderDetail,
@@ -111,5 +115,15 @@ export class OrderRepository {
       total += productPrice;
     }
     return total;
+  }
+
+  async updateOrder(orderId: string, orderDto: OrderDto) {
+    return await this.orderRepository.update(orderId, orderDto);
+  }
+
+  async findOrderBySessionId(sessionId: string): Promise<Order | undefined> {
+    return await this.orderRepository.findOne({
+      where: { sessionId },
+    });
   }
 }

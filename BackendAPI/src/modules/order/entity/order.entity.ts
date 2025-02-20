@@ -8,12 +8,15 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string = uuid();
 
+  @ManyToOne(() => Users, (userId) => userId.order)
+  userId: Partial<Users>
+
+  @OneToOne(() => OrderDetails, orderDetails => orderDetails.order)
+  orderDetails: OrderDetails
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   orderDate: Date;
 
-  @ManyToOne(()=> Users, (userId)=> userId.order)
-  userId: Users
-
-  @OneToOne(()=> OrderDetails, orderDetails => orderDetails.order)
-  orderDetails: OrderDetails
+  @Column({ nullable: true })
+  sessionId: string;
 }

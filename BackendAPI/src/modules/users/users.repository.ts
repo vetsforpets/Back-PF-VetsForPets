@@ -14,9 +14,9 @@ export class UsersRepository {
             return user
         })
     }
-    
-    async getUserById(id: string):Promise<Users | null>{
-        return this.usersRepository.findOne({where:{id}, relations: ['pets']})
+
+    async getUserById(id: string): Promise<Users | null> {
+        return this.usersRepository.findOne({ where: { id }, relations: ['pets'] })
     }
 
     async getUserByEmail(email: string) {
@@ -31,9 +31,9 @@ export class UsersRepository {
         return this.usersRepository.findOne({where: {email: user.email}})
     }
 
-    async updateUser(id: string, userData: Partial<Users>): Promise<Partial<Users>>{
+    async updateUser(id: string, userData: Partial<Users>): Promise<Partial<Users>> {
         const user = await this.getUserById(id)
-        if(!user){
+        if (!user) {
             return new NotFoundException('El usuario no fue encontrado')
         }
         Object.assign(user, userData)
@@ -47,7 +47,7 @@ export class UsersRepository {
                 throw new NotFoundException(`Usuario no encontrado para eliminar`);
             }
         } catch (error) {
-            if (error.code === '23503') { 
+            if (error.code === '23503') {
                 throw new PetsAssociatedException()
             }
             throw error

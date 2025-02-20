@@ -33,4 +33,4 @@ import { GoogleStrategy } from '../common/strategies/google.oauth.strategy';
   providers: [AuthService, UsersRepository, PetShopRepository, EmailService, JwtGuardStrategy, JwtGuard, GoogleStrategy],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }

@@ -53,7 +53,7 @@ export class OrderDetailsService {
         throw error;
       }
       console.error(error);
-      throw new InternalServerErrorException('');
+      throw new InternalServerErrorException('Fallo la operacion de buscar la orden desde la DB');
     }
   }
 }

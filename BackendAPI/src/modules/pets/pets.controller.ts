@@ -22,17 +22,23 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from 'src/decorators/roles/roles.decorator';
+import { Role } from '../common/enums/roles.enum';
+import { Admin } from 'src/decorators/roles/admin.decorator';
 
 @ApiTags('Pets')
+@UseGuards(RolesGuard)
 @Controller('pets')
 export class PetsController {
-  constructor(private readonly petsService: PetsService) {}
+  constructor(private readonly petsService: PetsService) { }
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Obtener todas las mascotas' })
   @ApiOkResponse({ description: 'Listado de mascotas' })
+  @Admin()
+  @Roles(Role.PETSHOP, Role.USER)
   async getAllPets(): Promise<Pets[]> {
     return this.petsService.getAllPets();
   }
@@ -42,6 +48,7 @@ export class PetsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Obtener mascota por ID' })
   @ApiOkResponse({ description: 'Detalles de la mascota' })
+  @Roles(Role.PETSHOP)
   async getPetById(
     @Param('id', new ParseUUIDPipe()) id: string,
   ): Promise<Pets> {
@@ -57,6 +64,7 @@ export class PetsController {
     type: Pets,
   })
   @ApiBody({ type: CreatePetDto })
+  @Roles(Role.USER)
   async createNewPet(
     @Body() newPet: CreatePetDto,
     @Request() req,
@@ -71,6 +79,7 @@ export class PetsController {
   @ApiOperation({ summary: 'Actualizar un mascota' })
   @ApiOkResponse({ description: 'La mascota ha sido actualizada con exito' })
   @ApiBody({ type: CreatePetDto })
+  @Roles(Role.USER, Role.PETSHOP)
   async updatePet(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updatedPet: Partial<CreatePetDto>,
@@ -83,6 +92,7 @@ export class PetsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Eliminar una mascota' })
   @ApiOkResponse({ description: 'La mascota ha sido eliminada con exito' })
+  @Roles(Role.USER)
   async deletePet(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.petsService.deletePet(id);
   }

@@ -25,6 +25,8 @@ export class PaymentService {
   }
 
   async createCheckoutSession(order: Order, membership: MembershipDto[]) {
+    console.log('Creating checkout session for order ID:', order.id);
+
     try {
       const lineItems = membership.map((item) => ({
         price_data: {
@@ -46,11 +48,14 @@ export class PaymentService {
         line_items: lineItems,
         success_url:
           'https://front-pf-vets-for-pets.vercel.app/success-transaction',
-        cancel_url: 'https://front-pf-vets-for-pets.vercel.app/canceled-transaction',
+        cancel_url:
+          'https://front-pf-vets-for-pets.vercel.app/canceled-transaction',
         metadata: {
           orderId: order.id,
         },
       });
+      await this.orderService.updateOrder(order.id, { sessionId: session.id });
+
       return session;
     } catch (error) {
       console.error('Error creating Stripe session:', error);
@@ -58,13 +63,9 @@ export class PaymentService {
     }
   }
 
-  async constructStripeEvent(
-    payload: Buffer,
-    signature: string | string[],
-  ): Promise <Stripe.Event> {
+  constructStripeEvent(payload: Buffer, signature: string): Stripe.Event {
     try {
-      console.log(process.env.STRIPE_WEBHOOK_SECRET);
-      return  this.stripe.webhooks.constructEvent(
+      return this.stripe.webhooks.constructEvent(
         payload,
         signature,
         process.env.STRIPE_WEBHOOK_SECRET,
@@ -75,16 +76,40 @@ export class PaymentService {
   }
 
   async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-    const orderId = session.metadata.orderId;
+    console.log('Processing webhook for session ID:', session.id);
+    let orderId = session.metadata.orderId;
+    console.log('Metadata orderId:', orderId);
+
     if (!orderId) {
-      throw new BadRequestException(
-        'No se ha encontrado el id en la sesion metadata',
-      );
+      const order = await this.orderService.findOrderBySessionId(session.id);
+      console.log('Order found by sessionId:', order);
+
+      if (!order) {
+        throw new BadRequestException(
+          'No se ha encontrado la orden asociada a la session id',
+        );
+      }
+      orderId = order.id;
     }
+    console.log('Using orderId:', orderId);
+
     const order = await this.orderService.getOrderById(orderId);
+    console.log(
+      '🚀 ~ PaymentService ~ handleCheckoutSessionCompleted ~ order:',
+      order,
+    );
+
     if (order) {
-      const userId = typeof order.userId === 'object' ? order.userId.id : order.userId;
-      await this.usersService.updateUser(userId, { isPremium: true });
+      const userId =
+        typeof order.userId === 'object' ? order.userId.id : order.userId;
+      console.log('Updating user with ID:', userId);
+
+      const updateResult = await this.usersService.updateUser(userId, {
+        isPremium: true,
+      });
+      console.log('Update result:', updateResult);
+
+      return updateResult;
     } else {
       throw new NotFoundException('No se ha encontrado la orden');
     }

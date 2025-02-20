@@ -16,6 +16,8 @@ import { PassportModule } from '@nestjs/passport';
 import { MedicalRecordModule } from './modules/medical-record/medical-record.module';
 import { LocationModule } from './modules/location/location.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { JwtAuthGuard } from './modules/common/guards/auth.guard';
+import { APP_GUARD } from '@nestjs/core';
 import { EmailModule } from './modules/common/email/email.module';
 import { JwtStrategy } from './modules/common/strategies/jwt.strategy';
 
@@ -37,7 +39,7 @@ import { JwtStrategy } from './modules/common/strategies/jwt.strategy';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
-    
+
     UsersModule,
     AuthModule,
     FileUploadModule,
@@ -53,6 +55,11 @@ import { JwtStrategy } from './modules/common/strategies/jwt.strategy';
     EmailModule
   ],
   controllers: [],
-  providers: [JwtService, JwtStrategy],
+  providers: [JwtService, JwtStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule { }
