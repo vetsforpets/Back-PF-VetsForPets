@@ -65,12 +65,11 @@ export class PaymentService {
 
   constructStripeEvent(payload: Buffer, signature: string): Stripe.Event {
     try {
-      // return this.stripe.webhooks.constructEvent(
-      //   payload,
-      //   signature,
-      //   process.env.STRIPE_WEBHOOK_SECRET,
-      // );
-      return JSON.parse(payload.toString()); // This bypasses verification
+      return this.stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET,
+      );
     } catch (error) {
       throw new BadRequestException(`Error con el webhook: ${error.message}`);
     }
