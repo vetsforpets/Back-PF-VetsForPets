@@ -65,25 +65,25 @@ export class PaymentService {
 
   constructStripeEvent(payload: Buffer, signature: string): Stripe.Event {
     try {
-      // return this.stripe.webhooks.constructEvent(
-      //   payload,
-      //   signature,
-      //   process.env.STRIPE_WEBHOOK_SECRET,
-      // );
-      return JSON.parse(payload.toString()); // This bypasses verification
+      return this.stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET,
+      );
     } catch (error) {
       throw new BadRequestException(`Error con el webhook: ${error.message}`);
     }
   }
 
   async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+    console.log('Processing webhook for session ID:', session.id);
     let orderId = session.metadata.orderId;
-    console.log(
-      '🚀 ~ PaymentService ~ handleCheckoutSessionCompleted ~ orderId:',
-      orderId,
-    );
+    console.log('Metadata orderId:', orderId);
+
     if (!orderId) {
       const order = await this.orderService.findOrderBySessionId(session.id);
+      console.log('Order found by sessionId:', order);
+
       if (!order) {
         throw new BadRequestException(
           'No se ha encontrado la orden asociada a la session id',
@@ -91,11 +91,25 @@ export class PaymentService {
       }
       orderId = order.id;
     }
+    console.log('Using orderId:', orderId);
+
     const order = await this.orderService.getOrderById(orderId);
+    console.log(
+      '🚀 ~ PaymentService ~ handleCheckoutSessionCompleted ~ order:',
+      order,
+    );
+
     if (order) {
       const userId =
         typeof order.userId === 'object' ? order.userId.id : order.userId;
-      await this.usersService.updateUser(userId, { isPremium: true });
+      console.log('Updating user with ID:', userId);
+
+      const updateResult = await this.usersService.updateUser(userId, {
+        isPremium: true,
+      });
+      console.log('Update result:', updateResult);
+
+      return updateResult;
     } else {
       throw new NotFoundException('No se ha encontrado la orden');
     }
