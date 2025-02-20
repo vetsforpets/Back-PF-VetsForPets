@@ -4,7 +4,11 @@ import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { OrderDetailsService } from '../order-details/order-details.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { CreateOrderDto, MembershipProductDto } from './dto/createOrder.dto';
+import {
+  CreateOrderDto,
+  MembershipProductDto,
+  OrderDto,
+} from './dto/createOrder.dto';
 import { MembershipService } from '../membership/membership.service';
 import { CreateOrderDetailDto } from '../order-details/dto/createOrderDetail.dto';
 import { PaymentService } from '../payment/payment.service';
@@ -46,7 +50,7 @@ export class OrderRepository {
     };
   }
 
-  async addOrder(orderDto: CreateOrderDto) {    
+  async addOrder(orderDto: CreateOrderDto) {
     const { userId, membership, paymentMethod } = orderDto;
     const foundUser = await this.userService.getUserById(userId);
     if (!foundUser) {
@@ -110,5 +114,15 @@ export class OrderRepository {
       total += productPrice;
     }
     return total;
+  }
+
+  async updateOrder(orderId: string, orderDto: OrderDto) {
+    return await this.orderRepository.update(orderId, orderDto);
+  }
+
+  async findOrderBySessionId(sessionId: string): Promise<Order | undefined> {
+    return await this.orderRepository.findOne({
+      where: { sessionId },
+    });
   }
 }

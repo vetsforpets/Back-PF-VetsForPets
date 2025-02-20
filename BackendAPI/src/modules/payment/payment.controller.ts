@@ -9,10 +9,10 @@ export class PaymentController {
     @Post('webhook')
     async handleStripeWebhook(@Req()req: RawBodyRequest<Request>, @Res() res: Response){
 
-        const sig = req.headers['stripe-signature']
+        const sig = req.headers['stripe-signature'].toString()
         let event;
         try {
-            event = await this.paymentService.constructStripeEvent(req.rawBody, sig)
+            event =  this.paymentService.constructStripeEvent(req.rawBody, sig)
         } catch (error) {
             throw new BadRequestException(`Error en el webhook: ${error.message}`);
 

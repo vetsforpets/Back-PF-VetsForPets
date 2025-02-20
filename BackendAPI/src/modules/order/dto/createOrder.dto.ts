@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsUUID,
   ValidateNested,
@@ -34,6 +35,11 @@ export class CreateOrderDto {
     example: 'Debit card',
   })
   paymentMethod: string;
+
+  @IsOptional()
+  sessionId?: string
 }
+
+export class OrderDto extends PickType(CreateOrderDto, ['sessionId']){ }
 
 export class MembershipProductDto extends PartialType(Membership) {}

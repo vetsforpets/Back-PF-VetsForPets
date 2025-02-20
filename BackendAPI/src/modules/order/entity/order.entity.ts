@@ -16,4 +16,7 @@ export class Order {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   orderDate: Date;
+
+  @Column({ nullable: true })
+  sessionId: string; 
 }
