@@ -64,13 +64,14 @@ export class PaymentService {
   }
 
   constructStripeEvent(payload: Buffer, signature: string): Stripe.Event {
+    console.log(`Payment service`, payload, signature);
+
     try {
-      return JSON.parse(payload.toString()) as Stripe.Event;
-      // return this.stripe.webhooks.constructEvent(
-      //   payload,
-      //   signature,
-      //   process.env.STRIPE_WEBHOOK_SECRET,
-      // );
+      return this.stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET,
+      );
     } catch (error) {
       throw new BadRequestException(`Error con el webhook: ${error.message}`);
     }
