@@ -1,7 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PetShopRepository } from './pet-shop.repository';
 import { PetShop } from './entity/pet-shop.entity';
-import { SignUpPetShopDto } from './dto/signUpPetshop.dto';
 import { UpdatePetShopDto } from './dto/updatePetShop.dto';
 import { EmailService } from '../common/email/email.service';
 import { sendEmailDto } from '../common/email/dto/create.email.dto';
@@ -27,15 +26,6 @@ export class PetShopService {
                 throw error
             }
             throw new InternalServerErrorException('Se genero un error al obtener la veterinaria en la base de datos')
-        }
-    }
-
-    async createNewPetshop(petShopData:  SignUpPetShopDto): Promise<PetShop>{
-        try {
-            return await this.petShopRepository.savePetshop(petShopData)
-        } catch (error) {
-            console.error('Error en la creacion de la veterinaria', error)
-            throw new InternalServerErrorException('Se genero un error al crear la veterinaria en la base de datos')
         }
     }
 
