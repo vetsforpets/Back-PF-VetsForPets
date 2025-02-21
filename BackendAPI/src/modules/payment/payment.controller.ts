@@ -8,22 +8,15 @@ import {
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Request, Response } from 'express';
-import { ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from 'src/decorators/public-routes/public-routes.decorator';
 import Stripe from 'stripe';
-import { OrderService } from '../order/order.service';
 
 @Controller('payments')
 export class PaymentController {
-  private stripe: Stripe;
-  constructor(
-    private readonly paymentService: PaymentService,
-    private readonly orderService: OrderService,
-  ) {}
+  constructor(private readonly paymentService: PaymentService) {}
 
   @Public()
   @Post('webhook')
-  // @ApiBearerAuth()
   async handleStripeWebhook(
     @Req() req: RawBodyRequest<Request>,
     @Res() res: Response,
@@ -33,7 +26,9 @@ export class PaymentController {
       const rawBody = Buffer.isBuffer(req.rawBody)
         ? req.rawBody.toString()
         : (req.rawBody as string);
+      console.log('Webhook raw body:', rawBody);
       event = JSON.parse(rawBody);
+      console.log('Parsed event:', event);
     } catch (error) {
       throw new BadRequestException(`Error en el webhook: ${error.message}`);
     }
@@ -42,7 +37,7 @@ export class PaymentController {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       await this.paymentService.handleCheckoutSessionCompleted(session);
-      console.log('handleCheckoutSessionCompleted was triggered.');
+      console.log('Processed checkout.session.completed event.');
     } else if (event.type === 'charge.updated') {
       const charge = event.data.object;
       console.log('Charge updated event received:', charge);
@@ -50,26 +45,30 @@ export class PaymentController {
       if (!orderId && charge.payment_intent) {
         try {
           const paymentIntent = await this.paymentService.getPaymentIntent(
-            charge.payment_intent,
+            charge.payment_intent
           );
-          console.log(
-            'Retrieved PaymentIntent metadata:',
-            paymentIntent.metadata,
-          );
+          console.log('Retrieved PaymentIntent metadata:', paymentIntent.metadata);
           orderId = paymentIntent.metadata.orderId;
         } catch (error) {
           console.error('Error retrieving PaymentIntent:', error);
-          const order = await this.orderService.findOrderBySessionId(
-            event.data.object.id,
-          );
-          if (!order) {
-            console.warn(
-              'No order found via PaymentIntent retrieval or session lookup.',
-            );
-            return;
-          }
-          orderId = order.id;
         }
+      }
+      if (!orderId) {
+        try {
+          const order = await this.paymentService.findOrderBySessionId(charge.id);
+          console.log('Fallback lookup order:', order);
+          if (order) {
+            orderId = order.id;
+          }
+        } catch (error) {
+          console.error('Error during fallback order lookup:', error);
+        }
+      }
+      if (!orderId) {
+        console.warn(
+          'charge.updated event missing orderId in metadata and fallback did not find an order.'
+        );
+      } else {
         await this.paymentService.handleCheckoutSessionCompleted({
           metadata: { orderId },
           id: charge.id,

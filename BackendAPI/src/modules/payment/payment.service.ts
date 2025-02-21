@@ -1,15 +1,15 @@
 import {
   BadRequestException,
-  forwardRef,
-  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import Stripe from 'stripe';
-import { MembershipDto } from '../membership/dto/membership.dto';
-import { Order } from '../order/entity/order.entity';
 import { OrderService } from '../order/order.service';
 import { UsersService } from '../users/users.service';
+import { Order } from '../order/entity/order.entity';
+import { MembershipDto } from '../membership/dto/membership.dto';
 
 @Injectable()
 export class PaymentService {
@@ -68,29 +68,24 @@ export class PaymentService {
     }
   }
 
-  constructStripeEvent(payload: Buffer, signature: string): Stripe.Event {
-    console.log(`Payload`, payload);
-
-    try {
-      return this.stripe.webhooks.constructEvent(
-        payload,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET,
-      );
-    } catch (error) {
-      throw new BadRequestException(`Error con el webhook: ${error.message}`);
-    }
+  async getPaymentIntent(
+    paymentIntentId: string,
+  ): Promise<Stripe.PaymentIntent> {
+    return await this.stripe.paymentIntents.retrieve(paymentIntentId);
   }
 
-  async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-    console.log('Inside handleCheckoutSessionCompleted, session:', session);
+  async findOrderBySessionId(sessionId: string) {
+    return await this.orderService.findOrderBySessionId(sessionId);
+  }
 
+  async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session | any) {
+    console.log('Inside handleCheckoutSessionCompleted, session:', session);
     let orderId = session.metadata?.orderId;
     console.log('OrderId from metadata:', orderId);
 
     if (!orderId) {
       const order = await this.orderService.findOrderBySessionId(session.id);
-
+      console.log('Order found by session id:', order);
       if (!order) {
         throw new BadRequestException(
           'No se ha encontrado la orden asociada a la session id',
@@ -98,28 +93,21 @@ export class PaymentService {
       }
       orderId = order.id;
     }
+    console.log('Using orderId:', orderId);
 
     const order = await this.orderService.getOrderById(orderId);
-
+    console.log('Order fetched by orderId:', order);
     if (order) {
       const userId =
         typeof order.userId === 'object' ? order.userId.id : order.userId;
       console.log('Updating user with ID:', userId);
-
       const updateResult = await this.usersService.updateUser(userId, {
         isPremium: true,
       });
       console.log('Update result:', updateResult);
-
       return updateResult;
     } else {
       throw new NotFoundException('No se ha encontrado la orden');
     }
-  }
-
-  async getPaymentIntent(
-    paymentIntentId: string,
-  ): Promise<Stripe.PaymentIntent> {
-    return this.stripe.paymentIntents.retrieve(paymentIntentId);
   }
 }
