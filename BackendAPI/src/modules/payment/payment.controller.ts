@@ -9,41 +9,66 @@ import {
 import { PaymentService } from './payment.service';
 import { Request, Response } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Public } from 'src/decorators/public-routes/public-routes.decorator';
+import Stripe from 'stripe';
 
 @Controller('payments')
 export class PaymentController {
+  private stripe: Stripe;
   constructor(private readonly paymentService: PaymentService) {}
 
+  @Public()
   @Post('webhook')
-  @ApiBearerAuth()
+  // @ApiBearerAuth()
   async handleStripeWebhook(
     @Req() req: RawBodyRequest<Request>,
     @Res() res: Response,
   ) {
-    let rawBody: string;
-    if (Buffer.isBuffer(req.rawBody)) {
-      rawBody = req.rawBody.toString();
-    } else {
-      rawBody = req.rawBody as string;
-    }
-    if (!req.rawBody) {
-      console.error('No rawBody found on request!');
-      throw new BadRequestException('No raw body available');
-    }
-    const sigHeader = req.headers['stripe-signature'];
-    if (!sigHeader) {
-      throw new BadRequestException('Missing stripe-signature header');
-    }
-    const sig = sigHeader.toString();
     let event;
     try {
-      event = this.paymentService.constructStripeEvent(req.rawBody, sig);
-      if (event.type === 'checkout.session.completed') {
-        const session = event.data.object as any;
-        await this.paymentService.handleCheckoutSessionCompleted(session);
-      }
+      const rawBody = Buffer.isBuffer(req.rawBody)
+        ? req.rawBody.toString()
+        : (req.rawBody as string);
+      event = JSON.parse(rawBody);
     } catch (error) {
       throw new BadRequestException(`Error en el webhook: ${error.message}`);
+    }
+    console.log('Event type:', event.type);
+
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      await this.paymentService.handleCheckoutSessionCompleted(session);
+      console.log('handleCheckoutSessionCompleted was triggered.');
+    } else if (event.type === 'charge.updated') {
+      const charge = event.data.object;
+      console.log('Charge updated event received:', charge);
+      let orderId = charge.metadata?.orderId;
+      if (!orderId && charge.payment_intent) {
+        try {
+          const paymentIntent = await this.paymentService.getPaymentIntent(
+            charge.payment_intent,
+          );
+          console.log(
+            'Retrieved PaymentIntent metadata:',
+            paymentIntent.metadata,
+          );
+          orderId = paymentIntent.metadata.orderId;
+        } catch (error) {
+          console.error('Error retrieving PaymentIntent:', error);
+        }
+        if (!orderId) {
+          console.warn(
+            'charge.updated event missing orderId in metadata even after retrieving PaymentIntent',
+          );
+        } else {
+          await this.paymentService.handleCheckoutSessionCompleted({
+            metadata: { orderId },
+            id: charge.id,
+          } as unknown as Stripe.Checkout.Session);
+        }
+      }
+    } else {
+      console.log('Unhandled event type:', event.type);
     }
 
     res.status(200).json({ received: true });
