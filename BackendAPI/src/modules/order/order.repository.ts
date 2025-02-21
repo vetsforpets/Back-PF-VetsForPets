@@ -122,8 +122,9 @@ export class OrderRepository {
   }
 
   async findOrderBySessionId(sessionId: string): Promise<Order | undefined> {
-    return await this.orderRepository.findOne({
-      where: { sessionId },
-    });
+    const order = await this.orderRepository.findOne({ where: { sessionId } });
+    console.log('findOrderBySessionId: sessionId:', sessionId, 'Order:', order);
+    return order;
   }
+  
 }
