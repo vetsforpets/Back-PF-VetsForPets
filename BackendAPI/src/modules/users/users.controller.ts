@@ -4,11 +4,11 @@ import { ApiBearerAuth, ApiConflictResponse, ApiInternalServerErrorResponse, Api
 import { Users } from './entity/users.entity';
 import { Request as ExpressRequest } from 'express'
 import { UpdateUserDto } from './dto/update.user.dto';
-import { PetsAssociatedException } from '../common/petAssociatedException';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { Role } from '../common/enums/roles.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Admin } from 'src/decorators/roles/admin.decorator';
+import { PetsAssociatedException } from '../common/exceptions/petAssociatedException';
 
 
 @ApiTags('Users')

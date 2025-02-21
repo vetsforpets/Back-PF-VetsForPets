@@ -23,13 +23,13 @@ export class PetShop {
   @Column()
   email: string;
 
-  @Column()
+  @Column({nullable: true})
   veterinarian: string;
 
-  @Column()
+  @Column({nullable: true})
   password: string;
 
-  @Column()
+  @Column({nullable: true})
   phoneNumber: string;
 
   @Column({ type: 'boolean' })
@@ -53,7 +53,7 @@ export class PetShop {
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
 
-  @Column({ type: 'bigint' })
+  @Column({ type: 'bigint' , nullable: true})
   licenseNumber: number;
 
   @Column({ type: 'json', default: null })
