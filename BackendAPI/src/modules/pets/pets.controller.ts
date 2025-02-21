@@ -26,6 +26,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { Role } from '../common/enums/roles.enum';
 import { Admin } from 'src/decorators/roles/admin.decorator';
+import { JwtAuthGuard } from '../common/guards/auth.guard';
 
 @ApiTags('Pets')
 @UseGuards(RolesGuard)
@@ -44,7 +45,7 @@ export class PetsController {
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Obtener mascota por ID' })
   @ApiOkResponse({ description: 'Detalles de la mascota' })

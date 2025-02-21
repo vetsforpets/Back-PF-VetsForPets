@@ -13,13 +13,13 @@ import { PetShopModule } from './modules/pet-shop/pet-shop.module';
 import { OrderModule } from './modules/order/order.module';
 import { OrderDetailsModule } from './modules/order-details/order-details.module';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './modules/auth/jwt.strategy';
 import { MedicalRecordModule } from './modules/medical-record/medical-record.module';
 import { LocationModule } from './modules/location/location.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { JwtAuthGuard } from './modules/common/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { EmailModule } from './modules/common/email/email.module';
+import { JwtStrategy } from './modules/common/strategies/jwt.strategy';
 
 
 @Module({
