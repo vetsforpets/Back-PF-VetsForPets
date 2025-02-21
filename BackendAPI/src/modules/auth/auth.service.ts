@@ -140,27 +140,30 @@ export class AuthService {
       );
     }
   }
-
-  async oAuthSignIn(oAuthUser: GoogleUserDto) { 
+  async oAuthSignIn(oAuthUser: GoogleUserDto) {
     if (!oAuthUser || !oAuthUser.email || !oAuthUser.given_name || !oAuthUser.family_name) {
-      throw new BadRequestException('Invalid user information from Google.');
+        throw new BadRequestException('Información de usuario inválida desde Google.');
     }
     try {
-      let user = await this.usersRepository.getUserByEmail(oAuthUser.email);
-      if (!user) {
-        const newUser = new Users();
-        newUser.email = oAuthUser.email;
-        newUser.name = oAuthUser.given_name;
-        newUser.lastName = oAuthUser.family_name || "";
-        newUser.imgProfile = oAuthUser.picture || null;
-        user = await this.usersRepository.createNewUser(newUser);
-      }
-      return user;
+        let user = await this.usersRepository.getUserByEmail(oAuthUser.email);
+        if (!user) {
+            const newUser = new Users();
+            newUser.email = oAuthUser.email;
+            newUser.name = oAuthUser.given_name;
+            newUser.lastName = oAuthUser.family_name || "";
+            newUser.imgProfile = oAuthUser.picture || null;
+            newUser.role = Role.USER;
+            newUser.isAdmin = false;
+            user = await this.usersRepository.createNewUser(newUser);
+        } else {
+            user = await this.usersDbRepository.findOne({ where: { email: oAuthUser.email } });
+        }
+        return user;
     } catch (error) {
-      console.error('Error in oAuthSignIn:', error);
-      throw new InternalServerErrorException('Error during OAuth sign-in.');
+        console.error('Error en oAuthSignIn:', error);
+        throw new InternalServerErrorException('Error durante el inicio de sesión con Google.');
     }
-  }
+}
 
   async signUp(newUser: SignUpUserDto) {
     try {
