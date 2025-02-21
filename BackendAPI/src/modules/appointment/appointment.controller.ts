@@ -1,43 +1,47 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { AppointmentService } from "./appointment.service";
 import { AppointmentDto } from "./dto/appointment.dto";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "src/decorators/roles/roles.decorator";
 import { Role } from "../common/enums/roles.enum";
 import { Admin } from "src/decorators/roles/admin.decorator";
+import { Users } from "../users/entity/users.entity";
 
 
 @ApiTags('Appointments')
 @UseGuards(RolesGuard)
+@ApiBearerAuth()
 @Controller('appointments')
 export class AppointmentController {
 
     constructor(private readonly appointmentService: AppointmentService) { }
 
-    @Roles(Role.USER)
     @Admin()
+    @Roles(Role.USER)
     @Post('schedule')
-    makeAppointment(@Body() appointment: AppointmentDto) {
-        return this.appointmentService.makeAppointment(appointment)
+    makeAppointment(@Req() req: Request & { user: Partial<Users> }, @Body() appointment: AppointmentDto) {
+
+        const { user } = req
+        return this.appointmentService.makeAppointment(appointment, user.id)
     }
 
-    @Roles(Role.PETSHOP)
     @Admin()
+    @Roles(Role.PETSHOP)
     @Get()
     findAll() {
         return this.appointmentService.findAll()
     }
 
-    @Roles(Role.PETSHOP)
     @Admin()
+    @Roles(Role.PETSHOP)
     @Get(':id')
     findById(@Param('id', ParseUUIDPipe) id: string) {
         return this.appointmentService.findById(id)
     }
 
-    @Roles(Role.PETSHOP, Role.USER)
     @Admin()
+    @Roles(Role.PETSHOP, Role.USER)
     @Put('cancel/:id')
     cancelAppointment(@Param('id', ParseUUIDPipe) id: string) {
         return this.appointmentService.cancelAppointment(id)

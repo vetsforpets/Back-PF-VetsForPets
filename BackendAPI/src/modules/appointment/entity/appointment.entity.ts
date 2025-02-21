@@ -36,7 +36,7 @@ export class Appointment {
 
   @ManyToOne(() => Users, (user) => user.appointments)
   @JoinColumn({ name: 'user_id' })
-  user: Users;
+  user: Partial<Users>;
 
   @ManyToOne(() => Pets, (pets) => pets.appointment)
   pets: Pets;
@@ -48,7 +48,7 @@ export class Appointment {
   @JoinColumn({ name: "medical_record" })
   medicalRecord: MedicalRecord
 
-  @OneToOne(()=> Location, (location)=> location.appointment)
+  @OneToOne(() => Location, (location) => location.appointment)
   @JoinColumn()
   location: Location
 }

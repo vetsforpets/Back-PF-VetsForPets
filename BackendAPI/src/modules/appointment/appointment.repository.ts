@@ -15,15 +15,17 @@ export class AppointmentRepository {
     ) { }
 
 
-    async makeAppointment(appointment: AppointmentDto) {
+    async makeAppointment(appointment: AppointmentDto, userId: string) {
 
-        const user = await this.usersRepository.findOne({ where: { id: appointment.userId } })
+        const user = await this.usersRepository.findOne({ where: { id: userId } })
 
         if (!user) throw new NotFoundException("Usuario no encontrado")
 
         const newAppointment = await this.appointmentRepository.save(appointment)
 
-        newAppointment.user = user
+        const { password, ...rest } = user
+
+        newAppointment.user = rest
 
         await this.appointmentRepository.save(newAppointment)
 
@@ -32,7 +34,7 @@ export class AppointmentRepository {
 
 
     async findAll() {
-        const appointments = await this.appointmentRepository.find()
+        const appointments = await this.appointmentRepository.find({ relations: ['user'] })
 
         if (!appointments) throw new NotFoundException("No existen turnos agendados.")
 
@@ -42,7 +44,7 @@ export class AppointmentRepository {
 
     async findById(id: string) {
 
-        const appointment = await this.appointmentRepository.findOne({ where: { id }, relations: { user: true } })
+        const appointment = await this.appointmentRepository.findOne({ where: { id }, relations: ['user'] })
 
         if (!appointment) throw new NotFoundException("ID inválido o el turno no existe, intenta con un ID válido.")
 

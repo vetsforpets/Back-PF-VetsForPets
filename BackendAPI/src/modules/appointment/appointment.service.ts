@@ -7,8 +7,8 @@ import { AppointmentDto } from "./dto/appointment.dto";
 export class AppointmentService {
     constructor(private readonly appointmentRepository: AppointmentRepository) { }
 
-    makeAppointment(appointment: AppointmentDto) {
-        return this.appointmentRepository.makeAppointment(appointment)
+    makeAppointment(appointment: AppointmentDto, userId: string) {
+        return this.appointmentRepository.makeAppointment(appointment, userId)
     }
 
 
