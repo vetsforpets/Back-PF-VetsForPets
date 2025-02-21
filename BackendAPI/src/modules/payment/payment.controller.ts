@@ -37,9 +37,47 @@ export class PaymentController {
       await this.paymentService.handleCheckoutSessionCompleted(session);
       console.log('Processed checkout.session.completed event.');
     } else if (event.type === 'charge.updated') {
-      console.log(
-        'charge.updated received, ignoring until checkout.session.completed',
-      );
+      const charge = event.data.object;
+      console.log('Charge updated event received:', charge);
+      let orderId = charge.metadata?.orderId;
+      if (!orderId && charge.payment_intent) {
+        try {
+          const paymentIntent = await this.paymentService.getPaymentIntent(
+            charge.payment_intent,
+          );
+          console.log(
+            'Retrieved PaymentIntent metadata:',
+            paymentIntent.metadata,
+          );
+          orderId = paymentIntent.metadata.orderId;
+        } catch (error) {
+          console.error('Error retrieving PaymentIntent:', error);
+        }
+      }
+      if (!orderId) {
+        try {
+          const order = await this.paymentService.findOrderBySessionId(
+            charge.id,
+          );
+          console.log('Fallback lookup order:', order);
+          if (order) {
+            orderId = order.id;
+          }
+        } catch (error) {
+          console.error('Error during fallback order lookup:', error);
+        }
+      }
+      if (!orderId) {
+        console.warn(
+          'charge.updated event missing orderId in metadata and fallback did not find an order. Proceeding without update.',
+        );
+      } else {
+        console.log('Processing order update for orderId:', orderId);
+        await this.paymentService.handleCheckoutSessionCompleted({
+          metadata: { orderId },
+          id: charge.id,
+        } as unknown as Stripe.Checkout.Session);
+      }
     } else {
       console.log('Unhandled event type:', event.type);
     }
