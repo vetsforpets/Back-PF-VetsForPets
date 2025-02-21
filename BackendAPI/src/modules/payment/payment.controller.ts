@@ -26,9 +26,7 @@ export class PaymentController {
       const rawBody = Buffer.isBuffer(req.rawBody)
         ? req.rawBody.toString()
         : (req.rawBody as string);
-      console.log('Webhook raw body:', rawBody);
       event = JSON.parse(rawBody);
-      console.log('Parsed event:', event);
     } catch (error) {
       throw new BadRequestException(`Error en el webhook: ${error.message}`);
     }
@@ -39,41 +37,9 @@ export class PaymentController {
       await this.paymentService.handleCheckoutSessionCompleted(session);
       console.log('Processed checkout.session.completed event.');
     } else if (event.type === 'charge.updated') {
-      const charge = event.data.object;
-      console.log('Charge updated event received:', charge);
-      let orderId = charge.metadata?.orderId;
-      if (!orderId && charge.payment_intent) {
-        try {
-          const paymentIntent = await this.paymentService.getPaymentIntent(
-            charge.payment_intent
-          );
-          console.log('Retrieved PaymentIntent metadata:', paymentIntent.metadata);
-          orderId = paymentIntent.metadata.orderId;
-        } catch (error) {
-          console.error('Error retrieving PaymentIntent:', error);
-        }
-      }
-      if (!orderId) {
-        try {
-          const order = await this.paymentService.findOrderBySessionId(charge.id);
-          console.log('Fallback lookup order:', order);
-          if (order) {
-            orderId = order.id;
-          }
-        } catch (error) {
-          console.error('Error during fallback order lookup:', error);
-        }
-      }
-      if (!orderId) {
-        console.warn(
-          'charge.updated event missing orderId in metadata and fallback did not find an order.'
-        );
-      } else {
-        await this.paymentService.handleCheckoutSessionCompleted({
-          metadata: { orderId },
-          id: charge.id,
-        } as unknown as Stripe.Checkout.Session);
-      }
+      console.log(
+        'charge.updated received, ignoring until checkout.session.completed',
+      );
     } else {
       console.log('Unhandled event type:', event.type);
     }

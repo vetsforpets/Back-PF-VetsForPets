@@ -37,10 +37,8 @@ export class OrderRepository {
         'La orden no se encuentra en la base de datos',
       );
 
-    const { orderDetails, ...orderQuery } = orderFound;
-
     const foundOrderDetails = await this.orderDetailsService.findOneBy(
-      orderQuery,
+      { order: { id: orderFound.id } },
       ['order', 'membership'],
     );
 
