@@ -53,6 +53,11 @@ export class PaymentService {
         metadata: {
           orderId: order.id,
         },
+        payment_intent_data: {
+          metadata: {
+            orderId: order.id,
+          },
+        },
       });
       await this.orderService.updateOrder(order.id, { sessionId: session.id });
 
@@ -64,6 +69,8 @@ export class PaymentService {
   }
 
   constructStripeEvent(payload: Buffer, signature: string): Stripe.Event {
+    console.log(`Payload`, payload);
+
     try {
       return this.stripe.webhooks.constructEvent(
         payload,
@@ -76,9 +83,10 @@ export class PaymentService {
   }
 
   async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-    console.log(session);
-    
-    let orderId = session.metadata.orderId;
+    console.log('Inside handleCheckoutSessionCompleted, session:', session);
+
+    let orderId = session.metadata?.orderId;
+    console.log('OrderId from metadata:', orderId);
 
     if (!orderId) {
       const order = await this.orderService.findOrderBySessionId(session.id);
@@ -92,7 +100,6 @@ export class PaymentService {
     }
 
     const order = await this.orderService.getOrderById(orderId);
-
 
     if (order) {
       const userId =
@@ -108,5 +115,11 @@ export class PaymentService {
     } else {
       throw new NotFoundException('No se ha encontrado la orden');
     }
+  }
+
+  async getPaymentIntent(
+    paymentIntentId: string,
+  ): Promise<Stripe.PaymentIntent> {
+    return this.stripe.paymentIntents.retrieve(paymentIntentId);
   }
 }
