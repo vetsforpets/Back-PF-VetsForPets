@@ -11,11 +11,15 @@ import { Request, Response } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from 'src/decorators/public-routes/public-routes.decorator';
 import Stripe from 'stripe';
+import { OrderService } from '../order/order.service';
 
 @Controller('payments')
 export class PaymentController {
   private stripe: Stripe;
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(
+    private readonly paymentService: PaymentService,
+    private readonly orderService: OrderService,
+  ) {}
 
   @Public()
   @Post('webhook')
@@ -55,17 +59,21 @@ export class PaymentController {
           orderId = paymentIntent.metadata.orderId;
         } catch (error) {
           console.error('Error retrieving PaymentIntent:', error);
-        }
-        if (!orderId) {
-          console.warn(
-            'charge.updated event missing orderId in metadata even after retrieving PaymentIntent',
+          const order = await this.orderService.findOrderBySessionId(
+            event.data.object.id,
           );
-        } else {
-          await this.paymentService.handleCheckoutSessionCompleted({
-            metadata: { orderId },
-            id: charge.id,
-          } as unknown as Stripe.Checkout.Session);
+          if (!order) {
+            console.warn(
+              'No order found via PaymentIntent retrieval or session lookup.',
+            );
+            return;
+          }
+          orderId = order.id;
         }
+        await this.paymentService.handleCheckoutSessionCompleted({
+          metadata: { orderId },
+          id: charge.id,
+        } as unknown as Stripe.Checkout.Session);
       }
     } else {
       console.log('Unhandled event type:', event.type);
