@@ -4,18 +4,12 @@ import { loggerGlobal } from './middlewares/logger.middleware';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
+import { RawBodyMiddleware } from './middlewares/raw.body.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(
-    '/payments/webhook',
-    bodyParser.raw({
-      type: '*/*',
-      verify: (req: any, res, buf) => {
-        req.rawBody = buf;
-      },
-    }),
-  );
+  app.use('/payments/webhook', new RawBodyMiddleware().use);
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

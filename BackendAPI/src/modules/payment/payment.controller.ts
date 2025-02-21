@@ -8,30 +8,74 @@ import {
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Request, Response } from 'express';
+import { Public } from 'src/decorators/public-routes/public-routes.decorator';
+import Stripe from 'stripe';
 
 @Controller('payments')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
+  @Public()
   @Post('webhook')
   async handleStripeWebhook(
     @Req() req: RawBodyRequest<Request>,
     @Res() res: Response,
   ) {
-    const sigHeader = req.headers['stripe-signature'];
-    if (!sigHeader) {
-      throw new BadRequestException('Missing stripe-signature header');
-    }
-    const sig = sigHeader.toString();
     let event;
     try {
-      event = this.paymentService.constructStripeEvent(req.rawBody, sig);
+      const rawBody = Buffer.isBuffer(req.rawBody)
+        ? req.rawBody.toString()
+        : (req.rawBody as string);
+      console.log('Webhook raw body:', rawBody);
+      event = JSON.parse(rawBody);
+      console.log('Parsed event:', event);
     } catch (error) {
       throw new BadRequestException(`Error en el webhook: ${error.message}`);
     }
+    console.log('Event type:', event.type);
+
     if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as any;
+      const session = event.data.object;
       await this.paymentService.handleCheckoutSessionCompleted(session);
+      console.log('Processed checkout.session.completed event.');
+    } else if (event.type === 'charge.updated') {
+      const charge = event.data.object;
+      console.log('Charge updated event received:', charge);
+      let orderId = charge.metadata?.orderId;
+      if (!orderId && charge.payment_intent) {
+        try {
+          const paymentIntent = await this.paymentService.getPaymentIntent(
+            charge.payment_intent
+          );
+          console.log('Retrieved PaymentIntent metadata:', paymentIntent.metadata);
+          orderId = paymentIntent.metadata.orderId;
+        } catch (error) {
+          console.error('Error retrieving PaymentIntent:', error);
+        }
+      }
+      if (!orderId) {
+        try {
+          const order = await this.paymentService.findOrderBySessionId(charge.id);
+          console.log('Fallback lookup order:', order);
+          if (order) {
+            orderId = order.id;
+          }
+        } catch (error) {
+          console.error('Error during fallback order lookup:', error);
+        }
+      }
+      if (!orderId) {
+        console.warn(
+          'charge.updated event missing orderId in metadata and fallback did not find an order.'
+        );
+      } else {
+        await this.paymentService.handleCheckoutSessionCompleted({
+          metadata: { orderId },
+          id: charge.id,
+        } as unknown as Stripe.Checkout.Session);
+      }
+    } else {
+      console.log('Unhandled event type:', event.type);
     }
 
     res.status(200).json({ received: true });
