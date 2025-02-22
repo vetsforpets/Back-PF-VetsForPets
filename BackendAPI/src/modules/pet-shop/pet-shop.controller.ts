@@ -65,7 +65,6 @@ export class PetShopController {
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
   @Roles(Role.PETSHOP)
-  @Admin()
   @Put(':id')
   async updatePetShop(
     @Param('id') id: string,
