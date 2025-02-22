@@ -44,7 +44,6 @@ export class PetShopController {
   @ApiResponse({ status: 200, description: 'Veterinaria encontrada' })
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
-  @Admin()
   @Roles(Role.PETSHOP)
   @Get(':id')
   async findPetShopById(@Param('id') id: string): Promise<PetShop> {
@@ -66,7 +65,6 @@ export class PetShopController {
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
   @Roles(Role.PETSHOP)
-  @Admin()
   @Put(':id')
   async updatePetShop(
     @Param('id') id: string,
