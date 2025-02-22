@@ -85,7 +85,7 @@ export class AuthController {
   @Public()
   petShopSignUp(@Body() newPetShop: SignUpPetShopDto) {
     try {
-      return this.authService.petShopSignUp(newPetShop);
+      return this.authService.signUpPetShop(newPetShop);
     } catch (error) {
       throw new BadRequestException(
         'Ha habido un error con las crendeciales, por favor intente de nuevo',
