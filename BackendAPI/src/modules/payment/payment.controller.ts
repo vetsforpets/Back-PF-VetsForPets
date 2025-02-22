@@ -30,24 +30,17 @@ export class PaymentController {
     } catch (error) {
       throw new BadRequestException(`Error en el webhook: ${error.message}`);
     }
-    console.log('Event type:', event.type);
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       await this.paymentService.handleCheckoutSessionCompleted(session);
-      console.log('Processed checkout.session.completed event.');
     } else if (event.type === 'charge.updated') {
       const charge = event.data.object;
-      console.log('Charge updated event received:', charge);
       let orderId = charge.metadata?.orderId;
       if (!orderId && charge.payment_intent) {
         try {
           const paymentIntent = await this.paymentService.getPaymentIntent(
             charge.payment_intent,
-          );
-          console.log(
-            'Retrieved PaymentIntent metadata:',
-            paymentIntent.metadata,
           );
           orderId = paymentIntent.metadata.orderId;
         } catch (error) {
@@ -59,7 +52,6 @@ export class PaymentController {
           const order = await this.paymentService.findOrderBySessionId(
             charge.id,
           );
-          console.log('Fallback lookup order:', order);
           if (order) {
             orderId = order.id;
           }
@@ -72,7 +64,6 @@ export class PaymentController {
           'charge.updated event missing orderId in metadata and fallback did not find an order. Proceeding without update.',
         );
       } else {
-        console.log('Processing order update for orderId:', orderId);
         await this.paymentService.handleCheckoutSessionCompleted({
           metadata: { orderId },
           id: charge.id,
