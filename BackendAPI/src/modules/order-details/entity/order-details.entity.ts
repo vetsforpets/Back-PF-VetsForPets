@@ -27,6 +27,6 @@ export class OrderDetails {
   @Column()
   paymentMethod: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 , default: null})
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: null })
   price: number;
 }
