@@ -54,9 +54,9 @@ export class PetShopRepository {
     }
   }
 
-  async savePetshop(petshopData: Partial<PetShop>): Promise<PetShop> {
+  async savePetshop(petshopData: PetShop): Promise<PetShop> {
     try {
-      const newPetshop = this.petshopRepository.create(petshopData);
+      const newPetshop = this.petshopRepository.create(petshopData)
       return await this.petshopRepository.save(newPetshop)
     } catch (error) {
       console.error('Error en la creacion de la veterinaria:', error)

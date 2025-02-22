@@ -86,36 +86,33 @@ export class SignUpPetShopDto {
   location: string;
 
   @ApiProperty({ description: 'Número de licencia del veterinario', example: 1234567890 })
-  /**
-   * El numero de licencia del veterinario.
-   * @example 1234564789
-   */
   @IsNumber()
   licenseNumber: number;
   
-  @ApiProperty({ description: 'Año de fundación (YYYY)', example: '2005', pattern: '^\\d{4}$' }) // ApiProperty for Swagger
+  @ApiProperty({ description: 'Año de fundación (YYYY)', example: '2005', pattern: '^\\d{4}$' }) 
   @IsNotEmpty()
   @IsString()
-  @Matches(/^\d{4}$/, { message: 'El año de fundación debe tener 4 dígitos (YYYY).' }) // Validation for YYYY format
+  @Matches(/^\d{4}$/, { message: 'El año de fundación debe tener 4 dígitos (YYYY).' }) 
   foundation: string;
 
-  // /**
-  //  * El horario de atencion de la veterinaria/petshop.
-  //  * @example        
-  //  * "monday": {"opening": "08:00","closure": "18:00"},
-  //  * "tuesday": {"opening": "08:00","closure": "18:00"},
-  //  * "wednesday": {"opening": "08:00","closure": "18:00"},
-  //  * "thursday": {"opening": "08:00","closure": "18:00"},
-  //  * "friday": {"opening": "08:00","closure": "18:00"},
-  //  * "saturday": {"opening": "10:00","closure": "14:00"},
-  //  * "sunday": {"opening": "Closed","closure": "Closed"}
-  //  */
-  // @IsNotEmpty()
-  // @IsObject()
-  // businessHours: {
-  //   [day: string]: {
-  //     opening: string;
-  //     closure: string;
-  //   };
-  // };
+  @ApiProperty({
+    description: 'El horario de atención de la veterinaria/petshop.',
+    example: {
+      monday: { opening: '08:00', closure: '18:00' },
+      tuesday: { opening: '08:00', closure: '18:00' },
+      wednesday: { opening: '08:00', closure: '18:00' },
+      thursday: { opening: '08:00', closure: '18:00' },
+      friday: { opening: '08:00', closure: '18:00' },
+      saturday: { opening: '10:00', closure: '14:00' },
+      sunday: { opening: 'Closed', closure: 'Closed' },
+    },
+  })
+  @IsNotEmpty()
+  @IsObject()
+  businessHours: {
+    [day: string]: {
+      opening: string;
+      closure: string;
+    };
+  };
 }
