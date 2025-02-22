@@ -21,7 +21,7 @@ export class Membership {
   @Column({ type: 'varchar', length: 50, unique: true })
   name: string;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
   @Column('text', { array: true, nullable: false })

@@ -25,8 +25,6 @@ export class PaymentService {
   }
 
   async createCheckoutSession(order: Order, membership: MembershipDto[]) {
-    console.log('Creating checkout session for order ID:', order.id);
-
     try {
       const lineItems = membership.map((item) => ({
         price_data: {
@@ -37,7 +35,7 @@ export class PaymentService {
               ? item.benefits.join(',')
               : item.benefits,
           },
-          unit_amount: item.price * 100,
+          unit_amount: Math.round(item.price * 100),
         },
         quantity: 1,
       }));
@@ -79,13 +77,10 @@ export class PaymentService {
   }
 
   async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session | any) {
-    console.log('Inside handleCheckoutSessionCompleted, session:', session);
     let orderId = session.metadata?.orderId;
-    console.log('OrderId from metadata:', orderId);
 
     if (!orderId) {
       const order = await this.orderService.findOrderBySessionId(session.id);
-      console.log('Order found by session id:', order);
       if (!order) {
         throw new BadRequestException(
           'No se ha encontrado la orden asociada a la session id',
@@ -93,18 +88,14 @@ export class PaymentService {
       }
       orderId = order.id;
     }
-    console.log('Using orderId:', orderId);
 
     const order = await this.orderService.getOrderById(orderId);
-    console.log('Order fetched by orderId:', order);
     if (order) {
       const userId =
         typeof order.userId === 'object' ? order.userId.id : order.userId;
-      console.log('Updating user with ID:', userId);
       const updateResult = await this.usersService.updateUser(userId, {
         isPremium: true,
       });
-      console.log('Update result:', updateResult);
       return updateResult;
     } else {
       throw new NotFoundException('No se ha encontrado la orden');
