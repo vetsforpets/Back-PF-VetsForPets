@@ -66,57 +66,96 @@ export class AuthService {
     return this.jwtService.sign(payload)
   }
 
-  async exchangeCodeForToken(code: string): Promise<{ token: string }> {
+  async exchangeCodeForToken(code: string): Promise<any> {
     try {
-      console.log('Exchanging code for token. Code:', code);
-  
-      const clientId = process.env.GOOGLE_CLIENT_ID;
-      const clientSecret = process.env.GOOGLE_SECRET;
-      const redirectUri = process.env.GOOGLE_CALLBACK_URL;
-  
+      // 1. Exchange code for Google tokens
       const tokenResponse = await axios.post(
         'https://oauth2.googleapis.com/token',
         {
           code,
-          client_id: clientId,
-          client_secret: clientSecret,
-          redirect_uri: redirectUri,
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          redirect_uri: `${process.env.GOOGLE_CALLBACK_URL}/auth/google/callback`,
           grant_type: 'authorization_code',
         },
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
       );
-  
-      const accessToken = tokenResponse.data.access_token;
-  
-      const userInfo = await this.getUserInfo(accessToken);
-  
-      const signedInUser = await this.oAuthSignIn(userInfo);
-  
-      const jwtToken = this.generateJwt(signedInUser);
-  
-      return { token: jwtToken };
-    } catch (error) {
 
-      if (axios.isAxiosError(error) && error.response) {
-        console.error('OAuth Error Details:', error.response.data);
-  
-        if (error.response.data.error === 'invalid_grant') {
-          throw new BadRequestException('Invalid authorization code or redirect URI.');
-        } else if (error.response.data.error === 'invalid_client') {
-          throw new UnauthorizedException('Invalid client credentials.');
-        } else if (error.response.data.error === 'redirect_uri_mismatch') {
-          throw new BadRequestException('Redirect URI mismatch.');
-        }
+      const idToken = tokenResponse.data.id_token;
+
+      // 2. Decode ID token to get user info
+      const decodedToken = this.jwtService.decode(idToken) as any; // Adjust type as needed
+      const googleEmail = decodedToken.email;
+      const googleName = decodedToken.name;
+
+      // 3. Check if user exists in your database
+      const existingUser = await this.usersRepository.getUserByEmail(googleEmail);
+
+      if (existingUser) {
+        const payload = { sub: existingUser.id, email: existingUser.email, role: existingUser.role };
+        const jwtToken = this.jwtService.sign(payload);
+        return { token: jwtToken, statusCode: 200 };
       } else {
-        console.error('General Error:', error);
+        return { needsSignup: true, email: googleEmail, name: googleName, statusCode: 404 };
       }
-        throw new InternalServerErrorException('Failed to exchange code for token.');
+        
+      }
+     catch (error) {
+      console.error('Error in exchangeCodeForToken:', error);
+      return { message: 'Error exchanging code for token', error: 'Bad Request', statusCode: 400 };
     }
   }
+
+  // async exchangeCodeForToken(code: string): Promise<{ token: string }> {
+  //   try {
+  //     console.log('Exchanging code for token. Code:', code);
+  
+  //     const clientId = process.env.GOOGLE_CLIENT_ID;
+  //     const clientSecret = process.env.GOOGLE_SECRET;
+  //     const redirectUri = process.env.GOOGLE_CALLBACK_URL;
+  
+  //     const tokenResponse = await axios.post(
+  //       'https://oauth2.googleapis.com/token',
+  //       {
+  //         code,
+  //         client_id: clientId,
+  //         client_secret: clientSecret,
+  //         redirect_uri: redirectUri,
+  //         grant_type: 'authorization_code',
+  //       },
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/x-www-form-urlencoded',
+  //         },
+  //       }
+  //     );
+  
+  //     const accessToken = tokenResponse.data.access_token;
+  
+  //     const userInfo = await this.getUserInfo(accessToken);
+  
+  //     const signedInUser = await this.oAuthSignIn(userInfo);
+  
+  //     const jwtToken = this.generateJwt(signedInUser);
+  
+  //     return { token: jwtToken };
+  //   } catch (error) {
+
+  //     if (axios.isAxiosError(error) && error.response) {
+  //       console.error('OAuth Error Details:', error.response.data);
+  
+  //       if (error.response.data.error === 'invalid_grant') {
+  //         throw new BadRequestException('Invalid authorization code or redirect URI.');
+  //       } else if (error.response.data.error === 'invalid_client') {
+  //         throw new UnauthorizedException('Invalid client credentials.');
+  //       } else if (error.response.data.error === 'redirect_uri_mismatch') {
+  //         throw new BadRequestException('Redirect URI mismatch.');
+  //       }
+  //     } else {
+  //       console.error('General Error:', error);
+  //     }
+  //       throw new InternalServerErrorException('Failed to exchange code for token.');
+  //   }
+  // }
 
   async getUserInfo(accessToken: string) {
     try {
