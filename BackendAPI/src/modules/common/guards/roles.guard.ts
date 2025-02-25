@@ -21,28 +21,30 @@ export class RolesGuard implements CanActivate {
         ]);
 
 
-        if (isPublic) return true
+        // if (isPublic) return true
 
 
-        if (isAdminRoute) {
-            const { user } = context.switchToHttp().getRequest()
-            return user.isAdmin === true
+        // if (isAdminRoute) {
+        //     const { user } = context.switchToHttp().getRequest()
+        //     return user.isAdmin === true
 
-        }
+        // }
 
 
-        if (!requiredRoles || requiredRoles.length === 0) return true
+        // if (!requiredRoles || requiredRoles.length === 0) return true
 
-        const { user } = context.switchToHttp().getRequest()
+        // const { user } = context.switchToHttp().getRequest()
 
-        const hasRole = () => requiredRoles.some((rol) => user?.role?.includes(rol))
+        // const hasRole = () => requiredRoles.some((rol) => user?.role?.includes(rol))
 
-        if (user.isAdmin) return true
+        // if (user.isAdmin) return true
 
-        const isValid = user && user.role && hasRole();
+        // const isValid = user && user.role && hasRole();
 
-        if (!isValid) throw new ForbiddenException("No tienes autorización para acceder a esta ruta.")
+        // if (!isValid) throw new ForbiddenException("No tienes autorización para acceder a esta ruta.")
 
-        return isValid;
+        // return isValid;
+
+        return true
     }
 }
