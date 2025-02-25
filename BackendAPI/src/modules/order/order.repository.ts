@@ -90,13 +90,21 @@ export class OrderRepository {
   }
 
   async deleteOrder(orderId: string) {
-    const order = await this.orderRepository.findOne({
-      where: { id: orderId },
-    });
-    await this.orderRepository.delete(order);
-    return {
-      mensaje: `La orden del usuario ${order.userId.id} ha sido eliminada`,
-    };
+    try {
+      const order = await this.orderRepository.findOne({
+        where: { id: orderId },
+      });
+      if (!order) {
+        throw new NotFoundException('Orden no encontrada');
+      }
+      await this.orderRepository.delete(order.id); 
+      return {
+        mensaje: `La orden del usuario ${order.userId} ha sido eliminada`,
+      };
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      throw error; 
+    }
   }
 
   async calculateTotal(memberships: MembershipProductDto[]) {
