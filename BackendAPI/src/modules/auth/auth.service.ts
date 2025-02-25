@@ -68,7 +68,12 @@ export class AuthService {
 
   async exchangeCodeForToken(code: string): Promise<any> {
     try {
-      // 1. Exchange code for Google tokens
+      console.log('Exchanging code for token. Code:', code);
+
+      const clientId = process.env.GOOGLE_CLIENT_ID;
+      const clientSecret = process.env.GOOGLE_SECRET;
+      const redirectUri = process.env.GOOGLE_CALLBACK_URL;
+
       const tokenResponse = await axios.post(
         'https://oauth2.googleapis.com/token',
         {
@@ -80,82 +85,33 @@ export class AuthService {
         },
       );
 
-      const idToken = tokenResponse.data.id_token;
+      const accessToken = tokenResponse.data.access_token;
 
-      // 2. Decode ID token to get user info
-      const decodedToken = this.jwtService.decode(idToken) as any; // Adjust type as needed
-      const googleEmail = decodedToken.email;
-      const googleName = decodedToken.name;
+      const userInfo = await this.getUserInfo(accessToken);
 
-      // 3. Check if user exists in your database
-      const existingUser = await this.usersRepository.getUserByEmail(googleEmail);
+      const signedInUser = await this.oAuthSignIn(userInfo);
 
-      if (existingUser) {
-        const payload = { sub: existingUser.id, email: existingUser.email, role: existingUser.role };
-        const jwtToken = this.jwtService.sign(payload);
-        return { token: jwtToken, statusCode: 200 };
+      const jwtToken = this.generateJwt(signedInUser);
+
+      return { token: jwtToken };
+    } catch (error) {
+
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('OAuth Error Details:', error.response.data);
+
+        if (error.response.data.error === 'invalid_grant') {
+          throw new BadRequestException('Invalid authorization code or redirect URI.');
+        } else if (error.response.data.error === 'invalid_client') {
+          throw new UnauthorizedException('Invalid client credentials.');
+        } else if (error.response.data.error === 'redirect_uri_mismatch') {
+          throw new BadRequestException('Redirect URI mismatch.');
+        }
       } else {
-        return { needsSignup: true, email: googleEmail, name: googleName, statusCode: 404 };
+        console.error('General Error:', error);
       }
-        
-      }
-     catch (error) {
-      console.error('Error in exchangeCodeForToken:', error);
-      return { message: 'Error exchanging code for token', error: 'Bad Request', statusCode: 400 };
+      throw new InternalServerErrorException('Failed to exchange code for token.');
     }
   }
-
-  // async exchangeCodeForToken(code: string): Promise<{ token: string }> {
-  //   try {
-  //     console.log('Exchanging code for token. Code:', code);
-  
-  //     const clientId = process.env.GOOGLE_CLIENT_ID;
-  //     const clientSecret = process.env.GOOGLE_SECRET;
-  //     const redirectUri = process.env.GOOGLE_CALLBACK_URL;
-  
-  //     const tokenResponse = await axios.post(
-  //       'https://oauth2.googleapis.com/token',
-  //       {
-  //         code,
-  //         client_id: clientId,
-  //         client_secret: clientSecret,
-  //         redirect_uri: redirectUri,
-  //         grant_type: 'authorization_code',
-  //       },
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/x-www-form-urlencoded',
-  //         },
-  //       }
-  //     );
-  
-  //     const accessToken = tokenResponse.data.access_token;
-  
-  //     const userInfo = await this.getUserInfo(accessToken);
-  
-  //     const signedInUser = await this.oAuthSignIn(userInfo);
-  
-  //     const jwtToken = this.generateJwt(signedInUser);
-  
-  //     return { token: jwtToken };
-  //   } catch (error) {
-
-  //     if (axios.isAxiosError(error) && error.response) {
-  //       console.error('OAuth Error Details:', error.response.data);
-  
-  //       if (error.response.data.error === 'invalid_grant') {
-  //         throw new BadRequestException('Invalid authorization code or redirect URI.');
-  //       } else if (error.response.data.error === 'invalid_client') {
-  //         throw new UnauthorizedException('Invalid client credentials.');
-  //       } else if (error.response.data.error === 'redirect_uri_mismatch') {
-  //         throw new BadRequestException('Redirect URI mismatch.');
-  //       }
-  //     } else {
-  //       console.error('General Error:', error);
-  //     }
-  //       throw new InternalServerErrorException('Failed to exchange code for token.');
-  //   }
-  // }
 
   async getUserInfo(accessToken: string) {
     try {
@@ -181,28 +137,28 @@ export class AuthService {
   }
   async oAuthSignIn(oAuthUser: GoogleUserDto) {
     if (!oAuthUser || !oAuthUser.email || !oAuthUser.given_name || !oAuthUser.family_name) {
-        throw new BadRequestException('Información de usuario inválida desde Google.');
+      throw new BadRequestException('Información de usuario inválida desde Google.');
     }
     try {
-        let user = await this.usersRepository.getUserByEmail(oAuthUser.email);
-        if (!user) {
-            const newUser = new Users();
-            newUser.email = oAuthUser.email;
-            newUser.name = oAuthUser.given_name;
-            newUser.lastName = oAuthUser.family_name || "";
-            newUser.imgProfile = oAuthUser.picture || null;
-            newUser.role = Role.USER;
-            newUser.isAdmin = false;
-            user = await this.usersRepository.createNewUser(newUser);
-        } else {
-            user = await this.usersDbRepository.findOne({ where: { email: oAuthUser.email } });
-        }
-        return user;
+      let user = await this.usersRepository.getUserByEmail(oAuthUser.email);
+      if (!user) {
+        const newUser = new Users();
+        newUser.email = oAuthUser.email;
+        newUser.name = oAuthUser.given_name;
+        newUser.lastName = oAuthUser.family_name || "";
+        newUser.imgProfile = oAuthUser.picture || null;
+        newUser.role = Role.USER;
+        newUser.isAdmin = false;
+        user = await this.usersRepository.createNewUser(newUser);
+      } else {
+        user = await this.usersDbRepository.findOne({ where: { email: oAuthUser.email } });
+      }
+      return user;
     } catch (error) {
-        console.error('Error en oAuthSignIn:', error);
-        throw new InternalServerErrorException('Error durante el inicio de sesión con Google.');
+      console.error('Error en oAuthSignIn:', error);
+      throw new InternalServerErrorException('Error durante el inicio de sesión con Google.');
     }
-}
+  }
 
   async signUp(newUser: SignUpUserDto) {
     try {
@@ -266,59 +222,65 @@ export class AuthService {
     }
   }
 
-  async petShopSignUp(newPetShop: SignUpPetShopDto) {
+  async signUpPetShop(newPetShop: SignUpPetShopDto) {
     try {
-      const existingPetshopEmailFound = await this.petShopRepository.getPetShopByEmail(
+      const emailFound = await this.petShopRepository.getPetShopByEmail(
         newPetShop.email,
       );
-      const existingUserEmailFound = await this.usersRepository.getUserByEmail(
-        newPetShop.email
-      )
-
-      if (existingPetshopEmailFound || existingUserEmailFound) {
+      if (emailFound) {
         throw new BadRequestException(
           'El correo electronico ya esta registrado',
         );
       }
-
       if (newPetShop.password !== newPetShop.confirmPassword) {
         throw new BadRequestException('Las contraseñas no coinciden.');
       }
-
       const hashedPassword = await bcrypt.hash(newPetShop.password, 10);
       if (!hashedPassword) {
         throw new BadRequestException('No se pudo encriptar la contraseña.');
       }
 
-      await this.petShopRepository.savePetshop({
-        ...newPetShop,
-        password: hashedPassword,
+      const petShopEntity = new PetShop();
+      petShopEntity.email = newPetShop.email;
+      petShopEntity.name = newPetShop.name;
+      petShopEntity.veterinarian = newPetShop.veterinarian;
+      petShopEntity.password = hashedPassword;
+      petShopEntity.phoneNumber = newPetShop.phoneNumber;
+      petShopEntity.imgProfile = newPetShop.imgProfile;
+      petShopEntity.is24Hours = newPetShop.is24Hours;
+      petShopEntity.location = newPetShop.location;
+      petShopEntity.foundation = newPetShop.foundation;
+      petShopEntity.licenseNumber = newPetShop.licenseNumber;
+      petShopEntity.businessHours = newPetShop.businessHours;
+      petShopEntity.role = Role.PETSHOP;
+      petShopEntity.isAdmin = false;
+      petShopEntity.createdAt = new Date();
 
-      });
+      await this.petShopRepository.savePetshop(petShopEntity);
 
-      const { password, confirmPassword, ...petShopWithOutPassword } =
-        newPetShop;
+      const { password, confirmPassword, ...petShopWithOutPassword } = newPetShop;
 
       try {
         const emailDto: sendEmailDto = {
           recipients: newPetShop.email,
           subject: '¡Bienvenido(a) a VetsForPets!',
           html: `
-            <p>¡Hola ${newPetShop.name}!</p>
-            <p>¡Gracias por registrar tu veterinaria/petShop en VetsForPets!</p>
-            <p>¡Esperamos verte pronto!</p>
-            <p>Atentamente,<br>El equipo de VetsForPets</p>
-          `}
+                    <p>¡Hola ${newPetShop.name}!</p>  
+                    <p>¡Gracias por registrarte en VetsForPets!</p>
+                    <p>¡Esperamos verte pronto!</p>
+                    <p>Atentamente,<br>El equipo de VetsForPets</p>
+                `,
+        };
         await this.emailService.sendEmail(emailDto)
       } catch (error) {
-        console.error('Error al enviar el email:', error)
+        console.error("Error al enviar el email:", error);
       }
       return {
-        success: 'La veterinaria/petshop ha sido creada exitosamente: ',
+        success: 'Veterinaria registrada exitosamente:',
         petShopWithOutPassword,
       };
     } catch (error) {
-      console.error('Error durante la creacion del usuario:', error);
+      console.error('Error en la creacion de la veterinaria: ', error);
       if (error instanceof BadRequestException) {
         throw error;
       }
@@ -328,6 +290,7 @@ export class AuthService {
       );
     }
   }
+
 
 
   async assignRole(userId: string) {

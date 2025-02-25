@@ -1,6 +1,22 @@
-import { Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  InternalServerErrorException,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { PetShopService } from './pet-shop.service';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PetShop } from './entity/pet-shop.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdatePetShopDto } from './dto/updatePetShop.dto';
@@ -13,7 +29,7 @@ import { Admin } from 'src/decorators/roles/admin.decorator';
 @UseGuards(RolesGuard)
 @Controller('petshop')
 export class PetShopController {
-  constructor(private readonly petShopService: PetShopService) { }
+  constructor(private readonly petShopService: PetShopService) {}
 
   @ApiOperation({ summary: 'Obtener todas las veterinarias' })
   @ApiResponse({ status: 200, description: 'Lista de veterinarias' })
@@ -28,17 +44,19 @@ export class PetShopController {
   @ApiResponse({ status: 200, description: 'Veterinaria encontrada' })
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
-  @Admin()
+  @Roles(Role.PETSHOP)
   @Get(':id')
   async findPetShopById(@Param('id') id: string): Promise<PetShop> {
     try {
       return await this.petShopService.getPetShopById(id);
     } catch (error) {
-      console.error("Error en controlador findPetShopById:", error);
+      console.error('Error en controlador findPetShopById:', error);
       if (error instanceof NotFoundException) {
-        throw error
+        throw error;
       }
-      throw new InternalServerErrorException('Error al obtener la veterinaria.')
+      throw new InternalServerErrorException(
+        'Error al obtener la veterinaria.',
+      );
     }
   }
 
@@ -47,17 +65,21 @@ export class PetShopController {
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
   @Roles(Role.PETSHOP)
-  @Admin()
   @Put(':id')
-  async updatePetShop(@Param('id') id: string, @Body() petShopData: UpdatePetShopDto): Promise<PetShop | undefined> {
+  async updatePetShop(
+    @Param('id') id: string,
+    @Body() petShopData: UpdatePetShopDto,
+  ): Promise<PetShop | undefined> {
     try {
-      return await this.petShopService.updatePetShop(id, petShopData)
+      return await this.petShopService.updatePetShop(id, petShopData);
     } catch (error) {
-      console.error("Error en controlador updatePetShop:", error)
+      console.error('Error en controlador updatePetShop:', error);
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new InternalServerErrorException('Error al actualizar la veterinaria.');
+      throw new InternalServerErrorException(
+        'Error al actualizar la veterinaria.',
+      );
     }
   }
 
@@ -71,11 +93,13 @@ export class PetShopController {
     try {
       return await this.petShopService.deletePetShop(id);
     } catch (error) {
-      console.error("Error en controlador deletePetShop:", error);
+      console.error('Error en controlador deletePetShop:', error);
       if (error instanceof NotFoundException) {
-        throw error
+        throw error;
       }
-      throw new InternalServerErrorException('Error al eliminar la veterinaria.')
+      throw new InternalServerErrorException(
+        'Error al eliminar la veterinaria.',
+      );
     }
   }
 }

@@ -1,8 +1,6 @@
 import {
-  Body,
   Controller,
   Get,
-  Param,
   Post,
   Put,
   Query,
@@ -40,7 +38,7 @@ export class MembershipController {
   }
 
   @Get()
-  @Admin()
+  @Roles(Role.USER)
   @ApiBearerAuth()
   findAll() {
     return this.membershipService.findAll();
