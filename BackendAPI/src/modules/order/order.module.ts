@@ -12,7 +12,6 @@ import { Membership } from '../membership/entity/membership.entity';
 import { MembershipModule } from '../membership/membership.module';
 import { PaymentModule } from '../payment/payment.module';
 import { EmailService } from '../common/email/email.service';
-import { UsersService } from '../users/users.service';
 
 @Module({
   imports: [
@@ -23,7 +22,7 @@ import { UsersService } from '../users/users.service';
     forwardRef(() => PaymentModule),
   ],
   controllers: [OrderController],
-  providers: [OrderService, OrderRepository, EmailService, UsersService],
+  providers: [OrderService, OrderRepository, EmailService],
   exports: [OrderService, OrderRepository],
 })
 export class OrderModule {}

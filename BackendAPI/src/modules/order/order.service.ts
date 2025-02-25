@@ -72,18 +72,18 @@ export class OrderService {
   async deleteOrder(orderId: string) {
     try {
       const orderToDelete = await this.orderRepository.getOrder(orderId)
+      console.log('orderToDelete:', orderToDelete);
       if (!orderToDelete) {
         throw new NotFoundException('Orden no encontrada')
-      }
+      }      
 
-      await this.orderRepository.deleteOrder(orderId);
-
-      if (orderToDelete && orderToDelete.userId && typeof orderToDelete.userId === 'string') {
+      if (orderToDelete.userId) {
         try {
-          const user = await this.userService.getUserById(orderToDelete.userId);
+          const user = await this.userService.getUserById(orderToDelete.userId.id);
+          console.log('user:', user);          
           if (user) {
             const emailDto: sendEmailDto = {
-              recipients: user.email,
+              recipients: user.email, 
               subject: 'Orden Eliminada en VetsForPets',
               html: `
                 <p>¡Hola ${user.name}!</p>
@@ -92,11 +92,14 @@ export class OrderService {
               `,
             };
             await this.emailService.sendEmail(emailDto);
+          } else {
+            console.log('User not found for order ID:', orderId); 
           }
         } catch (emailError) {
           console.error('Error al enviar email de eliminacion de orden de compra: ', emailError)
         }
       }
+      await this.orderRepository.deleteOrder(orderId);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
