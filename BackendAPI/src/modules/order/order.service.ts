@@ -6,10 +6,17 @@ import {
 } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { CreateOrderDto, OrderDto } from './dto/createOrder.dto';
+import { EmailService } from '../common/email/email.service';
+import { sendEmailDto } from '../common/email/dto/create.email.dto';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly orderRepository: OrderRepository) {}
+  constructor(
+    private readonly orderRepository: OrderRepository,
+    private readonly emailService: EmailService,
+    private readonly userService: UsersService
+  ) { }
 
   find() {
     try {
@@ -27,9 +34,29 @@ export class OrderService {
   }
 
 
-  addOrder(orderDto: CreateOrderDto) {
+  async addOrder(orderDto: CreateOrderDto) {
     try {
       const newOrder = this.orderRepository.addOrder(orderDto);
+      if (newOrder && orderDto.userId) {
+        try {
+          const user = await this.userService.getUserById(orderDto.userId);
+          if (user) {
+            const emailDto: sendEmailDto = {
+              recipients: user.email,
+              subject: '¡Nueva Orden Registrada en VetsForPets!',
+              html: `
+                <p>¡Hola ${user.name}!</p>
+                <p>Tu orden ha sido registrada exitosamente en VetsForPets.</p>
+                <p>¡Gracias por confiar en nosotros!</p>
+                <p>Atentamente,<br>El equipo de VetsForPets</p>
+              `,
+            };
+            await this.emailService.sendEmail(emailDto);
+          }
+        } catch (emailError) {
+          console.error('Error al enviar email de creacion de orden de compra: ', emailError)
+        }
+      }
       return newOrder;
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -42,9 +69,34 @@ export class OrderService {
     }
   }
 
-  deleteOrder(orderId: string) {
+  async deleteOrder(orderId: string) {
     try {
-      return this.orderRepository.deleteOrder(orderId);
+      const orderToDelete = await this.orderRepository.getOrder(orderId)
+      if (!orderToDelete) {
+        throw new NotFoundException('Orden no encontrada')
+      }
+
+      await this.orderRepository.deleteOrder(orderId);
+
+      if (orderToDelete && orderToDelete.userId && typeof orderToDelete.userId === 'string') {
+        try {
+          const user = await this.userService.getUserById(orderToDelete.userId);
+          if (user) {
+            const emailDto: sendEmailDto = {
+              recipients: user.email,
+              subject: 'Orden Eliminada en VetsForPets',
+              html: `
+                <p>¡Hola ${user.name}!</p>
+                <p>Tu orden ha sido eliminada de VetsForPets.</p>
+                <p>Atentamente,<br>El equipo de VetsForPets</p>
+              `,
+            };
+            await this.emailService.sendEmail(emailDto);
+          }
+        } catch (emailError) {
+          console.error('Error al enviar email de eliminacion de orden de compra: ', emailError)
+        }
+      }
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -71,7 +123,7 @@ export class OrderService {
     }
   }
 
-  updateOrder(orderId: string, orderDto: OrderDto){
+  updateOrder(orderId: string, orderDto: OrderDto) {
     try {
       const updatedOrder = this.orderRepository.updateOrder(orderId, orderDto)
       return updatedOrder
@@ -86,7 +138,7 @@ export class OrderService {
     }
   }
 
-  findOrderBySessionId(sessionId: string){
+  findOrderBySessionId(sessionId: string) {
     try {
       return this.orderRepository.findOrderBySessionId(sessionId)
     } catch (error) {
