@@ -21,7 +21,22 @@ export class LocationService {
       }
       console.error(error);
       throw new InternalServerErrorException(
-        'Ha ocurrido un error al obtener las coordenadas de la base de datos',
+        'Ha ocurrido un error al obtener las ubicaciones de la base de datos',
+      );
+    }
+  }
+
+  findOneLocation(id: string) {
+    try {
+      const locationFiltered = this.locationRepository.findBy(id);
+      return locationFiltered;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException(
+        `Ha ocurrido un error al recuperar la orden por ID ${id} desde la base de datos`,
       );
     }
   }
