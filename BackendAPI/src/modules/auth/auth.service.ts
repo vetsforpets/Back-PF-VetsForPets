@@ -66,7 +66,7 @@ export class AuthService {
     return this.jwtService.sign(payload)
   }
 
-  async exchangeCodeForToken(code: string): Promise<{ token: string }> {
+  async exchangeCodeForToken(code: string): Promise<{ token: string }>{
     try {
       console.log('Exchanging code for token. Code:', code);
 
@@ -78,16 +78,11 @@ export class AuthService {
         'https://oauth2.googleapis.com/token',
         {
           code,
-          client_id: clientId,
-          client_secret: clientSecret,
-          redirect_uri: redirectUri,
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_SECRET,
+          redirect_uri: `${process.env.GOOGLE_CALLBACK_URL}/auth/google/callback`,
           grant_type: 'authorization_code',
         },
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
       );
 
       const accessToken = tokenResponse.data.access_token;
