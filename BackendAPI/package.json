@@ -47,6 +47,7 @@
     "class-validator": "^0.14.1",
     "cloudinary": "^2.5.1",
     "dotenv": "^16.4.7",
+    "geolib": "^3.3.4",
     "nodemailer": "^6.10.0",
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",

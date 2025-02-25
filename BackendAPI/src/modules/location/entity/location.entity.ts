@@ -22,10 +22,10 @@ export class Location {
   zipCode: number
 
   @Column()
-  latitude: string
+  latitude: number
 
   @Column()
-  longitude: string
+  longitude: number
 
   @OneToOne(()=> Users, (user)=> user.location)
   user: Users
