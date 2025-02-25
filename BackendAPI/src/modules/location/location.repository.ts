@@ -20,7 +20,7 @@ export class LocationRepository {
     const currentLatitude = typeof lat === 'string' ? parseFloat(lat) : lat;
     const currentLongitude = typeof long === 'string' ? parseFloat(long) : long;
 
-    const locations = [];
+    const locations = await this.locationRepository.find();
 
     const nearbyLocations = locations
       .map((location) => {
@@ -43,5 +43,17 @@ export class LocationRepository {
       .filter((item) => item.distance <= radius)
       .sort((a, b) => a.distance - b.distance);
     return nearbyLocations;
+  }
+
+  async save(location: Location): Promise<Location> {
+    return await this.locationRepository.save(location);
+  }
+
+  async find() {
+    return await this.locationRepository.find();
+  }
+
+  async findBy(id: string) {
+    return await this.locationRepository.findOne({ where: { id } });
   }
 }
