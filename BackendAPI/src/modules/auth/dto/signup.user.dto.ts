@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -8,6 +9,9 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Location } from 'src/modules/location/entity/location.entity';
+export type GeolibLongitudeInputValue = number | string;
+export type GeolibLatitudeInputValue = number | string;
 
 export class SignUpUserDto {
   @ApiProperty({
@@ -113,4 +117,7 @@ export class SignUpUserDto {
   @IsOptional()
   @IsString()
   imgProfile?: string;
+
+  @IsArray()
+  location:[{latitude: number, longitude: number}]
 }

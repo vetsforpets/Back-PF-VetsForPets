@@ -60,5 +60,5 @@ export class Users {
 
   @OneToOne(() => Location, (location) => location.user)
   @JoinColumn()
-  location: Location
+  location: Location[]
 }

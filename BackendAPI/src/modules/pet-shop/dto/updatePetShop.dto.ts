@@ -49,11 +49,6 @@ export class UpdatePetShopDto {
   @IsBoolean()
   is24Hours?: boolean;
 
-  @ApiProperty({ description: 'Ubicación de la veterinaria', example: 'Caracas, Venezuela', required: false })
-  @IsOptional()
-  @IsString()
-  location?: string;
-
   @ApiProperty({ description: 'Número de licencia del veterinario', example: 1234567890, required: false })
   @IsOptional()
   @IsNumber()
