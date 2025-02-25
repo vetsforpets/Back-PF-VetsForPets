@@ -72,7 +72,6 @@ export class OrderService {
   async deleteOrder(orderId: string) {
     try {
       const orderToDelete = await this.orderRepository.getOrder(orderId)
-      console.log('orderToDelete:', orderToDelete);
       if (!orderToDelete) {
         throw new NotFoundException('Orden no encontrada')
       }      
@@ -80,7 +79,6 @@ export class OrderService {
       if (orderToDelete.userId) {
         try {
           const user = await this.userService.getUserById(orderToDelete.userId.id);
-          console.log('user:', user);          
           if (user) {
             const emailDto: sendEmailDto = {
               recipients: user.email, 
