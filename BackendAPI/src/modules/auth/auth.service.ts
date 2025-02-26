@@ -39,13 +39,15 @@ export class AuthService {
       const user = await this.usersRepository.getUserByEmail(email)
       if (user && await bcrypt.compare(password, user.password)) {
         const token = this.generateJwt(user)
-        return { success: 'El usuario se ha logueado exitosamente', user, token }
+        const { password: userPassword, ...userWithoutPassword } = user;
+        return { success: 'El usuario se ha logueado exitosamente', user: userWithoutPassword, token };
       }
 
       const petShop = await this.petShopRepository.getPetShopByEmail(email)
       if (petShop && await bcrypt.compare(password, petShop.password)) {
         const token = this.generateJwt(petShop)
-        return { success: 'El usuario se ha logueado exitosamente', user: petShop, token }
+        const { password: petShopPassword, ...petShopWithoutPassword } = petShop;
+        return { success: 'El usuario se ha logueado exitosamente', user: petShopWithoutPassword, token };
       }
       throw new UnauthorizedException('Credenciales inválidas');
 

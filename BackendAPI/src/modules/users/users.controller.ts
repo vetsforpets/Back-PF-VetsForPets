@@ -37,7 +37,6 @@ export class UsersController {
   @Admin()
   @Get(':id')
   getUserById(@Param('id', ParseUUIDPipe) id: string, @Request() req: ExpressRequest & { user: Users }) {
-    console.log(req.user);
     return this.usersService.getUserById(id);
   }
 
