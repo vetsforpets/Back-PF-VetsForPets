@@ -5,6 +5,7 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -33,7 +34,7 @@ export class Location {
   @Column({ type: 'decimal', precision: 10, scale: 7 })
   longitude: number;
 
-  @OneToOne(() => Users, (user) => user.location)
+  @ManyToOne(() => Users, (user) => user.location)
   user: Users;
 
   @ManyToOne(() => PetShop, (petShop) => petShop.location)

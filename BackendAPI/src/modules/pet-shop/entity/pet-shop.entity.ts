@@ -71,6 +71,6 @@ export class PetShop {
   @OneToMany(() => MedicalRecord, (medicalRecord) => medicalRecord.petshop)
   medicalRecords: MedicalRecord[];
 
-  @OneToMany(() => Location, (location) => location.petShop)
+  @OneToMany(() => Location, (location) => location.petShop, {cascade: true})
   location: Location[];
 }

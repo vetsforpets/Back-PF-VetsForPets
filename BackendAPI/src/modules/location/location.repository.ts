@@ -45,8 +45,12 @@ export class LocationRepository {
     return nearbyLocations;
   }
 
-  async save(location: Location): Promise<Location> {
-    return await this.locationRepository.save(location);
+  async save(location: Location | Location[]): Promise<Location | Location[]> {
+    if (Array.isArray(location)) {
+      return this.locationRepository.save(location);
+    } else {
+      return this.locationRepository.save(location);
+    }
   }
 
   async find() {

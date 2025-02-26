@@ -23,11 +23,13 @@ import { PetShop } from '../pet-shop/entity/pet-shop.entity';
 import axios from 'axios';
 import { GoogleUserDto } from './dto/signup.google';
 import { Location } from '../location/entity/location.entity';
+import { LocationService } from '../location/location.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersRepository: UsersRepository,
+    private readonly locationRepository: LocationService,
     private readonly petShopRepository: PetShopRepository,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
@@ -214,6 +216,8 @@ export class AuthService {
 
         return loc;
       });
+
+      // await this.locationRepository.saveLocation(locationEntities);
 
       const userEntity = new Users();
       userEntity.email = newUser.email;

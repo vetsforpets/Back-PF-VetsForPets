@@ -1,9 +1,11 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { LocationRepository } from './location.repository';
+import { Location } from './entity/location.entity';
 
 export type GeolibLongitudeInputValue = number | string;
 export type GeolibLatitudeInputValue = number | string;
@@ -37,6 +39,44 @@ export class LocationService {
       console.error(error);
       throw new InternalServerErrorException(
         `Ha ocurrido un error al recuperar la orden por ID ${id} desde la base de datos`,
+      );
+    }
+  }
+
+  getCurrentLocation(
+    latitude: GeolibLatitudeInputValue,
+    longitude: GeolibLongitudeInputValue,
+    radius: number,
+  ) {
+    try {
+      const currentLoc = this.locationRepository.getCurrentLocation(
+        latitude,
+        longitude,
+        radius,
+      );
+      return currentLoc;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Ha ocurrido un error al recuperar la ubicacion actual del usuario',
+      );
+    }
+  }
+
+  saveLocation(location: Location | Location[]){
+    try {
+      const locationToSave = this.locationRepository.save(location)
+      return locationToSave
+    } catch (error) {
+            if (error instanceof BadRequestException) {
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Ha ocurrido un error al recuperar la ubicacion actual del usuario',
       );
     }
   }
