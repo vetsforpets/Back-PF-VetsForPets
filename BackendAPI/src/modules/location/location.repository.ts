@@ -2,6 +2,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from './entity/location.entity';
 import { Repository } from 'typeorm';
 import * as geolib from 'geolib';
+import { CurrentLocationDto } from './dto/currentLocation.dto';
+import { NotFoundException } from '@nestjs/common';
 export type GeolibLongitudeInputValue = number | string;
 export type GeolibLatitudeInputValue = number | string;
 export type GeolibAltitudeInputValue = number;
@@ -59,5 +61,43 @@ export class LocationRepository {
 
   async findBy(id: string) {
     return await this.locationRepository.findOne({ where: { id } });
+  }
+
+  async findByDistance(center: CurrentLocationDto) {
+    const locations = await this.locationRepository.find();
+    if (locations.length === 0) {
+      throw new NotFoundException(
+        `No ser pudieron encontrar las ubicaciones de la base de datos`,
+      );
+    }
+
+    const locationCoords = locations.map((loc) => ({
+      lat:
+        typeof loc.latitude === 'string'
+          ? parseFloat(loc.latitude)
+          : loc.latitude,
+      lng:
+        typeof loc.longitude === 'string'
+          ? parseFloat(loc.longitude)
+          : loc.longitude,
+    }));
+    const sorted = geolib.orderByDistance(center, locationCoords) as {
+      lat: number;
+      lng: number;
+    }[];
+
+    const nearestCord = sorted[0];
+
+    const tolerance = 0.000001;
+
+    const sortedLocations = locations.find((loc) => {
+      const locLat = Number(loc.latitude);
+      const locLng = Number(loc.longitude);
+      return (
+        Math.abs(locLat - nearestCord.lat) < tolerance &&
+        Math.abs(locLng - nearestCord.lng) < tolerance
+      );
+    });
+    return sortedLocations;
   }
 }

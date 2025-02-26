@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { LocationRepository } from './location.repository';
 import { Location } from './entity/location.entity';
+import { CurrentLocationDto } from './dto/currentLocation.dto';
 
 export type GeolibLongitudeInputValue = number | string;
 export type GeolibLatitudeInputValue = number | string;
@@ -66,17 +67,33 @@ export class LocationService {
     }
   }
 
-  saveLocation(location: Location | Location[]){
+  saveLocation(location: Location | Location[]) {
     try {
-      const locationToSave = this.locationRepository.save(location)
-      return locationToSave
+      const locationToSave = this.locationRepository.save(location);
+      return locationToSave;
     } catch (error) {
-            if (error instanceof BadRequestException) {
+      if (error instanceof BadRequestException) {
         throw error;
       }
       console.error(error);
       throw new InternalServerErrorException(
         'Ha ocurrido un error al recuperar la ubicacion actual del usuario',
+      );
+    }
+  }
+
+  findPetShopsByDistance(center: CurrentLocationDto) {
+    try {
+      const shopsFilteredByDistance =
+        this.locationRepository.findByDistance(center);
+      return shopsFilteredByDistance;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Ha ocurrido un error al organizar las tiendas en orden, el error viene desde la base de datos',
       );
     }
   }
