@@ -49,7 +49,6 @@ export class UsersController {
   @Roles(Role.USER)
   @Put(':id')
   updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() userData: UpdateUserDto, @Request() req: ExpressRequest & { user: Users }) {
-    console.log(req.user);
     return this.usersService.updateUser(id, userData);
   }
 
@@ -68,7 +67,6 @@ export class UsersController {
   @Admin()
   @Delete(':id')
   deleteUser(@Param('id', ParseUUIDPipe) id: string, @Request() req: ExpressRequest & { user: Users }) {
-    console.log(req.user);
     return this.usersService.deleteUser(id);
   }
 
