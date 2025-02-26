@@ -13,6 +13,8 @@ import Stripe from 'stripe';
 
 @Controller('payments')
 export class PaymentController {
+  private stripe: Stripe;
+
   constructor(private readonly paymentService: PaymentService) {}
 
   @Public()
@@ -21,12 +23,20 @@ export class PaymentController {
     @Req() req: RawBodyRequest<Request>,
     @Res() res: Response,
   ) {
+    const signature = req.headers['stripe-signature'];
+    if (!signature) {
+      throw new BadRequestException('Missing stripe-signature header');
+    }
     let event;
+    const rawBody = Buffer.isBuffer(req.rawBody)
+      ? req.rawBody.toString()
+      : (req.rawBody as string);
     try {
-      const rawBody = Buffer.isBuffer(req.rawBody)
-        ? req.rawBody.toString()
-        : (req.rawBody as string);
-      event = JSON.parse(rawBody);
+      event = this.stripe.webhooks.constructEvent(
+        rawBody,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET,
+      );
     } catch (error) {
       throw new BadRequestException(`Error en el webhook: ${error.message}`);
     }
@@ -37,7 +47,7 @@ export class PaymentController {
     } else if (event.type === 'charge.updated') {
       const charge = event.data.object;
       let orderId = charge.metadata?.orderId;
-      if (!orderId && charge.payment_intent) {
+      if (!orderId && charge?.payment_intent) {
         try {
           const paymentIntent = await this.paymentService.getPaymentIntent(
             charge.payment_intent,
