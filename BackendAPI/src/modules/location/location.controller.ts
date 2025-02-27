@@ -3,17 +3,19 @@ import {
   Controller,
   Get,
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { Role } from '../common/enums/roles.enum';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/decorators/public-routes/public-routes.decorator';
-import { CurrentLocationDto } from './dto/currentLocation.dto';
+import { RolesGuard } from '../common/guards/roles.guard';
 export type GeolibLongitudeInputValue = number | string;
 export type GeolibLatitudeInputValue = number | string;
 
 @ApiTags('Location')
+@UseGuards(RolesGuard)
 @Controller('location')
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}

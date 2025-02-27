@@ -119,5 +119,5 @@ export class SignUpUserDto {
   imgProfile?: string;
 
   @IsArray()
-  location?:[{latitude: number, longitude: number}]
+  location: [{ latitude: number; longitude: number }];
 }
