@@ -10,14 +10,23 @@ import { PaymentService } from './payment.service';
 import { Request, Response } from 'express';
 import { Public } from 'src/decorators/public-routes/public-routes.decorator';
 import Stripe from 'stripe';
+import {
+  ApiBadGatewayResponse,
+  ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
 @Controller('payments')
 export class PaymentController {
-
   constructor(private readonly paymentService: PaymentService) {}
 
   @Public()
+  @ApiUnauthorizedResponse({ description: 'No autorizado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
+  @ApiBadRequestResponse({ description: 'La informacion enviada es invalida ' })
   @Post('webhook')
+  @ApiBadGatewayResponse()
   async handleStripeWebhook(
     @Req() req: RawBodyRequest<Request>,
     @Res() res: Response,
@@ -71,11 +80,6 @@ export class PaymentController {
         console.warn(
           'charge.updated event missing orderId in metadata and fallback did not find an order. Proceeding without update.',
         );
-      } else {
-        await this.paymentService.handleCheckoutSessionCompleted({
-          metadata: { orderId },
-          id: charge.id,
-        } as unknown as Stripe.Checkout.Session);
       }
     } else {
       console.log('Unhandled event type:', event.type);

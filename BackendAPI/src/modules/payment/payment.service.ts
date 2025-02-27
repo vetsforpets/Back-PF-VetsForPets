@@ -96,7 +96,6 @@ export class PaymentService {
       const updateResult = await this.usersService.updateUser(userId, {
         isPremium: true,
       });
-      return updateResult;
     } else {
       throw new NotFoundException('No se ha encontrado la orden');
     }
@@ -105,7 +104,6 @@ export class PaymentService {
     rawBody: string,
     signature: string,
   ): Promise<Stripe.Event> {
-    console.log(process.env.STRIPE_WEBHOOK_SECRET);
 
     try {
       return this.stripe.webhooks.constructEvent(
