@@ -206,8 +206,6 @@ export class AuthService {
         return loc;
       });
 
-      // await this.locationRepository.saveLocation(locationEntities);
-
       const userEntity = new Users();
       userEntity.email = newUser.email;
       userEntity.name = newUser.name;
