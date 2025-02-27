@@ -13,7 +13,6 @@ import Stripe from 'stripe';
 
 @Controller('payments')
 export class PaymentController {
-  private stripe: Stripe;
 
   constructor(private readonly paymentService: PaymentService) {}
 
@@ -32,10 +31,9 @@ export class PaymentController {
       ? req.rawBody.toString()
       : (req.rawBody as string);
     try {
-      event = this.stripe.webhooks.constructEvent(
+      event = await this.paymentService.constructStripeEvent(
         rawBody,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET,
+        signature.toString(),
       );
     } catch (error) {
       throw new BadRequestException(`Error en el webhook: ${error.message}`);

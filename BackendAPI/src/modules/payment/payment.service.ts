@@ -101,4 +101,20 @@ export class PaymentService {
       throw new NotFoundException('No se ha encontrado la orden');
     }
   }
+  async constructStripeEvent(
+    rawBody: string,
+    signature: string,
+  ): Promise<Stripe.Event> {
+    console.log(process.env.STRIPE_WEBHOOK_SECRET);
+
+    try {
+      return this.stripe.webhooks.constructEvent(
+        rawBody,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET,
+      );
+    } catch (error) {
+      throw new BadRequestException(`Error en el webhook: ${error.message}`);
+    }
+  }
 }
