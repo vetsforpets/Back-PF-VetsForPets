@@ -1,12 +1,8 @@
 import {
   BadRequestException,
-  Body,
   Controller,
   Get,
   InternalServerErrorException,
-  Param,
-  ParseUUIDPipe,
-  Post,
 } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { Roles } from 'src/decorators/roles/roles.decorator';
@@ -23,9 +19,9 @@ export class LocationController {
   constructor(private readonly locationService: LocationService) {}
   @Public()
   @Get()
-  //   @Roles(Role.PETSHOP, Role.USER)
-  //   @ApiBearerAuth()
-  findAll() {
+  @Roles(Role.PETSHOP, Role.USER)
+  @ApiBearerAuth()
+  findAllLocations() {
     try {
       const locations = this.locationService.findAllLocations();
       return locations;
@@ -39,39 +35,41 @@ export class LocationController {
       );
     }
   }
-  @Public()
-  @Get(':id')
-  findOneLocation(@Param('id', ParseUUIDPipe) locationId: string) {
+  // @Public()
+  // @Post()
+  // getCurrentLocation(@Body() dto: CurrentLocationDto) {
+  //   try {
+  //     const currentLocation = this.locationService.getCurrentLocation(
+  //       dto.latitude,
+  //       dto.longitude,
+  //       dto.radius,
+  //     );
+  //     return currentLocation;
+  //   } catch (error) {
+  //     if (error instanceof BadRequestException) {
+  //       throw error;
+  //     }
+  //     console.error(error);
+  //     throw new InternalServerErrorException(
+  //       'Ha ocurrido al ingresar la informacion de la ubicacion desde el servicio',
+  //     );
+  //   }
+  // }
+
+  @Get('users')
+  @Roles(Role.PETSHOP, Role.USER)
+  @ApiBearerAuth()
+  findUsersArray() {
     try {
-      const locationFiltered = this.locationService.findOneLocation(locationId);
-      return locationFiltered;
+      const locations = this.locationService.findLocationsArray();
+      return locations;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
       }
       console.error(error);
       throw new InternalServerErrorException(
-        `Ha ocurrido un error al recuperar la ubicacion por ID ${locationId} del servicio`,
-      );
-    }
-  }
-  @Public()
-  @Post()
-  getCurrentLocation(@Body() dto: CurrentLocationDto) {
-    try {
-      const currentLocation = this.locationService.getCurrentLocation(
-        dto.latitude,
-        dto.longitude,
-        dto.radius,
-      );
-      return currentLocation;
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      console.error(error);
-      throw new InternalServerErrorException(
-        'Ha ocurrido al ingresar la informacion de la ubicacion desde el servicio',
+        'Ha ocurrido un error al obtener las ubicaciones desde el servicio',
       );
     }
   }

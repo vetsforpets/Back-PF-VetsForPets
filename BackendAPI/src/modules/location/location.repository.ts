@@ -14,38 +14,38 @@ export class LocationRepository {
     private readonly locationRepository: Repository<Location>,
   ) {}
 
-  async getCurrentLocation(
-    lat: GeolibLatitudeInputValue,
-    long: GeolibLongitudeInputValue,
-    radius: number,
-  ): Promise<{ location: Location; distance: number }[]> {
-    const currentLatitude = typeof lat === 'string' ? parseFloat(lat) : lat;
-    const currentLongitude = typeof long === 'string' ? parseFloat(long) : long;
+  // async getCurrentLocation(
+  //   lat: GeolibLatitudeInputValue,
+  //   long: GeolibLongitudeInputValue,
+  //   radius: number,
+  // ): Promise<{ location: Location; distance: number }[]> {
+  //   const currentLatitude = typeof lat === 'string' ? parseFloat(lat) : lat;
+  //   const currentLongitude = typeof long === 'string' ? parseFloat(long) : long;
 
-    const locations = await this.locationRepository.find();
+  //   const locations = await this.locationRepository.find();
 
-    const nearbyLocations = locations
-      .map((location) => {
-        const locLat =
-          typeof location.latitude === 'string'
-            ? parseFloat(location.latitude)
-            : location.latitude;
-        const locLong =
-          typeof location.longitude === 'string'
-            ? parseFloat(location.longitude)
-            : location.longitude;
+  //   const nearbyLocations = locations
+  //     .map((location) => {
+  //       const locLat =
+  //         typeof location.latitude === 'string'
+  //           ? parseFloat(location.latitude)
+  //           : location.latitude;
+  //       const locLong =
+  //         typeof location.longitude === 'string'
+  //           ? parseFloat(location.longitude)
+  //           : location.longitude;
 
-        const distance = geolib.getDistance(
-          { latitude: currentLatitude, longitude: currentLongitude },
-          { latitude: locLat, longitude: locLong },
-        );
+  //       const distance = geolib.getDistance(
+  //         { latitude: currentLatitude, longitude: currentLongitude },
+  //         { latitude: locLat, longitude: locLong },
+  //       );
 
-        return { location, distance };
-      })
-      .filter((item) => item.distance <= radius)
-      .sort((a, b) => a.distance - b.distance);
-    return nearbyLocations;
-  }
+  //       return { location, distance };
+  //     })
+  //     .filter((item) => item.distance <= radius)
+  //     .sort((a, b) => a.distance - b.distance);
+  //   return nearbyLocations;
+  // }
 
   async save(location: Location | Location[]): Promise<Location | Location[]> {
     if (Array.isArray(location)) {
@@ -59,45 +59,46 @@ export class LocationRepository {
     return await this.locationRepository.find();
   }
 
-  async findBy(id: string) {
-    return await this.locationRepository.findOne({ where: { id } });
+  async findLocationsArray(){
+    return await this.locationRepository.find({relations: {user: true}})
   }
 
-  async findByDistance(center: CurrentLocationDto) {
-    const locations = await this.locationRepository.find();
-    if (locations.length === 0) {
-      throw new NotFoundException(
-        `No ser pudieron encontrar las ubicaciones de la base de datos`,
-      );
-    }
+ 
+  // async findByDistance(center: CurrentLocationDto) {
+  //   const locations = await this.locationRepository.find();
+  //   if (locations.length === 0) {
+  //     throw new NotFoundException(
+  //       `No ser pudieron encontrar las ubicaciones de la base de datos`,
+  //     );
+  //   }
 
-    const locationCoords = locations.map((loc) => ({
-      lat:
-        typeof loc.latitude === 'string'
-          ? parseFloat(loc.latitude)
-          : loc.latitude,
-      lng:
-        typeof loc.longitude === 'string'
-          ? parseFloat(loc.longitude)
-          : loc.longitude,
-    }));
-    const sorted = geolib.orderByDistance(center, locationCoords) as {
-      lat: number;
-      lng: number;
-    }[];
+  //   const locationCoords = locations.map((loc) => ({
+  //     lat:
+  //       typeof loc.latitude === 'string'
+  //         ? parseFloat(loc.latitude)
+  //         : loc.latitude,
+  //     lng:
+  //       typeof loc.longitude === 'string'
+  //         ? parseFloat(loc.longitude)
+  //         : loc.longitude,
+  //   }));
+  //   const sorted = geolib.orderByDistance(center, locationCoords) as {
+  //     lat: number;
+  //     lng: number;
+  //   }[];
 
-    const nearestCord = sorted[0];
+  //   const nearestCord = sorted[0];
 
-    const tolerance = 0.000001;
+  //   const tolerance = 0.000001;
 
-    const sortedLocations = locations.find((loc) => {
-      const locLat = Number(loc.latitude);
-      const locLng = Number(loc.longitude);
-      return (
-        Math.abs(locLat - nearestCord.lat) < tolerance &&
-        Math.abs(locLng - nearestCord.lng) < tolerance
-      );
-    });
-    return sortedLocations;
-  }
+  //   const sortedLocations = locations.find((loc) => {
+  //     const locLat = Number(loc.latitude);
+  //     const locLng = Number(loc.longitude);
+  //     return (
+  //       Math.abs(locLat - nearestCord.lat) < tolerance &&
+  //       Math.abs(locLng - nearestCord.lng) < tolerance
+  //     );
+  //   });
+  //   return sortedLocations;
+  // }
 }
