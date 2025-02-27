@@ -44,6 +44,21 @@ export class LocationService {
     }
   }
 
+  findPetShopLocations() {
+    try {
+      const petShopLocations = this.locationRepository.findPetShopsLocations();
+      return petShopLocations;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Ha ocurrido un error al obtener las ubicaciones de la base de datos',
+      );
+    }
+  }
+
   // findOneLocation(id: string) {
   //   try {
   //     const locationFiltered = this.locationRepository.findBy(id);

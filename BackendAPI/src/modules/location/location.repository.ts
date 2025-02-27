@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from './entity/location.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import * as geolib from 'geolib';
 import { CurrentLocationDto } from './dto/currentLocation.dto';
 import { NotFoundException } from '@nestjs/common';
@@ -59,11 +59,17 @@ export class LocationRepository {
     return await this.locationRepository.find();
   }
 
-  async findLocationsArray(){
-    return await this.locationRepository.find({relations: {user: true}})
+  async findLocationsArray() {
+    return await this.locationRepository.find({ relations: { user: true } });
   }
 
- 
+  async findPetShopsLocations() {
+    return await this.locationRepository.find({
+      where: { petShop: Not(IsNull()) },
+      relations: { petShop: true },
+    });
+  }
+
   // async findByDistance(center: CurrentLocationDto) {
   //   const locations = await this.locationRepository.find();
   //   if (locations.length === 0) {

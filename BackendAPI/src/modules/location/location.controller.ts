@@ -9,7 +9,6 @@ import { LocationService } from './location.service';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { Role } from '../common/enums/roles.enum';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Public } from 'src/decorators/public-routes/public-routes.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 export type GeolibLongitudeInputValue = number | string;
 export type GeolibLatitudeInputValue = number | string;
@@ -19,7 +18,6 @@ export type GeolibLatitudeInputValue = number | string;
 @Controller('location')
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
-  @Public()
   @Get()
   @Roles(Role.PETSHOP, Role.USER)
   @ApiBearerAuth()
@@ -75,4 +73,23 @@ export class LocationController {
       );
     }
   }
+
+  @Get('petshops')
+  @Roles(Role.PETSHOP, Role.USER)
+  @ApiBearerAuth()
+  findPetshopsArray(){
+    try {
+      const petshopLocations = this.locationService.findPetShopLocations()
+      return petshopLocations
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Ha ocurrido un error al obtener las ubicaciones desde el servicio',
+      );
+    }
+  }
+
 }

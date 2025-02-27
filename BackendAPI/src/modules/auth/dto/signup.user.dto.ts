@@ -118,6 +118,10 @@ export class SignUpUserDto {
   @IsString()
   imgProfile?: string;
 
+  @ApiProperty({
+    description: 'La ubicacion de residencia del usuario por su latitud y longitud',
+    example: [{latitude: 40.73061, longitude: -73.935242}],
+  })
   @IsArray()
   location: [{ latitude: number; longitude: number }];
 }
