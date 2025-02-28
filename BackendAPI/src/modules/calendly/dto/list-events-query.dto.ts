@@ -1,4 +1,4 @@
-import { IsOptional, IsInt, Min, Max, IsEmail, IsString, IsDateString } from 'class-validator';
+import { IsOptional, IsInt, Min, Max, IsEmail, IsString, IsDateString, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -97,4 +97,13 @@ export class ListEventsQueryDto {
   @IsOptional()
   @IsString()
   user?: string;
+  @ApiProperty({
+    description: 'Filtrar eventos por preguntas específicas.',
+    example: ['¿Cuál es tu nombre?', '¿Cómo te enteraste del evento?'],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  questions?: string[];
 }

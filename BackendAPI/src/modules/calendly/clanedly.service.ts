@@ -27,19 +27,17 @@ export class CalendlyApiService {
         params,
       });
 
-      const events = response.data.collection;
+      let events = response.data.collection;
 
       for (const event of events) {
-        const inviteeEmail = event.invitees?.[0]?.email; 
-
+        const inviteeEmail = event.invitees?.[0]?.email;
         if (inviteeEmail) {
           try {
             const user = await this.usersRepository.findOne({ where: { email: inviteeEmail } });
-
             if (user) {
               event.userId = user.id;
             } else {
-              event.userId = null; 
+              event.userId = null;
             }
           } catch (dbError) {
             console.error('Database error during user lookup:', dbError);
@@ -48,6 +46,16 @@ export class CalendlyApiService {
         } else {
           event.userId = null;
         }
+      }
+
+      if (params?.questions && Array.isArray(params.questions) && params.questions.length > 0) {
+        events = events.filter(event => {
+          if (!event.questions_and_answers) { 
+            return false;
+          }
+          const eventQuestions = event.questions_and_answers.map(qa => qa.question); 
+          return params.questions.every(question => eventQuestions.includes(question));
+        });
       }
 
       return events;
