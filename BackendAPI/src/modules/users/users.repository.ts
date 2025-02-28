@@ -37,7 +37,9 @@ export class UsersRepository {
             return new NotFoundException('El usuario no fue encontrado')
         }
         Object.assign(user, userData)
-        return this.usersRepository.save(user)
+        const updatedUser= await this.usersRepository.save(user)
+        const { password, ...result } = updatedUser;
+        return result;
     }
 
     async deleteUser(id: string): Promise<void> {
