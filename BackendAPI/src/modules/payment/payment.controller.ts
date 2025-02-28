@@ -26,7 +26,6 @@ export class PaymentController {
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBadRequestResponse({ description: 'La informacion enviada es invalida ' })
   @Post('webhook')
-  @ApiBadGatewayResponse()
   async handleStripeWebhook(
     @Req() req: RawBodyRequest<Request>,
     @Res() res: Response,
