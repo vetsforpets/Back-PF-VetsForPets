@@ -273,10 +273,6 @@ export class AuthService {
         const loc = new Location();
         loc.latitude = locDTO.latitude;
         loc.longitude = locDTO.longitude;
-        loc.street = locDTO.street || null;
-        loc.city = locDTO.city || null;
-        loc.state = locDTO.state || null;
-        loc.zipCode = locDTO.zipCode || null;
 
         return loc;
       });
