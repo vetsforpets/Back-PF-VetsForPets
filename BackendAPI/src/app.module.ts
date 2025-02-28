@@ -20,6 +20,7 @@ import { JwtAuthGuard } from './modules/common/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { EmailModule } from './modules/common/email/email.module';
 import { JwtStrategy } from './modules/common/strategies/jwt.strategy';
+import { CalendlyModule } from './modules/calendly/calendly.module';
 
 
 @Module({
@@ -52,7 +53,8 @@ import { JwtStrategy } from './modules/common/strategies/jwt.strategy';
     MedicalRecordModule,
     LocationModule,
     PaymentModule,
-    EmailModule
+    EmailModule,
+    CalendlyModule
   ],
   controllers: [],
   providers: [JwtService, JwtStrategy,
