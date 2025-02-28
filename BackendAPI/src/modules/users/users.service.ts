@@ -4,6 +4,7 @@ import { Users } from './entity/users.entity';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { EmailService } from '../common/email/email.service';
 import { sendEmailDto } from '../common/email/dto/create.email.dto';
+import { Location } from '../location/entity/location.entity';
 
 @Injectable()
 export class UsersService {
@@ -54,7 +55,18 @@ export class UsersService {
 
   async updateUser(id: string, userData: UpdateUserDto): Promise<Partial<Users>> {
     try {
-      const updatedUser = await this.usersRepository.updateUser(id, userData);
+      const locationEntities: Location[] = userData.location.map(locData => {
+        const loc = new Location();
+        loc.latitude = locData.latitude;
+        loc.longitude = locData.longitude;
+        return loc;
+      });
+
+      const userUpdate: Partial<Users> = {
+        ...userData,
+        location: locationEntities,
+      };
+      const updatedUser = await this.usersRepository.updateUser(id, userUpdate);
       if (updatedUser) {
         try {
           const emailDto: sendEmailDto = {
