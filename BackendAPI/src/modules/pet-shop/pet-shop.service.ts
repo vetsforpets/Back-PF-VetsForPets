@@ -50,13 +50,13 @@ export class PetShopService {
         },
       );
 
-      const petshopUpdate: Partial<PetShop> = {
+      const userUpdate: Partial<PetShop> = {
         ...petShopData,
         location: locationEntities,
       };
       const updatedPetShop = await this.petShopRepository.updatePetshop(
         id,
-        petshopUpdate,
+        userUpdate,
       );
 
       if (updatedPetShop) {
