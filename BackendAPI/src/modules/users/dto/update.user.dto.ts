@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsBoolean,
   IsEmail,
   IsOptional,
@@ -83,4 +84,8 @@ export class UpdateUserDto {
   @IsBoolean()
   @IsOptional()
   isAdmin?: boolean;
+
+    @IsArray()
+    @IsOptional()
+    location?: [{ latitude: number; longitude: number }];
 }
