@@ -6,7 +6,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
   Param,
-  Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
@@ -18,7 +17,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PetShop } from './entity/pet-shop.entity';
-import { AuthGuard } from '@nestjs/passport';
 import { UpdatePetShopDto } from './dto/updatePetShop.dto';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from 'src/decorators/roles/roles.decorator';
