@@ -9,6 +9,7 @@ import { Role } from '../common/enums/roles.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Admin } from 'src/decorators/roles/admin.decorator';
 import { PetsAssociatedException } from '../common/exceptions/petAssociatedException';
+import { Public } from 'src/decorators/public-routes/public-routes.decorator';
 
 
 @ApiTags('Users')
@@ -23,18 +24,19 @@ export class UsersController {
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBearerAuth()
   @Admin()
+  @Roles(Role.USER, Role.PETSHOP)
   @Get()
   getAllUsers(@Request() req: ExpressRequest & { user: Users }) {
     return this.usersService.getAllUsers()
   }
-
   @ApiOperation({ summary: 'Obtener usuario por ID' })
   @ApiOkResponse({ description: 'Usuario encontrado' })
   @ApiNotFoundResponse({ description: 'Usuario no encontrado' })
   @ApiUnauthorizedResponse({ description: 'No autorizado' })
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
-  @ApiBearerAuth()
+  @Roles(Role.USER, Role.PETSHOP)
   @Admin()
+  @ApiBearerAuth()
   @Get(':id')
   getUserById(@Param('id', ParseUUIDPipe) id: string, @Request() req: ExpressRequest & { user: Users }) {
     return this.usersService.getUserById(id);
