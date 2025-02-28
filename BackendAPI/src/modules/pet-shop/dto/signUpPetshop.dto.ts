@@ -11,6 +11,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Location } from 'src/modules/location/entity/location.entity';
 
 export class SignUpPetShopDto {
   @ApiProperty({ description: 'Nombre de la veterinaria', example: 'Vets', minLength: 4, maxLength: 20 })
@@ -80,10 +81,8 @@ export class SignUpPetShopDto {
   is24Hours: boolean;
 
 
-  @ApiProperty({ description: 'Ubicación de la veterinaria', example: 'Caracas, Venezuela' })
-  @IsString()
-  @IsNotEmpty()
-  location: string;
+  @ApiProperty({ description: 'Ubicación de la veterinaria'})
+  location: Location[];
 
   @ApiProperty({ description: 'Número de licencia del veterinario', example: 1234567890 })
   @IsNumber()

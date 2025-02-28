@@ -22,17 +22,22 @@ import { Repository } from 'typeorm';
 import { PetShop } from '../pet-shop/entity/pet-shop.entity';
 import axios from 'axios';
 import { GoogleUserDto } from './dto/signup.google';
+import { Location } from '../location/entity/location.entity';
+import { LocationService } from '../location/location.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersRepository: UsersRepository,
+    private readonly locationRepository: LocationService,
     private readonly petShopRepository: PetShopRepository,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
-    @InjectRepository(Users) private readonly usersDbRepository: Repository<Users>,
-    @InjectRepository(PetShop) private readonly petshopDbRepository: Repository<PetShop>
-  ) { }
+    @InjectRepository(Users)
+    private readonly usersDbRepository: Repository<Users>,
+    @InjectRepository(PetShop)
+    private readonly petshopDbRepository: Repository<PetShop>,
+  ) {}
 
   async signIn(email: string, password: string) {
     try {
@@ -50,9 +55,8 @@ export class AuthService {
         return { success: 'El usuario se ha logueado exitosamente', user: petShopWithoutPassword, token };
       }
       throw new UnauthorizedException('Credenciales inválidas');
-
     } catch (error) {
-      console.error("Error en signIn:", error);
+      console.error('Error en signIn:', error);
       throw new UnauthorizedException('Credenciales inválidas');
     }
   }
@@ -63,9 +67,9 @@ export class AuthService {
       email: user.email,
       userType: user instanceof Users ? 'user' : 'petShop',
       role: user.role,
-      isAdmin: user.isAdmin
-    }
-    return this.jwtService.sign(payload)
+      isAdmin: user.isAdmin,
+    };
+    return this.jwtService.sign(payload);
   }
 
   async exchangeCodeForToken(code: string): Promise<{ token: string }>{
@@ -97,12 +101,13 @@ export class AuthService {
 
       return { token: jwtToken };
     } catch (error) {
-
       if (axios.isAxiosError(error) && error.response) {
         console.error('OAuth Error Details:', error.response.data);
 
         if (error.response.data.error === 'invalid_grant') {
-          throw new BadRequestException('Invalid authorization code or redirect URI.');
+          throw new BadRequestException(
+            'Invalid authorization code or redirect URI.',
+          );
         } else if (error.response.data.error === 'invalid_client') {
           throw new UnauthorizedException('Invalid client credentials.');
         } else if (error.response.data.error === 'redirect_uri_mismatch') {
@@ -111,7 +116,9 @@ export class AuthService {
       } else {
         console.error('General Error:', error);
       }
-      throw new InternalServerErrorException('Failed to exchange code for token.');
+      throw new InternalServerErrorException(
+        'Failed to exchange code for token.',
+      );
     }
   }
 
@@ -138,8 +145,15 @@ export class AuthService {
     }
   }
   async oAuthSignIn(oAuthUser: GoogleUserDto) {
-    if (!oAuthUser || !oAuthUser.email || !oAuthUser.given_name || !oAuthUser.family_name) {
-      throw new BadRequestException('Información de usuario inválida desde Google.');
+    if (
+      !oAuthUser ||
+      !oAuthUser.email ||
+      !oAuthUser.given_name ||
+      !oAuthUser.family_name
+    ) {
+      throw new BadRequestException(
+        'Información de usuario inválida desde Google.',
+      );
     }
     try {
       let user = await this.usersRepository.getUserByEmail(oAuthUser.email);
@@ -147,18 +161,22 @@ export class AuthService {
         const newUser = new Users();
         newUser.email = oAuthUser.email;
         newUser.name = oAuthUser.given_name;
-        newUser.lastName = oAuthUser.family_name || "";
+        newUser.lastName = oAuthUser.family_name || '';
         newUser.imgProfile = oAuthUser.picture || null;
         newUser.role = Role.USER;
         newUser.isAdmin = false;
         user = await this.usersRepository.createNewUser(newUser);
       } else {
-        user = await this.usersDbRepository.findOne({ where: { email: oAuthUser.email } });
+        user = await this.usersDbRepository.findOne({
+          where: { email: oAuthUser.email },
+        });
       }
       return user;
     } catch (error) {
       console.error('Error en oAuthSignIn:', error);
-      throw new InternalServerErrorException('Error durante el inicio de sesión con Google.');
+      throw new InternalServerErrorException(
+        'Error durante el inicio de sesión con Google.',
+      );
     }
   }
 
@@ -180,6 +198,14 @@ export class AuthService {
         throw new BadRequestException('No se pudo encriptar la contraseña.');
       }
 
+      const locationEntities: Location[] = newUser.location.map((locDTO) => {
+        const loc = new Location();
+        loc.latitude = locDTO.latitude;
+        loc.longitude = locDTO.longitude;
+
+        return loc;
+      });
+
       const userEntity = new Users();
       userEntity.email = newUser.email;
       userEntity.name = newUser.name;
@@ -188,6 +214,7 @@ export class AuthService {
       userEntity.age = newUser.age;
       userEntity.phoneNumber = newUser.phoneNumber;
       userEntity.imgProfile = newUser.imgProfile;
+      userEntity.location = locationEntities;
 
       await this.usersRepository.createNewUser(userEntity);
 
@@ -204,9 +231,9 @@ export class AuthService {
             <p>Atentamente,<br>El equipo de VetsForPets</p>
           `,
         };
-        await this.emailService.sendEmail(emailDto)
+        await this.emailService.sendEmail(emailDto);
       } catch (error) {
-        console.error("Error al enviar el email:", error);
+        console.error('Error al enviar el email:', error);
       }
       return {
         success: 'Usuario registrado exitosamente:',
@@ -242,6 +269,18 @@ export class AuthService {
         throw new BadRequestException('No se pudo encriptar la contraseña.');
       }
 
+      const locationEntities: Location[] = newPetShop.location.map((locDTO) => {
+        const loc = new Location();
+        loc.latitude = locDTO.latitude;
+        loc.longitude = locDTO.longitude;
+        loc.street = locDTO.street || null;
+        loc.city = locDTO.city || null;
+        loc.state = locDTO.state || null;
+        loc.zipCode = locDTO.zipCode || null;
+
+        return loc;
+      });
+
       const petShopEntity = new PetShop();
       petShopEntity.email = newPetShop.email;
       petShopEntity.name = newPetShop.name;
@@ -250,7 +289,7 @@ export class AuthService {
       petShopEntity.phoneNumber = newPetShop.phoneNumber;
       petShopEntity.imgProfile = newPetShop.imgProfile;
       petShopEntity.is24Hours = newPetShop.is24Hours;
-      petShopEntity.location = newPetShop.location;
+      petShopEntity.location = locationEntities;
       petShopEntity.foundation = newPetShop.foundation;
       petShopEntity.licenseNumber = newPetShop.licenseNumber;
       petShopEntity.businessHours = newPetShop.businessHours;
@@ -260,7 +299,8 @@ export class AuthService {
 
       await this.petShopRepository.savePetshop(petShopEntity);
 
-      const { password, confirmPassword, ...petShopWithOutPassword } = newPetShop;
+      const { password, confirmPassword, ...petShopWithOutPassword } =
+        newPetShop;
 
       try {
         const emailDto: sendEmailDto = {
@@ -273,9 +313,9 @@ export class AuthService {
                     <p>Atentamente,<br>El equipo de VetsForPets</p>
                 `,
         };
-        await this.emailService.sendEmail(emailDto)
+        await this.emailService.sendEmail(emailDto);
       } catch (error) {
-        console.error("Error al enviar el email:", error);
+        console.error('Error al enviar el email:', error);
       }
       return {
         success: 'Veterinaria registrada exitosamente:',
@@ -293,43 +333,45 @@ export class AuthService {
     }
   }
 
-
-
   async assignRole(userId: string) {
-
     const user = await this.petShopRepository.getPetShopById(userId);
 
-    if (!user) throw new NotFoundException("ID de usuario inválido")
+    if (!user) throw new NotFoundException('ID de usuario inválido');
 
     if (user.role === Role.USER) {
-      user.role = Role.PETSHOP
-      await this.petshopDbRepository.save(user)
+      user.role = Role.PETSHOP;
+      await this.petshopDbRepository.save(user);
     } else {
-      throw new BadRequestException("Este usuario ya es veterinario!")
+      throw new BadRequestException('Este usuario ya es veterinario!');
     }
 
-    return { message: "Rol de veterinario asignado con éxito!" }
+    return { message: 'Rol de veterinario asignado con éxito!' };
   }
-
 
   async assignAdmin(userId: string) {
-    const user = await this.usersDbRepository.findOne({ where: { id: userId }, })
+    const user = await this.usersDbRepository.findOne({
+      where: { id: userId },
+    });
 
-    if (!user) throw new NotFoundException("ID de usuario inválido")
+    if (!user) throw new NotFoundException('ID de usuario inválido');
 
     if (user.isAdmin) {
-      user.isAdmin = false
-      await this.usersDbRepository.save(user)
+      user.isAdmin = false;
+      await this.usersDbRepository.save(user);
 
-      return { message: `Se han quitado los permisos de administrador al usuario ${user.name}`, isAdmin: user.isAdmin }
+      return {
+        message: `Se han quitado los permisos de administrador al usuario ${user.name}`,
+        isAdmin: user.isAdmin,
+      };
     }
 
-    user.isAdmin = true
+    user.isAdmin = true;
 
-    await this.usersDbRepository.save(user)
+    await this.usersDbRepository.save(user);
 
-    return { message: `Se han otorgado permisos de administrador al usuario ${user.name}!`, isAdmin: user.isAdmin }
+    return {
+      message: `Se han otorgado permisos de administrador al usuario ${user.name}!`,
+      isAdmin: user.isAdmin,
+    };
   }
-
-
 }

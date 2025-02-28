@@ -14,10 +14,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtGuardStrategy } from '../common/strategies/jwt.auth.strategy';
 import { JwtGuard } from '../common/guards/jwt.auth.guard';
 import { GoogleStrategy } from '../common/strategies/google.oauth.strategy';
+import { Location } from '../location/entity/location.entity';
+import { LocationModule } from '../location/location.module';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users, PetShop]), UsersModule, PetShopModule, EmailModule,
+  imports: [TypeOrmModule.forFeature([Users, PetShop, Location]), UsersModule, PetShopModule, EmailModule, LocationModule,
   JwtModule.registerAsync({
     useFactory: () => ({
       secret: process.env.JWT_SECRET,

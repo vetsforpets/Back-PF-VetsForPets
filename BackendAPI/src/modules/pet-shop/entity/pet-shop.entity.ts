@@ -1,5 +1,6 @@
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
 import { Role } from 'src/modules/common/enums/roles.enum';
+import { Location } from 'src/modules/location/entity/location.entity';
 import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
 import { Membership } from 'src/modules/membership/entity/membership.entity';
 import {
@@ -23,13 +24,13 @@ export class PetShop {
   @Column()
   email: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   veterinarian: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   password: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   phoneNumber: string;
 
   @Column({ type: 'boolean' })
@@ -41,19 +42,20 @@ export class PetShop {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ default: null })
-  location: string;
-
   @Column({ type: 'varchar', default: null })
-  foundation: string
+  foundation: string;
 
-  @Column({ type: 'enum', enum: [Role.PETSHOP, Role.USER], default: Role.PETSHOP })
-  role: Role
+  @Column({
+    type: 'enum',
+    enum: [Role.PETSHOP, Role.USER],
+    default: Role.PETSHOP,
+  })
+  role: Role;
 
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
 
-  @Column({ type: 'bigint' , nullable: true})
+  @Column({ type: 'bigint', nullable: true })
   licenseNumber: number;
 
   @Column({ type: 'json', default: null })
@@ -69,6 +71,6 @@ export class PetShop {
   @OneToMany(() => MedicalRecord, (medicalRecord) => medicalRecord.petshop)
   medicalRecords: MedicalRecord[];
 
-  // @OneToMany(() => Location, (location) => location.user)
-  // location: Location[];
+  @OneToMany(() => Location, (location) => location.petShop, {cascade: true})
+  location: Location[];
 }

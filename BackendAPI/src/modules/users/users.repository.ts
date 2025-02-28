@@ -16,7 +16,7 @@ export class UsersRepository {
     }
 
     async getUserById(id: string): Promise<Users | null> {
-        return this.usersRepository.findOne({ where: { id }, relations: ['pets'] })
+        return this.usersRepository.findOne({ where: { id }, relations: ['pets', 'location'] })
     }
 
     async getUserByEmail(email: string) {
