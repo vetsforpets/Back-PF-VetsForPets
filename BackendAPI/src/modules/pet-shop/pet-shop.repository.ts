@@ -30,6 +30,7 @@ export class PetShopRepository {
           foundation: true,
           role: true,
         },
+        relations: ['location']
       });
     } catch (error) {
       console.error('Error en la carga de veterinarias', error);
