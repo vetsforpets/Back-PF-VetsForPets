@@ -84,8 +84,12 @@ export class UpdateUserDto {
   @IsBoolean()
   @IsOptional()
   isAdmin?: boolean;
-
-    @IsArray()
-    @IsOptional()
-    location?: [{ latitude: number; longitude: number }];
+  
+  @ApiProperty({
+    description: 'Ubicación de la veterinaria',
+    example: [{ latitude: 40.73061, longitude: -73.935242 }],
+  })
+  @IsArray()
+  @IsOptional()
+  location?: [{ latitude: number; longitude: number }];
 }
