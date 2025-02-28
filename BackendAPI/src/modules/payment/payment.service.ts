@@ -93,7 +93,7 @@ export class PaymentService {
     if (order) {
       const userId =
         typeof order.userId === 'object' ? order.userId.id : order.userId;
-      const updateResult = await this.usersService.updateUser(userId, {
+      const updateResult = await this.usersService.updateUserWithOutLocation(userId, {
         isPremium: true,
       });
     } else {
