@@ -24,6 +24,7 @@ export class UsersController {
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBearerAuth()
   @Admin()
+  @Roles(Role.USER, Role.PETSHOP)
   @Get()
   getAllUsers(@Request() req: ExpressRequest & { user: Users }) {
     return this.usersService.getAllUsers()
@@ -34,8 +35,8 @@ export class UsersController {
   @ApiUnauthorizedResponse({ description: 'No autorizado' })
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @Roles(Role.USER, Role.PETSHOP)
-  @ApiBearerAuth()
   @Admin()
+  @ApiBearerAuth()
   @Get(':id')
   getUserById(@Param('id', ParseUUIDPipe) id: string, @Request() req: ExpressRequest & { user: Users }) {
     return this.usersService.getUserById(id);
