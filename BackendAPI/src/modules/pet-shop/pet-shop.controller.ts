@@ -33,6 +33,7 @@ export class PetShopController {
   @ApiResponse({ status: 200, description: 'Lista de veterinarias' })
   @ApiBearerAuth()
   @Admin()
+  @Roles(Role.PETSHOP)
   @Get()
   async getAllPetshops(): Promise<PetShop[]> {
     return await this.petShopService.getAllPetShops();
