@@ -1,5 +1,7 @@
 import { registerAs } from '@nestjs/config';
 
 export default registerAs('calendly', () => ({
-  apiToken: process.env.CALENDLY_API_TOKEN,
+  layusApiToken: process.env.LAYUS_PETSHOP_API_TOKEN,
+  drPasoApiToken: process.env.DRPASO_PETSHOP_API_TOKEN,
+  alfredoApiToken: process.env.ALFREDO_PETSHOP_API_TOKEN,
 }));

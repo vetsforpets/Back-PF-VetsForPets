@@ -14,7 +14,9 @@ export class CalendlyApiService {
     private readonly configService: ConfigService,
     @InjectRepository(Users) private readonly usersRepository: Repository<Users>,
   ) {
-    this.calendlyApiToken = this.configService.get<string>('CALENDLY_API_TOKEN');
+    this.calendlyApiToken = this.configService.get<string>('LAYUS_PETSHOP_API_TOKEN');
+    this.calendlyApiToken = this.configService.get<string>('ALFREDO_PETSHOP_API_TOKEN');
+    this.calendlyApiToken = this.configService.get<string>('DRPASO_PETSHOP_API_TOKEN');
   }
 
   async listEvents(params?: any): Promise<any> {
@@ -23,7 +25,7 @@ export class CalendlyApiService {
         headers: {
           Authorization: `Bearer ${this.calendlyApiToken}`,
           'Content-Type': 'application/json',
-        },
+        }, 
         params,
       });
 
