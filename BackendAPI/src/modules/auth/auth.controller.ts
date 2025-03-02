@@ -22,6 +22,7 @@ import { Response } from 'express';
 import { Public } from 'src/decorators/public-routes/public-routes.decorator';
 import { Admin } from 'src/decorators/roles/admin.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
+import { GoogleCallbackDto } from './dto/google.callback.dto';
 
 
 @ApiTags('Auth')
@@ -36,23 +37,20 @@ export class AuthController {
   async googleAuthCallback(@Req() req, @Res() res: Response) {}
 
   @Public()
-  @Get('google/callback')
-  async googleRedirect(@Req() req, @Res() res: Response) {
+  @Post('google/callback')
+  async googleRedirect(@Body() body: GoogleCallbackDto, @Res() res: Response) { 
     try {
-      const code = req.query.code as string;
-      console.log('Authorization code:', code);
-      if (!code) {
-        throw new BadRequestException('Codigo de autorizacion no encontrado');
+      console.log('Authorization code:', body.code);
+      if (!body.code) {
+        throw new HttpException('Codigo de autorizacion no encontrado', HttpStatus.BAD_REQUEST);
       }
-      
-      const jwtGeneratedToken = await this.authService.exchangeCodeForToken(code);
-      console.log('JWT generated:', jwtGeneratedToken); 
-      const redirectUrl = `${process.env.GOOGLE_CALLBACK_URL}/oauth?token=${jwtGeneratedToken.token}`;
-      res.redirect(redirectUrl);
+
+      const jwtGeneratedToken = await this.authService.exchangeCodeForToken(body.code);
+      console.log('JWT generated:', jwtGeneratedToken);
+      res.send(jwtGeneratedToken);
     } catch (err) {
-      console.error('OAuth error:', err); 
-      const errorRedirect = `${process.env.GOOGLE_CALLBACK_URL}/oauth/error?message=${encodeURIComponent(err.message)}`;
-      res.redirect(errorRedirect);
+      console.error('OAuth error:', err);
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

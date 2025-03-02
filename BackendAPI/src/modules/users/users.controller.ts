@@ -9,6 +9,7 @@ import { Role } from '../common/enums/roles.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Admin } from 'src/decorators/roles/admin.decorator';
 import { PetsAssociatedException } from '../common/exceptions/petAssociatedException';
+import { Public } from 'src/decorators/public-routes/public-routes.decorator';
 
 
 @ApiTags('Users')
@@ -23,21 +24,21 @@ export class UsersController {
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBearerAuth()
   @Admin()
+  @Roles(Role.USER, Role.PETSHOP)
   @Get()
   getAllUsers(@Request() req: ExpressRequest & { user: Users }) {
     return this.usersService.getAllUsers()
   }
-
   @ApiOperation({ summary: 'Obtener usuario por ID' })
   @ApiOkResponse({ description: 'Usuario encontrado' })
   @ApiNotFoundResponse({ description: 'Usuario no encontrado' })
   @ApiUnauthorizedResponse({ description: 'No autorizado' })
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
-  @ApiBearerAuth()
+  @Roles(Role.USER, Role.PETSHOP)
   @Admin()
+  @ApiBearerAuth()
   @Get(':id')
   getUserById(@Param('id', ParseUUIDPipe) id: string, @Request() req: ExpressRequest & { user: Users }) {
-    console.log(req.user);
     return this.usersService.getUserById(id);
   }
 
@@ -47,10 +48,10 @@ export class UsersController {
   @ApiUnauthorizedResponse({ description: 'No autorizado' })
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBearerAuth()
+  @Admin()
   @Roles(Role.USER)
   @Put(':id')
   updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() userData: UpdateUserDto, @Request() req: ExpressRequest & { user: Users }) {
-    console.log(req.user);
     return this.usersService.updateUser(id, userData);
   }
 
@@ -69,7 +70,6 @@ export class UsersController {
   @Admin()
   @Delete(':id')
   deleteUser(@Param('id', ParseUUIDPipe) id: string, @Request() req: ExpressRequest & { user: Users }) {
-    console.log(req.user);
     return this.usersService.deleteUser(id);
   }
 

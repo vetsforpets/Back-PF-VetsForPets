@@ -22,6 +22,7 @@ import { EmailModule } from './modules/common/email/email.module';
 import { JwtStrategy } from './modules/common/strategies/jwt.strategy';
 import { ChatModule } from './modules/chat/chat.module';
 import { ChatGateway } from './modules/chat/chat.gateway';
+import { CalendlyModule } from './modules/calendly/calendly.module';
 
 
 @Module({
@@ -55,7 +56,8 @@ import { ChatGateway } from './modules/chat/chat.gateway';
     LocationModule,
     PaymentModule,
     EmailModule,
-    ChatModule
+    ChatModule,
+    CalendlyModule
   ],
   controllers: [],
   providers: [JwtService, JwtStrategy,

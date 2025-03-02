@@ -59,9 +59,8 @@ export class Users {
   @OneToMany(() => Order, (order) => order.userId)
   order: Order
 
-  @OneToOne(() => Location, (location) => location.user)
-  @JoinColumn()
-  location: Location
+  @OneToMany(() => Location, (location) => location.user, { cascade: true })
+  location: Location[]
 
   @OneToMany(() => Chat, (chat) => chat.user)
   chats: Chat[]

@@ -26,7 +26,7 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Get()
-  @Admin()
+  // @Admin()
   @Roles(Role.USER)
   @ApiBearerAuth()
   findAll() {
@@ -62,7 +62,7 @@ export class OrderController {
 
   @Delete(':id')
   @ApiBearerAuth()
-  @Admin()
+  // @Admin()
   deleteOrder(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
       return this.orderService.deleteOrder(orderId);

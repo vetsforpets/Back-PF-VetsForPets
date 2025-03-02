@@ -9,9 +9,11 @@ import { Membership } from '../membership/entity/membership.entity';
 import { MedicalRecord } from '../medical-record/entity/medical-record.entity';
 import { EmailModule } from '../common/email/email.module';
 import { EmailService } from '../common/email/email.service';
+import { Location } from '../location/entity/location.entity';
+import { LocationModule } from '../location/location.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PetShop, Appointment, Membership, MedicalRecord]), EmailModule],
+  imports: [TypeOrmModule.forFeature([PetShop, Appointment, Membership, MedicalRecord, Location]), EmailModule, LocationModule],
   controllers: [PetShopController],
   providers: [PetShopService, PetShopRepository, EmailService],
   exports: [PetShopService, PetShopRepository]

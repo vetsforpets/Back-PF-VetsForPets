@@ -6,7 +6,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
   Param,
-  Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
@@ -18,7 +17,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PetShop } from './entity/pet-shop.entity';
-import { AuthGuard } from '@nestjs/passport';
 import { UpdatePetShopDto } from './dto/updatePetShop.dto';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from 'src/decorators/roles/roles.decorator';
@@ -35,6 +33,7 @@ export class PetShopController {
   @ApiResponse({ status: 200, description: 'Lista de veterinarias' })
   @ApiBearerAuth()
   @Admin()
+  @Roles(Role.PETSHOP)
   @Get()
   async getAllPetshops(): Promise<PetShop[]> {
     return await this.petShopService.getAllPetShops();
@@ -44,6 +43,7 @@ export class PetShopController {
   @ApiResponse({ status: 200, description: 'Veterinaria encontrada' })
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
+  @Admin()
   @Roles(Role.PETSHOP)
   @Get(':id')
   async findPetShopById(@Param('id') id: string): Promise<PetShop> {

@@ -1,6 +1,7 @@
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
 import { Chat } from 'src/modules/chat/entities/chat.entity';
 import { Role } from 'src/modules/common/enums/roles.enum';
+import { Location } from 'src/modules/location/entity/location.entity';
 import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
 import { Membership } from 'src/modules/membership/entity/membership.entity';
 import {
@@ -42,14 +43,15 @@ export class PetShop {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ default: null })
-  location: string;
-
   @Column({ type: 'varchar', default: null })
-  foundation: string
+  foundation: string;
 
-  @Column({ type: 'enum', enum: [Role.PETSHOP, Role.USER], default: Role.PETSHOP })
-  role: Role
+  @Column({
+    type: 'enum',
+    enum: [Role.PETSHOP, Role.USER],
+    default: Role.PETSHOP,
+  })
+  role: Role;
 
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
@@ -73,6 +75,6 @@ export class PetShop {
   @OneToMany(() => Chat, (chat) => chat.petshop)
   chats: Chat[]
 
-  // @OneToMany(() => Location, (location) => location.user)
-  // location: Location[];
+  @OneToMany(() => Location, (location) => location.petShop, { cascade: true })
+  location: Location[];
 }

@@ -93,12 +93,26 @@ export class PaymentService {
     if (order) {
       const userId =
         typeof order.userId === 'object' ? order.userId.id : order.userId;
-      const updateResult = await this.usersService.updateUser(userId, {
+      const updateResult = await this.usersService.updateUserWithOutLocation(userId, {
         isPremium: true,
       });
-      return updateResult;
     } else {
       throw new NotFoundException('No se ha encontrado la orden');
+    }
+  }
+  async constructStripeEvent(
+    rawBody: string,
+    signature: string,
+  ): Promise<Stripe.Event> {
+
+    try {
+      return this.stripe.webhooks.constructEvent(
+        rawBody,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET,
+      );
+    } catch (error) {
+      throw new BadRequestException(`Error en el webhook: ${error.message}`);
     }
   }
 }
