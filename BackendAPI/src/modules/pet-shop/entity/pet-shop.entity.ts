@@ -1,4 +1,5 @@
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
+import { Chat } from 'src/modules/chat/entities/chat.entity';
 import { Role } from 'src/modules/common/enums/roles.enum';
 import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
 import { Membership } from 'src/modules/membership/entity/membership.entity';
@@ -23,13 +24,13 @@ export class PetShop {
   @Column()
   email: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   veterinarian: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   password: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   phoneNumber: string;
 
   @Column({ type: 'boolean' })
@@ -53,7 +54,7 @@ export class PetShop {
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
 
-  @Column({ type: 'bigint' , nullable: true})
+  @Column({ type: 'bigint', nullable: true })
   licenseNumber: number;
 
   @Column({ type: 'json', default: null })
@@ -68,6 +69,9 @@ export class PetShop {
 
   @OneToMany(() => MedicalRecord, (medicalRecord) => medicalRecord.petshop)
   medicalRecords: MedicalRecord[];
+
+  @OneToMany(() => Chat, (chat) => chat.petshop)
+  chats: Chat[]
 
   // @OneToMany(() => Location, (location) => location.user)
   // location: Location[];

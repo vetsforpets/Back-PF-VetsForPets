@@ -6,6 +6,9 @@ import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../users/entity/users.entity';
 import { Repository } from 'typeorm';
+import { UnauthorizedException } from '@nestjs/common';
+import { Role } from '../common/enums/roles.enum';
+import { PetShop } from '../pet-shop/entity/pet-shop.entity';
 
 
 
@@ -22,6 +25,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     private readonly chatService: ChatService,
     private readonly jwt: JwtService,
     @InjectRepository(Users) private readonly usersRepository: Repository<Users>,
+    @InjectRepository(PetShop) private readonly petshopRepository: Repository<PetShop>
   ) { }
 
 
@@ -32,80 +36,104 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
 
-  async handleConnection(client: Socket) {
+  async handleConnection(@ConnectedSocket() client: Socket) {
 
     const user = await this.chatService.validateSocket(client)
 
     if (!user) {
       client.disconnect()
-      return
+      throw new UnauthorizedException('Token inválido')
     }
 
     client.data.user = user
+    client.broadcast.emit("connectedUser", {
+      userId: user.sub,
+      email: user.email
+    })
 
 
-    console.log(`Usuario ${user.email} se ha conectado`)
+    console.log(`El cliente ${user.email} se ha conectado`)
   }
 
 
-  handleDisconnect(client: Socket) {
+
+  handleDisconnect(@ConnectedSocket() client: Socket) {
 
     const { user } = client.data
 
-    console.log(`Cliente ${user.email} se ha desconectado`)
+    console.log(`El cliente ${user.email} se ha desconectado`)
 
   }
 
 
-  @SubscribeMessage('join')
-  handleJoinRoom(client: Socket, room: string) {
-    const roomId = `room_${room}`
+
+  @SubscribeMessage('joinRoom')
+  async handleJoinRoom(@ConnectedSocket() client: Socket, @MessageBody() vetId: string) {
+
+    const { user } = client.data
+    const chat = await this.chatService.findOrCreateChat(user.sub, vetId)
+
+    const roomId = `chat_${chat.id}`
 
     client.join(roomId)
 
+    console.log(`El usuario ${user.email} ha ingresado a la sala`)
+
+    client.emit('joinedRoom', { roomId })
+
+    const messages = await this.chatService.findAll(chat.id)
+
+    client.emit('messageHistory', messages)
+
   }
 
 
-  @SubscribeMessage('leave')
-  handleLeaveRoom(client: Socket, room: string) {
 
-    const roomId = `room_${room}`
+  @SubscribeMessage('joinRoomPetshop')
+  async handleJoinRoomPetshop(@ConnectedSocket() client: Socket, @MessageBody() chatId: string) {
 
-    console.log(`chau chau adios ${roomId}`)
+    const petshop = client.data.user
+    const roomId = `chat_${chatId}`
+
+    client.join(roomId)
+
+    const messages = await this.chatService.findAll(chatId)
+    client.emit('messageHistory', messages)
+
+    console.log(`Veterinaria ${petshop.email} se unió a la sala.`)
+
+  }
+
+
+
+  @SubscribeMessage('leaveRoom')
+  handleLeaveRoom(client: Socket, roomId: string) {
+
+    const { user } = client.data
+
+    console.log(`El cliente ${user.email} ha dejado la sala`)
+
     client.leave(roomId)
-
   }
+
 
 
   @SubscribeMessage('message')
-  handleIncomingMessage(
-    client: Socket,
-    payload: { room: string, message: string },
+  async handleIncomingMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId: string, message: string },
   ) {
 
-    const { room, message } = payload
-    console.log(payload);
-    this.server.to(`room_${room}`).emit('new_message', message)
+    const { user } = client.data
+    const chatId = payload.roomId.split('_')[1];
 
-  }
+    console.log('chat id:', chatId)
 
-
-  @SubscribeMessage('createChat')
-  create(@MessageBody() createChatDto: CreateChatDto) {
-    return this.chatService.create(createChatDto);
-  }
+    const message = await this.chatService.saveMessage(chatId, user.sub, payload.message)
 
 
-  @SubscribeMessage('findAllChat')
-  findAll() {
-    return this.chatService.findAll();
-  }
+    client.broadcast.to(payload.roomId).emit('message', { sender: user.email, message: message.content, senderType: message.senderType })
 
-
-  @SubscribeMessage('message')
-  handleMessage(@ConnectedSocket() client: Socket, @MessageBody() message: string) {
-
-    this.server.emit('message', message)
   }
 
 
