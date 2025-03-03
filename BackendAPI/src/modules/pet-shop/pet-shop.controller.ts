@@ -27,13 +27,13 @@ import { Admin } from 'src/decorators/roles/admin.decorator';
 @UseGuards(RolesGuard)
 @Controller('petshop')
 export class PetShopController {
-  constructor(private readonly petShopService: PetShopService) {}
+  constructor(private readonly petShopService: PetShopService) { }
 
   @ApiOperation({ summary: 'Obtener todas las veterinarias' })
   @ApiResponse({ status: 200, description: 'Lista de veterinarias' })
   @ApiBearerAuth()
   @Admin()
-  @Roles(Role.PETSHOP)
+  @Roles(Role.PETSHOP, Role.USER)
   @Get()
   async getAllPetshops(): Promise<PetShop[]> {
     return await this.petShopService.getAllPetShops();
@@ -44,7 +44,7 @@ export class PetShopController {
   @ApiResponse({ status: 404, description: 'Veterinaria no encontrada' })
   @ApiBearerAuth()
   @Admin()
-  @Roles(Role.PETSHOP)
+  @Roles(Role.PETSHOP, Role.USER)
   @Get(':id')
   async findPetShopById(@Param('id') id: string): Promise<PetShop> {
     try {
