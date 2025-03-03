@@ -1,4 +1,5 @@
 import { Appointment } from 'src/modules/appointment/entity/appointment.entity';
+import { Chat } from 'src/modules/chat/entities/chat.entity';
 import { Role } from 'src/modules/common/enums/roles.enum';
 import { Location } from 'src/modules/location/entity/location.entity';
 import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
@@ -71,6 +72,9 @@ export class PetShop {
   @OneToMany(() => MedicalRecord, (medicalRecord) => medicalRecord.petshop)
   medicalRecords: MedicalRecord[];
 
-  @OneToMany(() => Location, (location) => location.petShop, {cascade: true})
+  @OneToMany(() => Chat, (chat) => chat.petshop)
+  chats: Chat[]
+
+  @OneToMany(() => Location, (location) => location.petShop, { cascade: true })
   location: Location[];
 }

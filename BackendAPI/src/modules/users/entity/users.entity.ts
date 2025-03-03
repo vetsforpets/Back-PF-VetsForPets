@@ -6,6 +6,7 @@ import { Pets } from 'src/modules/pets/entity/pets.entity';
 import { Order } from "src/modules/order/entity/order.entity";
 import { Location } from "src/modules/location/entity/location.entity";
 import { Role } from "src/modules/common/enums/roles.enum";
+import { Chat } from "src/modules/chat/entities/chat.entity";
 
 @Entity({ name: 'users' })
 export class Users {
@@ -18,7 +19,7 @@ export class Users {
   @Column({ length: 50 })
   lastName: string;
 
-  @Column({nullable: true })
+  @Column({ nullable: true })
   age: string;
 
   @Column({ length: 50 })
@@ -58,6 +59,10 @@ export class Users {
   @OneToMany(() => Order, (order) => order.userId)
   order: Order
 
-  @OneToMany(() => Location, (location) => location.user, {cascade: true})
+  @OneToMany(() => Location, (location) => location.user, { cascade: true })
   location: Location[]
+
+  @OneToMany(() => Chat, (chat) => chat.user)
+  chats: Chat[]
+
 }

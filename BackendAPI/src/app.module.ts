@@ -20,6 +20,8 @@ import { JwtAuthGuard } from './modules/common/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { EmailModule } from './modules/common/email/email.module';
 import { JwtStrategy } from './modules/common/strategies/jwt.strategy';
+import { ChatModule } from './modules/chat/chat.module';
+import { ChatGateway } from './modules/chat/chat.gateway';
 import { CalendlyModule } from './modules/calendly/calendly.module';
 
 
@@ -54,6 +56,7 @@ import { CalendlyModule } from './modules/calendly/calendly.module';
     LocationModule,
     PaymentModule,
     EmailModule,
+    ChatModule,
     CalendlyModule
   ],
   controllers: [],
