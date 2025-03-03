@@ -4,6 +4,7 @@ import { Role } from 'src/modules/common/enums/roles.enum';
 import { Location } from 'src/modules/location/entity/location.entity';
 import { MedicalRecord } from 'src/modules/medical-record/entity/medical-record.entity';
 import { Membership } from 'src/modules/membership/entity/membership.entity';
+import { Pets } from 'src/modules/pets/entity/pets.entity';
 import {
   Column,
   Entity,
@@ -56,7 +57,7 @@ export class PetShop {
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
 
-  @Column({ type: 'boolean', default: true }) 
+  @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
   @Column({ type: 'bigint', nullable: true })
@@ -64,6 +65,9 @@ export class PetShop {
 
   @Column({ type: 'json', default: null })
   businessHours: Record<string, { opening: string; closure: string }>;
+
+  @Column({ type: 'json', default: null})
+  emergencies: { userId: string; pet: Partial<Pets>}[];
 
   @OneToMany(() => Appointment, (appointment) => appointment.petShop)
   appointment: Appointment[];
@@ -76,7 +80,7 @@ export class PetShop {
   medicalRecords: MedicalRecord[];
 
   @OneToMany(() => Chat, (chat) => chat.petshop)
-  chats: Chat[]
+  chats: Chat[];
 
   @OneToMany(() => Location, (location) => location.petShop, { cascade: true })
   location: Location[];
