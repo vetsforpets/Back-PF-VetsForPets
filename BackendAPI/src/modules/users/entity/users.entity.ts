@@ -43,6 +43,9 @@ export class Users {
   @Column({ type: 'boolean', default: false })
   isPremium: boolean;
 
+  @Column({ type: 'boolean', default: true }) 
+  isActive: boolean;
+
   @OneToMany(() => Appointment, (appointment) => appointment.user)
   appointments: Appointment[];
 

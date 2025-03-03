@@ -126,10 +126,13 @@ export class PetShopRepository {
   }
   async deletePetshop(id: string): Promise<void> {
     try {
-      const result = await this.petshopRepository.delete(id);
-      if (result.affected === 0) {
-        throw new NotFoundException('La veterinaria no fue encontrada.');
+      const petShop = await this.getPetShopById(id);
+      if (!petShop) {
+        throw new NotFoundException('Veterinaria no encontrada para desactivar.');
       }
+
+      petShop.isActive = false; 
+      await this.petshopRepository.save(petShop);
     } catch (error) {
       console.error('Error en eliminar una veterinaria:', error);
       if (error instanceof NotFoundException) {

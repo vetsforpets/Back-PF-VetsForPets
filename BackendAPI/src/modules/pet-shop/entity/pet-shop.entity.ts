@@ -56,6 +56,9 @@ export class PetShop {
   @Column({ type: 'boolean', default: false })
   isAdmin: boolean;
 
+  @Column({ type: 'boolean', default: true }) 
+  isActive: boolean;
+
   @Column({ type: 'bigint', nullable: true })
   licenseNumber: number;
 

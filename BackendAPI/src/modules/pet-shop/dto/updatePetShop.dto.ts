@@ -79,6 +79,10 @@ export class UpdatePetShopDto {
   @IsBoolean()
   is24Hours?: boolean;
 
+  @IsBoolean()
+  @IsOptional()
+  isAdmin?: boolean;
+
   @ApiProperty({
     description: 'Número de licencia del veterinario',
     example: 1234567890,
