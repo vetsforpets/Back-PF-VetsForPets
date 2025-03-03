@@ -22,9 +22,15 @@ export class PetShopService {
     return petShops;
   }
 
-  async getPetShopById(id: string): Promise<PetShop> {
+  async getPetShopById(id: string): Promise<Partial<PetShop>> { 
     try {
-      return await this.petShopRepository.getPetShopById(id);
+      const petShop = await this.petShopRepository.getPetShopById(id);
+      if (!petShop) {
+        throw new NotFoundException(`Pet shop with ID ${id} not found`);
+      }
+
+      const { password, ...petShopWithoutPassword } = petShop; 
+      return petShopWithoutPassword;
     } catch (error) {
       console.error('Error al encontrar la veterinaria:', error);
       if (error instanceof NotFoundException) {
@@ -35,11 +41,10 @@ export class PetShopService {
       );
     }
   }
-
   async updatePetShop(
     id: string,
     petShopData: UpdatePetShopDto,
-  ): Promise<PetShop | undefined> {
+  ): Promise<Partial<PetShop>> {
     try {
       const locationEntities: Location[] = petShopData.location.map(
         (locData) => {

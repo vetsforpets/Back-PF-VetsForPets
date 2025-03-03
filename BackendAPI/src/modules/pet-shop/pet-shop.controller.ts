@@ -46,7 +46,7 @@ export class PetShopController {
   @Admin()
   @Roles(Role.PETSHOP, Role.USER)
   @Get(':id')
-  async findPetShopById(@Param('id') id: string): Promise<PetShop> {
+  async findPetShopById(@Param('id') id: string): Promise<Partial<PetShop>> {
     try {
       return await this.petShopService.getPetShopById(id);
     } catch (error) {
@@ -69,7 +69,7 @@ export class PetShopController {
   async updatePetShop(
     @Param('id') id: string,
     @Body() petShopData: UpdatePetShopDto,
-  ): Promise<PetShop | undefined> {
+  ): Promise<Partial<PetShop>> {
     try {
       return await this.petShopService.updatePetShop(id, petShopData);
     } catch (error) {
