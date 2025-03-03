@@ -43,7 +43,7 @@ export class PetShopRepository {
   async getPetShopById(id: string): Promise<PetShop> {
     const petShopFound = await this.petshopRepository.findOne({
       where: { id },
-      relations: ['location', 'businessHours'],
+      relations: ['location'],
     });
     if (!petShopFound) {
       throw new NotFoundException('Veterinaria no encontrada');
