@@ -65,10 +65,13 @@ export class UsersRepository {
 
   async deleteUser(id: string): Promise<void> {
     try {
-      const result = await this.usersRepository.delete(id);
-      if (result.affected === 0) {
-        throw new NotFoundException(`Usuario no encontrado para eliminar`);
+      const user = await this.getUserById(id);
+      if (!user) {
+        throw new NotFoundException(`Usuario no encontrado para desactivar`);
       }
+      user.isActive = false;
+      await this.usersRepository.save(user);
+
     } catch (error) {
       if (error.code === '23503') {
         throw new PetsAssociatedException();
