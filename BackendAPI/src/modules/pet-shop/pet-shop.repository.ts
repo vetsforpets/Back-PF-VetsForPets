@@ -83,7 +83,7 @@ export class PetShopRepository {
   async updatePetshop(
     id: string,
     petshopData: Partial<PetShop>,
-  ): Promise<PetShop | undefined> {
+  ): Promise<Partial<PetShop>> {
     try {
       const existingPetShop = await this.getPetShopById(id);
       if (!existingPetShop) {
@@ -112,7 +112,8 @@ export class PetShopRepository {
       Object.assign(existingPetShop, petshopData);
 
       const savedPetShop = await this.petshopRepository.save(existingPetShop);
-      return savedPetShop;
+      const { password, ...petShopWithoutPassword } = savedPetShop;
+      return petShopWithoutPassword;
     } catch (error) {
       if (error instanceof ConflictException) {
         throw error;
