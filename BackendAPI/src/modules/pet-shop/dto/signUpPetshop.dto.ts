@@ -12,7 +12,6 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Location } from 'src/modules/location/entity/location.entity';
 
 export class SignUpPetShopDto {
   @ApiProperty({

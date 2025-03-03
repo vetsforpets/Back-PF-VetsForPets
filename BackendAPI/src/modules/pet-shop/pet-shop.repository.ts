@@ -30,7 +30,7 @@ export class PetShopRepository {
           foundation: true,
           role: true,
         },
-        relations: ['location']
+        relations: ['location', 'businessHours']
       });
     } catch (error) {
       console.error('Error en la carga de veterinarias', error);
@@ -43,7 +43,7 @@ export class PetShopRepository {
   async getPetShopById(id: string): Promise<PetShop> {
     const petShopFound = await this.petshopRepository.findOne({
       where: { id },
-      relations: ['location'],
+      relations: ['location', 'businessHours'],
     });
     if (!petShopFound) {
       throw new NotFoundException('Veterinaria no encontrada');

@@ -7,21 +7,21 @@ dotenvConfig({ path: '.env' })
 
 const config = {
     type: 'postgres',
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
+    database: 'vetsforpets_db',
+    host: 'localhost',
     port: Number(process.env.DB_PORT),
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    url: process.env.DATABASE_URL,
+    username: 'postgres',
+    password: 'admin',
+    // url: process.env.DATABASE_URL,
     entities: ['dist/**/*.entity{.ts, .js}'],
     migrations: ['dist/migrations/*{.ts, .js}'],
     autoLoadEntities: true,
     synchronize: true,
     logging: false,
     dropSchema: false,
-    ssl: {
-        rejectUnauthorized: false,
-    }
+    // ssl: {
+    //     rejectUnauthorized: false,
+    // }
 }
 
 export default registerAs('typeorm', () => config)
