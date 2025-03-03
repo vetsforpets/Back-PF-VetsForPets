@@ -10,6 +10,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Pets } from 'src/modules/pets/entity/pets.entity';
 
 export class UpdatePetShopDto {
   @ApiProperty({
@@ -111,4 +112,10 @@ export class UpdatePetShopDto {
   })
   @IsArray()
   location?: [{ latitude: number; longitude: number }];
+
+  @ApiProperty({
+    description: 'Notificaciones emergentes urgentes',
+  })
+  @IsArray()
+  emergencies?: [{ userId: string; pet: Partial<Pets> }];
 }
