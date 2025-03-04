@@ -2,6 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Pets } from './entity/pets.entity';
 import { Repository } from 'typeorm';
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -36,19 +37,25 @@ export class PetsRepository {
     pet: Partial<Pets>,
     userId: string,
   ): Promise<Partial<Pets>> {
-    try {
-      const user = await this.usersRepository.findOneBy({ id: userId });
-      if (!user) {
-        throw new NotFoundException('Usuario no ha sido encontrado');
-      }
-      const newPet = this.petsRepository.create({ ...pet, user: user });
-      return await this.petsRepository.save(newPet);
-    } catch (error) {
-      console.error('Error al crear a la mascota:', error);
-      throw new InternalServerErrorException(
-        'Registro fallido para la mascota',
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+      relations: ['pets'],
+    });
+    if (!user) {
+      throw new NotFoundException('Usuario no ha sido encontrado');
+    }
+
+    const petCount = await this.petsRepository.count({
+      where: { user: { id: userId } },
+    });
+
+    if (!user.isPremium && petCount >= 2) {
+      throw new BadRequestException(
+        'Debido a la membresia que posee actualmente el usuario solo 2 mascotas pueden ser registradas',
       );
     }
+    const newPet = this.petsRepository.create({ ...pet, user: user });
+    return await this.petsRepository.save(newPet);
   }
 
   async updatePet(petId: string, pet: Partial<Pets>): Promise<Partial<Pets>> {

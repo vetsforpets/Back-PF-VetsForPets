@@ -20,9 +20,6 @@ export class CreatePetDto {
         example: 3,
         description: 'La edad de la mascota en años.'
     })
-    @IsNumber()
-    @Min(0) 
-    age: number
 
     @ApiProperty({
         example: 'Perro',
