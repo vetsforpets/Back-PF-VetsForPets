@@ -30,7 +30,7 @@ export class PetShopRepository {
           foundation: true,
           role: true,
         },
-        relations: ['location']
+        relations: ['location'],
       });
     } catch (error) {
       console.error('Error en la carga de veterinarias', error);
@@ -128,10 +128,12 @@ export class PetShopRepository {
     try {
       const petShop = await this.getPetShopById(id);
       if (!petShop) {
-        throw new NotFoundException('Veterinaria no encontrada para desactivar.');
+        throw new NotFoundException(
+          'Veterinaria no encontrada para desactivar.',
+        );
       }
 
-      petShop.isActive = false; 
+      petShop.isActive = false;
       await this.petshopRepository.save(petShop);
     } catch (error) {
       console.error('Error en eliminar una veterinaria:', error);
