@@ -1,23 +1,24 @@
-import { ExecutionContext, Injectable } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
+import { ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { IS_PUBLIC_KEY } from "src/decorators/public-routes/public-routes.decorator";
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-    constructor(private reflector: Reflector) {
+    constructor() {
         super();
     }
 
     canActivate(context: ExecutionContext) {
 
-        const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-            context.getHandler(),
-            context.getClass(),
-        ]);
+        const canActivate = super.canActivate(context) // se ejecuta el authGuard('jwt')
 
-        if (isPublic) return true;
+        if (!canActivate) return false
 
-        return super.canActivate(context);
+
+        const request = context.switchToHttp().getRequest()
+        const user = request.user;
+
+        if (!user || !user.isActive) throw new ForbiddenException("Tu cuenta está inactiva o no existe. Contacta al soporte.")
+
+        return true;
     }
 }
