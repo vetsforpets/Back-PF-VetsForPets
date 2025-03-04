@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { JwtService } from '@nestjs/jwt'
 import { Socket } from 'socket.io'
@@ -90,13 +90,18 @@ export class ChatService {
   async validateSocket(client: Socket) {
 
     try {
-      const token = client.handshake.headers['authorization']
+
+      const token = client.handshake.auth.token || client.handshake.query.token || client.handshake.headers.authorization.split(' ')[1] || client.handshake.headers['authorization']
+
+      if (!token) {
+        throw new Error("Token inválido o no existe, desconectando...")
+      }
       const payload = this.jwt.verify(token)
 
       return payload
 
-    } catch (error) {
-      throw new ForbiddenException("Token inválido")
+    } catch (e) {
+      throw new UnauthorizedException(e.message)
     }
 
   }
