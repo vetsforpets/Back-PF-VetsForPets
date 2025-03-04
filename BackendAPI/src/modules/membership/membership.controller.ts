@@ -39,6 +39,7 @@ export class MembershipController {
 
   @Get()
   @Roles(Role.USER)
+  @Admin()
   @ApiBearerAuth()
   findAll() {
     return this.membershipService.findAll();
