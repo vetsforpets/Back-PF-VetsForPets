@@ -74,7 +74,4 @@ export class CreatePetDto {
     @IsUrl()
     profileImg?: string
 
-    @IsOptional()
-    @IsArray()
-    appointments?: Appointment[] 
 }
