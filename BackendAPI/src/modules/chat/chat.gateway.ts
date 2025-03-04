@@ -1,14 +1,8 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
-import { CreateChatDto } from './dto/create-chat.dto';
 import { Server, Socket } from 'socket.io'
-import { JwtService } from '@nestjs/jwt'
-import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from '../users/entity/users.entity';
-import { Repository } from 'typeorm';
-import { UnauthorizedException } from '@nestjs/common';
-import { Role } from '../common/enums/roles.enum';
-import { PetShop } from '../pet-shop/entity/pet-shop.entity';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
+import { WsAuthGuard } from '../common/guards/auth-ws.guard';
 
 
 
@@ -23,9 +17,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   constructor(
     private readonly chatService: ChatService,
-    private readonly jwt: JwtService,
-    @InjectRepository(Users) private readonly usersRepository: Repository<Users>,
-    @InjectRepository(PetShop) private readonly petshopRepository: Repository<PetShop>
   ) { }
 
 
@@ -35,22 +26,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log("Esto se ejecuta cuando inicia");
   }
 
-
+  // @UseGuards(WsAuthGuard)
   async handleConnection(@ConnectedSocket() client: Socket) {
 
     const user = await this.chatService.validateSocket(client)
 
     if (!user) {
       client.disconnect()
-      throw new UnauthorizedException('Token inválido')
+      throw new UnauthorizedException('Token inválido o no existe, desconectando...')
     }
 
     client.data.user = user
-    client.broadcast.emit("connectedUser", {
+
+
+    client.emit("connectedUser", {
       userId: user.sub,
       email: user.email
     })
-
 
     console.log(`El cliente ${user.email} se ha conectado`)
   }
