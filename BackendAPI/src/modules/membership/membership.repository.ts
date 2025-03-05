@@ -30,13 +30,14 @@ export class MembershipRepository {
         newMembership.name = element.name;
         newMembership.price = Number(element.price.toFixed(2));
         newMembership.benefits = element.benefits;
+        newMembership.image = element.image
 
         await this.membershipRepository
           .createQueryBuilder()
           .insert()
           .into(Membership)
           .values(newMembership)
-          .orUpdate(['price', 'benefits'], ['name'])
+          .orUpdate(['price', 'benefits'], ['name'], )
           .execute();
       }
     }
