@@ -23,7 +23,7 @@ export class PetShop {
   @Column()
   name: string;
 
-  @Column()
+  @Column({unique:true})
   email: string;
 
   @Column({ nullable: true })
