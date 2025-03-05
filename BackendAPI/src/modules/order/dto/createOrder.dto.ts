@@ -1,5 +1,5 @@
-import { ApiProperty, PartialType, PickType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { ApiHideProperty, ApiProperty, PartialType, PickType } from '@nestjs/swagger';
+import { Exclude, Type } from 'class-transformer';
 import {
   IsArray,
   IsNotEmpty,
@@ -24,7 +24,7 @@ export class CreateOrderDto {
   @Type(() => MembershipProductDto)
   @ApiProperty({
     description: 'Informacion de la membresia o ID',
-    example: '456d2b9c-cbca-4cb9-a90f-b403fb5770f4',
+    example:   [{id: "db27293b-51cd-4b55-a9f5-924a25e728bb"}],
   })
   membership: MembershipProductDto[];
 
@@ -37,6 +37,7 @@ export class CreateOrderDto {
   paymentMethod: string;
 
   @IsOptional()
+  @ApiHideProperty()
   sessionId?: string
 }
 

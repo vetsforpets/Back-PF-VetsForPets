@@ -12,7 +12,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { CreateOrderDto } from './dto/createOrder.dto';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
@@ -26,9 +35,14 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Get()
-  // @Admin()
+  @Admin()
   @Roles(Role.USER)
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtiene todas las ordenes de la base de datos' })
+  @ApiOkResponse({ description: 'Lista de todas las ordenes' })
+  @ApiNotFoundResponse({ description: 'No se encontraron ordenes en la base de datos' })
+  @ApiUnauthorizedResponse({ description: 'No autorizado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   findAll() {
     try {
       return this.orderService.find();
@@ -45,6 +59,13 @@ export class OrderController {
 
   @Post()
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Crea una nueva orden con la informacion del usuario y membresia',
+  })
+  @ApiOkResponse({ description: 'Orden creada con exito' })
+  @ApiUnauthorizedResponse({ description: 'No autorizado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
+  @ApiBody({ type: CreateOrderDto })
   @Roles(Role.USER, Role.PETSHOP)
   addOrder(@Body() orderDto: CreateOrderDto) {
     try {
@@ -62,7 +83,7 @@ export class OrderController {
 
   @Delete(':id')
   @ApiBearerAuth()
-  // @Admin()
+  @Admin()
   deleteOrder(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
       return this.orderService.deleteOrder(orderId);
