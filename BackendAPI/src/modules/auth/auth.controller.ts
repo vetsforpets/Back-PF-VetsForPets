@@ -34,11 +34,11 @@ export class AuthController {
   @Public()
   @Get('google/signIn')
   @UseGuards(GoogleOauthGuard)
-  async googleAuthCallback(@Req() req, @Res() res: Response) {}
+  async googleAuthCallback(@Req() req, @Res() res: Response) { }
 
   @Public()
   @Post('google/callback')
-  async googleRedirect(@Body() body: GoogleCallbackDto, @Res() res: Response) { 
+  async googleRedirect(@Body() body: GoogleCallbackDto, @Res() res: Response) {
     try {
       console.log('Authorization code:', body.code);
       if (!body.code) {
@@ -55,8 +55,8 @@ export class AuthController {
   }
 
 
-  @Post('signIn')
   @Public()
+  @Post('signIn')
   signIn(@Body() loginDTO: LoginDTO) {
     try {
       return this.authService.signIn(loginDTO.email, loginDTO.password);
@@ -72,15 +72,15 @@ export class AuthController {
   }
 
 
-  @Post('signUp')
   @Public()
+  @Post('signUp')
   async saveUser(@Body() newUser: SignUpUserDto) {
     return await this.authService.signUp(newUser);
   }
 
 
-  @Post('vetSignUp')
   @Public()
+  @Post('vetSignUp')
   petShopSignUp(@Body() newPetShop: SignUpPetShopDto) {
     try {
       return this.authService.signUpPetShop(newPetShop);

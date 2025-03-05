@@ -37,7 +37,7 @@ export class AuthService {
     private readonly usersDbRepository: Repository<Users>,
     @InjectRepository(PetShop)
     private readonly petshopDbRepository: Repository<PetShop>,
-  ) {}
+  ) { }
 
   async signIn(email: string, password: string) {
     try {
@@ -68,11 +68,12 @@ export class AuthService {
       userType: user instanceof Users ? 'user' : 'petShop',
       role: user.role,
       isAdmin: user.isAdmin,
+      isActive: user.isActive
     };
     return this.jwtService.sign(payload);
   }
 
-  async exchangeCodeForToken(code: string): Promise<{ token: string }>{
+  async exchangeCodeForToken(code: string): Promise<{ token: string }> {
     try {
       console.log('Exchanging code for token. Code:', code);
 
