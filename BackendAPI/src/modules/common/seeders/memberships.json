@@ -1,26 +1,22 @@
 [
-    {
-      "name": "Pet Lover Premium",
-      "price": 9.99,
-      "benefits": [
-        "Sin numero de restriccion para el registro de mascotas",
-        "Geolocalizacion precisa para mostrar las veterinarias cercanas y solicitar emergencias de ser necesario",
-        "Atencion prioritaria en emergencias via chat"
-      ],
-      "image": "https://res.cloudinary.com/dwc27kmja/image/upload/v1741203914/memberships/hj6ucgmfeqkpbpgtzicg.png"
-
-    },
-
-    {
-      "name": "Free Plan",
-      "price": 0,
-      "benefits": [
-        "Geolocalizacion precisa para mostrar las veterinarias cercanas",
-        "Limite de registro de mascotas: 2 por usuario",
-        "No se puede solicitar atencion prioritaria via chat"
-      ],
-      "image": "https://res.cloudinary.com/dwc27kmja/image/upload/v1741203914/memberships/r4a1akoan5r6xg8jsu8z.png"
-
-    }
-
-  ]
+  {
+    "name": "Free Plan",
+    "price": 0,
+    "benefits": [
+      "Geolocalizacion precisa para mostrar las veterinarias cercanas",
+      "Limite de registro de mascotas: 2 por usuario",
+      "No se puede solicitar atencion prioritaria via chat"
+    ],
+    "image": "https://res.cloudinary.com/dwc27kmja/image/upload/v1741203914/memberships/r4a1akoan5r6xg8jsu8z.png"
+  },
+  {
+    "name": "Pet Lover Premium",
+    "price": 9.99,
+    "benefits": [
+      "Sin numero de restriccion para el registro de mascotas",
+      "Geolocalizacion precisa para mostrar las veterinarias cercanas y solicitar emergencias de ser necesario",
+      "Atencion prioritaria en emergencias via chat"
+    ],
+    "image": "https://res.cloudinary.com/dwc27kmja/image/upload/v1741203914/memberships/hj6ucgmfeqkpbpgtzicg.png"
+  }
+]
