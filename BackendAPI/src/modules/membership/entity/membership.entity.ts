@@ -27,6 +27,9 @@ export class Membership {
   @Column('text', { array: true, nullable: false })
   benefits: string[];
 
+  @Column()
+  image: string
+
   @OneToMany(
     () => UserMembership,
     (userMembership) => userMembership.membership,
