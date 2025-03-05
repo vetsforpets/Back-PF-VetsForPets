@@ -7,9 +7,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         super();
     }
 
-    canActivate(context: ExecutionContext) {
+    async canActivate(context: ExecutionContext) {
 
-        const canActivate = super.canActivate(context) // se ejecuta el authGuard('jwt')
+        const canActivate = await super.canActivate(context) // se ejecuta el authGuard('jwt')
 
         if (!canActivate) return false
 
@@ -17,7 +17,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         const request = context.switchToHttp().getRequest()
         const user = request.user;
 
-        if (!user || !user.isActive) throw new ForbiddenException("Tu cuenta está inactiva o no existe. Contacta al soporte.")
+        if (!user?.isActive) throw new ForbiddenException("Tu cuenta está inactiva o no existe. Contacta al soporte.")
 
         return true;
     }
