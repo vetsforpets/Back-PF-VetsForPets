@@ -22,7 +22,7 @@ export class Users {
   @Column({ nullable: true })
   age: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 50 , unique: true})
   email: string;
 
   @Column({ nullable: true })

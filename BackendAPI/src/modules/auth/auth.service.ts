@@ -183,8 +183,10 @@ export class AuthService {
 
   async signUp(newUser: SignUpUserDto) {
     try {
+      const normalizedEmail = newUser.email.trim().toLowerCase();
+
       const emailFound = await this.usersRepository.getUserByEmail(
-        newUser.email,
+        normalizedEmail
       );
       if (emailFound) {
         throw new BadRequestException(
@@ -254,8 +256,10 @@ export class AuthService {
 
   async signUpPetShop(newPetShop: SignUpPetShopDto) {
     try {
+      const normalizedEmail = newPetShop.email.trim().toLowerCase();
+
       const emailFound = await this.petShopRepository.getPetShopByEmail(
-        newPetShop.email,
+        normalizedEmail
       );
       if (emailFound) {
         throw new BadRequestException(
