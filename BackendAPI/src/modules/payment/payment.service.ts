@@ -4,6 +4,7 @@ import {
   NotFoundException,
   forwardRef,
   Inject,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import Stripe from 'stripe';
 import { OrderService } from '../order/order.service';
@@ -113,6 +114,16 @@ export class PaymentService {
       );
     } catch (error) {
       throw new BadRequestException(`Error en el webhook: ${error.message}`);
+    }
+  }
+
+  async getBalanceReport(){
+    try {
+      const finance = await this.stripe.balance.retrieve()
+      return finance
+    } catch (error) {
+      throw new InternalServerErrorException('No se ha podido recuperar el balance desde la API de Stripe');
+
     }
   }
 }

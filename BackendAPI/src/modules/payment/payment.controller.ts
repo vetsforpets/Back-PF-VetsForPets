@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Controller,
+  Get,
   Post,
   RawBodyRequest,
   Req,
@@ -85,5 +86,16 @@ export class PaymentController {
     }
 
     res.status(200).json({ received: true });
+  }
+
+  @Public()
+  @Get('admin/reports/financial')
+  adminFinancialRecords(){
+    try {
+      return this.paymentService.getBalanceReport()
+    } catch (error) {
+      throw new BadRequestException(`Se ha encontrado un error desde el lado del cliente ${error.message}`);
+
+    }
   }
 }
