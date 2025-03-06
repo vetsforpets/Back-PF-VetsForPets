@@ -115,8 +115,8 @@ export class UpdatePetShopDto {
 
   @ApiProperty({
     description: 'Notificaciones emergentes urgentes',
-    default: []
+    default: [],
   })
   @IsArray()
-  emergencies?: [{ userId: string; pet: Partial<Pets> }];
+  emergencies: { userId: string; pet: Partial<Pets>; chatId: string }[];
 }
