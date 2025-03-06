@@ -2,6 +2,8 @@ import {
   BadRequestException,
   Controller,
   Get,
+  NotFoundException,
+  Param,
   Post,
   RawBodyRequest,
   Req,
@@ -10,9 +12,7 @@ import {
 import { PaymentService } from './payment.service';
 import { Request, Response } from 'express';
 import { Public } from 'src/decorators/public-routes/public-routes.decorator';
-import Stripe from 'stripe';
 import {
-  ApiBadGatewayResponse,
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
   ApiUnauthorizedResponse,
@@ -89,13 +89,33 @@ export class PaymentController {
   }
 
   @Public()
-  @Get('admin/reports/financial')
-  adminFinancialRecords(){
+  @Get('admin/reports/balance')
+  adminBalanceRecord() {
     try {
-      return this.paymentService.getBalanceReport()
+      return this.paymentService.getBalanceReport();
     } catch (error) {
-      throw new BadRequestException(`Se ha encontrado un error desde el lado del cliente ${error.message}`);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException(
+        `Se ha encontrado un error desde el lado del cliente ${error.message}`,
+      );
+    }
+  }
 
+  @Public()
+  @Get('admin/reports/transactions')
+  adminBalanceTransactions(@Param() limitPage: number) {
+    try {
+      return this.paymentService.getTransactionsReport(limitPage);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      throw new BadRequestException(
+        `Se ha encontrado un error desde el lado del cliente ${error.message}`,
+      );
     }
   }
 }

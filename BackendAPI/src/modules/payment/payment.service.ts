@@ -117,12 +117,24 @@ export class PaymentService {
     }
   }
 
-  async getBalanceReport(){
+  async getBalanceReport(): Promise<Stripe.Balance>{
     try {
       const finance = await this.stripe.balance.retrieve()
       return finance
     } catch (error) {
       throw new InternalServerErrorException('No se ha podido recuperar el balance desde la API de Stripe');
+
+    }
+  }
+
+  async getTransactionsReport(limitPage: number){
+    try {
+      const balanceTransactions = await this.stripe.balanceTransactions.list({
+        limit: limitPage
+      })
+      return balanceTransactions.data
+    } catch (error) {
+      throw new InternalServerErrorException('No se ha podido recuperar el historial de transacciones desde la API de Stripe');
 
     }
   }
