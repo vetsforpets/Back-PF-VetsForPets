@@ -4,6 +4,7 @@ import {
   NotFoundException,
   forwardRef,
   Inject,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import Stripe from 'stripe';
 import { OrderService } from '../order/order.service';
@@ -113,6 +114,28 @@ export class PaymentService {
       );
     } catch (error) {
       throw new BadRequestException(`Error en el webhook: ${error.message}`);
+    }
+  }
+
+  async getBalanceReport(): Promise<Stripe.Balance>{
+    try {
+      const finance = await this.stripe.balance.retrieve()
+      return finance
+    } catch (error) {
+      throw new InternalServerErrorException('No se ha podido recuperar el balance desde la API de Stripe');
+
+    }
+  }
+
+  async getTransactionsReport(limitPage: number){
+    try {
+      const balanceTransactions = await this.stripe.balanceTransactions.list({
+        limit: limitPage
+      })
+      return balanceTransactions.data
+    } catch (error) {
+      throw new InternalServerErrorException('No se ha podido recuperar el historial de transacciones desde la API de Stripe');
+
     }
   }
 }

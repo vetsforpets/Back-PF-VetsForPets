@@ -14,7 +14,7 @@ export class UsersRepository {
 
   async getUsers() {
     const users = await this.usersRepository.find({
-      relations: { userMembership: { membership: true } },
+      relations: { userMembership: { membership: true }, location: true },
     });
     return users.map(({ password, ...user }) => {
       return user;
@@ -71,7 +71,6 @@ export class UsersRepository {
       }
       user.isActive = false;
       await this.usersRepository.save(user);
-
     } catch (error) {
       if (error.code === '23503') {
         throw new PetsAssociatedException();
