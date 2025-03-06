@@ -22,7 +22,7 @@ import { Admin } from 'src/decorators/roles/admin.decorator';
 @UseGuards(RolesGuard)
 @Controller('files')
 export class FileUploadController {
-  constructor(private readonly fileUploadService: FileUploadService) { }
+  constructor(private readonly fileUploadService: FileUploadService) {}
 
   @Post('image/userImage')
   @UseInterceptors(FileInterceptor('file'))
@@ -62,47 +62,43 @@ export class FileUploadController {
     return this.fileUploadService.uploadUserImage(file, id);
   }
 
-
-
-  // @Post('image/medical_record')
-  // @UseInterceptors(FileInterceptor('file'))
-  // @ApiConsumes('multipart/form-data')
-  // @ApiBody({
-  //   description: 'Archivo a subir',
-  //   schema: {
-  //     type: 'object',
-  //     properties: {
-  //       file: {
-  //         type: 'string',
-  //         format: 'binary',
-  //       },
-  //     },
-  //   },
-  // })
-  // @Roles(Role.PETSHOP)
-  // @Admin()
-  // @ApiBearerAuth()
-  // uploadMedicalRecordImage(
-  //   @UploadedFile(
-  //     new ParseFilePipe({
-  //       validators: [
-  //         new MaxFileSizeValidator({
-  //           maxSize: 2000000,
-  //           message: "File can't be larger than 200kb",
-  //         }),
-  //         new FileTypeValidator({
-  //           fileType: /(jpg|jpeg|png|webp|pdf)$/,
-  //         }),
-  //       ],
-  //     }),
-  //   )
-  //   file: Express.Multer.File,
-  //   @Query('id', ParseUUIDPipe) id: string,
-  // ) {
-  //   return this.fileUploadService.uploadMedicalRecordImage(file, id);
-  // }
-
-
+  @Post('image/medical_record')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Archivo a subir',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @Roles(Role.PETSHOP)
+  @Admin()
+  @ApiBearerAuth()
+  uploadMedicalRecordImage(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({
+            maxSize: 2000000,
+            message: "File can't be larger than 200kb",
+          }),
+          new FileTypeValidator({
+            fileType: /(jpg|jpeg|png|webp|pdf)$/,
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @Query('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.fileUploadService.uploadMedicalRecordImage(file, id);
+  }
 
   @Post('image/petImage')
   @UseInterceptors(FileInterceptor('file'))

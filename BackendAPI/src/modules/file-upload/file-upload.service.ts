@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { FileUploadRepository } from "./file-upload.repository";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Users } from "../users/entity/users.entity";
@@ -32,41 +32,37 @@ export class FileUploadService {
     }
 
 
-    // async uploadMedicalRecordImage(file: Express.Multer.File, id: string) {
+    async uploadMedicalRecordImage(file: Express.Multer.File, id: string) {
 
-    //     const record = await this.medicalRecordRepository.findOne({ where: { id } })
+        const record = await this.medicalRecordRepository.findOne({ where: { id } })
 
-    //     if (!record) throw new BadRequestException("Coloca un ID válido")
+        if (!record) throw new BadRequestException("Coloca un ID válido")
 
-    //     const upload = await this.fileUploadRepository.uploadImage(file)
+        const upload = await this.fileUploadRepository.uploadImage(file)
 
-    //     if (file.mimetype === 'application/pdf') {
+        if (file.mimetype === 'application/pdf') {
 
-    //         await this.medicalRecordRepository.update(id, { examResults: [upload.secure_url] })
-    //     }
+            await this.medicalRecordRepository.update(id, { examResults: [upload.secure_url] })
+        }
 
-    //     await this.medicalRecordRepository.update(id, { image: [upload.secure_url] })
+        await this.medicalRecordRepository.update(id, { image: [upload.secure_url] })
 
-    //     return {
-    //         fileUrl: upload.secure_url,
-    //         public_id: upload.public_id,
-    //         format: upload.format,
-    //         resource_type: upload.resource_type
-    //     }
-    // }
+        return {
+            fileUrl: upload.secure_url,
+            public_id: upload.public_id,
+            format: upload.format,
+            resource_type: upload.resource_type
+        }
+    }
 
 
     async uploadPetImage(file: Express.Multer.File, id: string) {
 
         const petFound = await this.petsRepository.findOne({ where: { id } })
 
-        if (!petFound) throw new NotFoundException("ID inválido, intenta de nuevo y coloca un ID válido")
+        if (!petFound) throw new BadRequestException("ID inválido, intenta de nuevo y coloca un ID válido")
 
         const upload = await this.fileUploadRepository.uploadImage(file)
-
-        if (file.mimetype === 'application/pdf') {
-            await this.petsRepository.update(id, { medicalRecord: upload.secure_url })
-        }
 
         await this.petsRepository.update(id, { profileImg: upload.secure_url })
 

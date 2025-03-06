@@ -32,7 +32,7 @@ export class MedicalRecordRepository {
 
         const petshop = await this.petshopRepository.findOne({ where: { id: petshopId } })
 
-        const newRecord = this.medicalRecordRepository.create({ ...record, petshop: petshop })
+        const newRecord = this.medicalRecordRepository.create({ ...record, pet: petExists, petshop: petshop })
 
         await this.medicalRecordRepository.save(newRecord)
 

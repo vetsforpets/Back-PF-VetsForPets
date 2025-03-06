@@ -47,14 +47,10 @@ export class Pets {
   @Column()
   userId: string;
 
-  @Column({ nullable: true })
-  medicalRecord?: string;
-
   @OneToMany(() => Appointment, (appointment) => appointment.pets)
   appointment: Appointment[];
 
-  // @OneToOne(() => MedicalRecord, (medicalRecord) => medicalRecord.pet)
-  // @JoinColumn({ name: 'medical_record' })
-  // medicalRecords: Partial<MedicalRecord>[];
-
+  @OneToOne(() => MedicalRecord, (medicalRecord) => medicalRecord.pet)
+  @JoinColumn({ name: 'medical_record' })
+  medicalRecord: MedicalRecord;
 }

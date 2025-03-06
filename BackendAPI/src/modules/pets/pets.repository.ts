@@ -16,7 +16,7 @@ export class PetsRepository {
     private readonly petsRepository: Repository<Pets>,
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
-  ) { }
+  ) {}
 
   async getPets(): Promise<Pets[]> {
     return await this.petsRepository.find({ relations: ['user'] });
@@ -25,7 +25,7 @@ export class PetsRepository {
   async getPetById(id: string): Promise<Pets> {
     const petFound = await this.petsRepository.findOne({
       where: { id },
-      relations: ['user', 'appointment'],
+      relations: ['user'],
     });
     if (!petFound) {
       throw new NotFoundException('La mascota no fue encontrada');

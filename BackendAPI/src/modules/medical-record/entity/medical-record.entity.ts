@@ -21,8 +21,8 @@ export class MedicalRecord {
     @Column('text', { nullable: true, array: true })
     image?: string[]
 
-    // @ManyToOne(() => Pets, pet => pet.medicalRecords)
-    // pet: Pets
+    @OneToOne(() => Pets, pet => pet.medicalRecord)
+    pet: Pets
 
     @ManyToOne(() => PetShop, petshop => petshop.medicalRecords)
     @JoinColumn({ name: "petshop_id" })
