@@ -68,4 +68,7 @@ export class Users {
   @OneToMany(() => Chat, (chat) => chat.user)
   chats: Chat[]
 
+  @Column({ type: 'json', nullable: true })
+  emergencies: { vetId: string; pet: Partial<Pets>; chatId: string }[];
+
 }
