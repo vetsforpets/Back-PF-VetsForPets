@@ -12,24 +12,25 @@ export class PetShopRepository {
   constructor(
     @InjectRepository(PetShop)
     private readonly petshopRepository: Repository<PetShop>,
-  ) {}
+  ) { }
 
   async getAllPetshops(): Promise<PetShop[]> {
     try {
       return await this.petshopRepository.find({
-        select: {
-          id: true,
-          name: true,
-          veterinarian: true,
-          email: true,
-          phoneNumber: true,
-          imgProfile: true,
-          is24Hours: true,
-          location: true,
-          licenseNumber: true,
-          foundation: true,
-          role: true,
-        },
+        select: [
+          'id',
+          'name',
+          'veterinarian',
+          'email',
+          'phoneNumber',
+          'imgProfile',
+          'is24Hours',
+          'location',
+          'licenseNumber',
+          'foundation',
+          'role',
+          'businessHours',
+        ],
         relations: ['location'],
       });
     } catch (error) {
