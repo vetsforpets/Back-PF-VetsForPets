@@ -94,9 +94,12 @@ export class PaymentService {
     if (order) {
       const userId =
         typeof order.userId === 'object' ? order.userId.id : order.userId;
-      const updateResult = await this.usersService.updateUserWithOutLocation(userId, {
-        isPremium: true,
-      });
+      const updateResult = await this.usersService.updateUserWithOutLocation(
+        userId,
+        {
+          isPremium: true,
+        },
+      );
     } else {
       throw new NotFoundException('No se ha encontrado la orden');
     }
@@ -105,7 +108,6 @@ export class PaymentService {
     rawBody: string,
     signature: string,
   ): Promise<Stripe.Event> {
-
     try {
       return this.stripe.webhooks.constructEvent(
         rawBody,
@@ -117,25 +119,40 @@ export class PaymentService {
     }
   }
 
-  async getBalanceReport(): Promise<Stripe.Balance>{
+  async getBalanceReport(): Promise<Stripe.Balance> {
     try {
-      const finance = await this.stripe.balance.retrieve()
-      return finance
+      const finance = await this.stripe.balance.retrieve();
+      return finance;
     } catch (error) {
-      throw new InternalServerErrorException('No se ha podido recuperar el balance desde la API de Stripe');
-
+      throw new InternalServerErrorException(
+        'No se ha podido recuperar el balance desde la API de Stripe',
+      );
     }
   }
 
-  async getTransactionsReport(limitPage: number){
+  async getTransactionsReport(
+    limitPage: number,
+  ): Promise<Stripe.ApiList<Stripe.BalanceTransaction>> {
     try {
       const balanceTransactions = await this.stripe.balanceTransactions.list({
-        limit: limitPage
-      })
-      return balanceTransactions.data
+        limit: limitPage,
+      });
+      return balanceTransactions;
     } catch (error) {
-      throw new InternalServerErrorException('No se ha podido recuperar el historial de transacciones desde la API de Stripe');
-
+      throw new InternalServerErrorException(
+        'No se ha podido recuperar el historial de transacciones desde la API de Stripe',
+      );
     }
+  }
+
+  async getUsersPremium(): Promise<number> {
+    let count = 0;
+
+    const users = await this.usersService.getAllUsers();
+
+    for (const user of users) {
+      if (user.isPremium === true) count++;
+    }
+    return count;
   }
 }
