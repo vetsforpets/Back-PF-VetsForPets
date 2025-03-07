@@ -47,7 +47,7 @@ export class UsersController {
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBearerAuth()
   @Admin()
-  @Roles(Role.USER)
+  @Roles(Role.USER, Role.PETSHOP)
   @Put(':id')
   updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() userData: UpdateUserDto, @Request() req: ExpressRequest & { user: Users }) {
     return this.usersService.updateUser(id, userData);
