@@ -4,6 +4,7 @@ import {
   NotFoundException,
   forwardRef,
   Inject,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import Stripe from 'stripe';
 import { OrderService } from '../order/order.service';
@@ -93,9 +94,12 @@ export class PaymentService {
     if (order) {
       const userId =
         typeof order.userId === 'object' ? order.userId.id : order.userId;
-      const updateResult = await this.usersService.updateUserWithOutLocation(userId, {
-        isPremium: true,
-      });
+      const updateResult = await this.usersService.updateUserWithOutLocation(
+        userId,
+        {
+          isPremium: true,
+        },
+      );
     } else {
       throw new NotFoundException('No se ha encontrado la orden');
     }
@@ -104,7 +108,6 @@ export class PaymentService {
     rawBody: string,
     signature: string,
   ): Promise<Stripe.Event> {
-
     try {
       return this.stripe.webhooks.constructEvent(
         rawBody,
@@ -114,5 +117,54 @@ export class PaymentService {
     } catch (error) {
       throw new BadRequestException(`Error en el webhook: ${error.message}`);
     }
+  }
+
+  async getBalanceReport(): Promise<Stripe.Balance> {
+    try {
+      const finance = await this.stripe.balance.retrieve();
+      return finance;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'No se ha podido recuperar el balance desde la API de Stripe',
+      );
+    }
+  }
+
+  async getTransactionsReport(
+    limitPage: number,
+  ): Promise<Stripe.ApiList<Stripe.BalanceTransaction>> {
+    try {
+      const balanceTransactions = await this.stripe.balanceTransactions.list({
+        limit: limitPage,
+      });
+      return balanceTransactions;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'No se ha podido recuperar el historial de transacciones desde la API de Stripe',
+      );
+    }
+  }
+
+  async getUsersPremium() {
+    const users = await this.usersService.usersFilteredByOrder();
+
+    const premiumUsers = users.filter((user) => user.isPremium);
+
+    const mappedUsers = premiumUsers.map((user) => {
+      let orderDate: Date | undefined;
+      if (user.order) {
+        orderDate = user.order.sort(
+          (a, b) => b.orderDate.getTime() - a.orderDate.getTime(),
+        )[0].orderDate;
+      }
+      return {
+        name: user.name,
+        lastName: user.lastName,
+        email: user.email,
+        orderDate,
+      };
+    });
+
+    return mappedUsers;
   }
 }

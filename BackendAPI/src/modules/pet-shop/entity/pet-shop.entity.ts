@@ -23,7 +23,7 @@ export class PetShop {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column({ nullable: true })
@@ -67,7 +67,7 @@ export class PetShop {
   businessHours: Record<string, { opening: string; closure: string }>;
 
   @Column({ type: 'json', nullable: true })
-  emergencies: { userId: string; pet: Partial<Pets>}[];
+  emergencies: { userId: string; pet: Partial<Pets>; chatId: string }[];
 
   @OneToMany(() => Appointment, (appointment) => appointment.petShop)
   appointment: Appointment[];

@@ -101,6 +101,7 @@ export class ChatService {
       return payload
 
     } catch (e) {
+      console.error("Token inválido o no existe", e.message)
       throw new UnauthorizedException(e.message)
     }
 

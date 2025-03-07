@@ -22,7 +22,7 @@ export class Users {
   @Column({ nullable: true })
   age: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 50 , unique: true})
   email: string;
 
   @Column({ nullable: true })
@@ -59,13 +59,16 @@ export class Users {
   @JoinColumn({ name: "membership" })
   userMembership: UserMembership
 
-  @OneToMany(() => Order, (order) => order.userId)
-  order: Order
+  @OneToMany(() => Order, (order) => order.userId, {eager: true})
+  order: Order[]
 
   @OneToMany(() => Location, (location) => location.user, { cascade: true })
   location: Location[]
 
   @OneToMany(() => Chat, (chat) => chat.user)
   chats: Chat[]
+
+  @Column({ type: 'json', nullable: true })
+  emergencies: { vetId: string; pet: Partial<Pets>; chatId: string }[];
 
 }

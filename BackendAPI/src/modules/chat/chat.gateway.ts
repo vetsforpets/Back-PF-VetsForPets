@@ -23,37 +23,54 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   afterInit() {
 
-    console.log("Esto se ejecuta cuando inicia");
+    // console.log("Esto se ejecuta cuando inicia");
   }
 
   // @UseGuards(WsAuthGuard)
   async handleConnection(@ConnectedSocket() client: Socket) {
 
-    const user = await this.chatService.validateSocket(client)
+    try {
+      const user = await this.chatService.validateSocket(client)
 
-    if (!user) {
-      client.disconnect()
-      throw new UnauthorizedException('Token inválido o no existe, desconectando...')
+      if (!user) {
+        client.emit("error", { message: "Token inválido o no existe, desconectando..." })
+        client.disconnect()
+        return;
+      }
+
+      client.data.user = user
+
+
+      client.emit("connectedUser", {
+        userId: user.sub,
+        email: user.email
+      })
+
+      console.log(`El cliente ${user.email} se ha conectado`)
+
+    } catch (e) {
+
+      console.error("Error en la conexión:", e.message)
+      client.emit("error", { message: "Error en la autenticación del WebSocket" })
+      client.disconnect();
     }
 
-    client.data.user = user
 
-
-    client.emit("connectedUser", {
-      userId: user.sub,
-      email: user.email
-    })
-
-    console.log(`El cliente ${user.email} se ha conectado`)
   }
 
 
 
   handleDisconnect(@ConnectedSocket() client: Socket) {
 
-    const { user } = client.data
+    try {
 
-    console.log(`El cliente ${user.email} se ha desconectado`)
+      const { user } = client.data
+
+      console.log(`El cliente ${user.email} se ha desconectado`)
+
+    } catch (error) {
+      console.error("Error desconectando:", error.message)
+    }
 
   }
 
@@ -62,20 +79,31 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('joinRoom')
   async handleJoinRoom(@ConnectedSocket() client: Socket, @MessageBody() vetId: string) {
 
-    const { user } = client.data
-    const chat = await this.chatService.findOrCreateChat(user.sub, vetId)
+    try {
+      const { user } = client.data
+      const chat = await this.chatService.findOrCreateChat(user.sub, vetId)
 
-    const roomId = `chat_${chat.id}`
+      if (!chat) {
+        client.emit("error", { message: "Chat no encontrado" })
+      }
 
-    client.join(roomId)
 
-    console.log(`El usuario ${user.email} ha ingresado a la sala`)
+      client.join(chat.id)
 
-    client.emit('joinedRoom', { roomId })
+      console.log(`El usuario ${user.email} ha ingresado a la sala`)
 
-    const messages = await this.chatService.findAll(chat.id)
+      client.emit('joinedRoom', chat.id)
 
-    client.emit('messageHistory', messages)
+      const messages = await this.chatService.findAll(chat.id)
+
+      client.emit('messageHistory', messages)
+
+    } catch (error) {
+
+      console.error("Error en handleJoinRoom:", error.message)
+
+      client.emit("error", { message: "Hubo un error ingresando a la sala" })
+    }
 
   }
 
@@ -85,9 +113,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleJoinRoomPetshop(@ConnectedSocket() client: Socket, @MessageBody() chatId: string) {
 
     const petshop = client.data.user
-    const roomId = `chat_${chatId}`
 
-    client.join(roomId)
+    client.join(chatId)
 
     const messages = await this.chatService.findAll(chatId)
     client.emit('messageHistory', messages)
@@ -116,15 +143,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @MessageBody() payload: { roomId: string, message: string },
   ) {
 
-    const { user } = client.data
-    const chatId = payload.roomId.split('_')[1];
-
-    console.log('chat id:', chatId)
-
-    const message = await this.chatService.saveMessage(chatId, user.sub, payload.message)
+    try {
+      const { user } = client.data
 
 
-    client.broadcast.to(payload.roomId).emit('message', { sender: user.email, message: message.content, senderType: message.senderType })
+      console.log('chat id:', payload.roomId)
+
+      const message = await this.chatService.saveMessage(payload.roomId, user.sub, payload.message)
+
+
+      client.broadcast.to(payload.roomId).emit('message', { sender: user.email, message: message.content, senderType: message.senderType })
+
+    } catch (error) {
+
+      console.error("Error enviando un mensaje:", error.message)
+      client.emit("errorMessage", { message: "Error al enviar el mensaje" })
+    }
+
 
   }
 

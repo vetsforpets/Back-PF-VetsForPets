@@ -1,32 +1,22 @@
 [
-    {
-      "name": "Pet Lover",
-      "price": 9.99,
-      "benefits": [
-        "Descuento del 5% en productos de la tienda",
-        "Consulta veterinaria inicial gratuita",
-        "Acceso a contenido exclusivo sobre el cuidado de mascotas"
-      ]
-    },
-    {
-      "name": "Pet Care",
-      "price": 19.99,
-      "benefits": [
-        "Descuento del 10% en productos de la tienda",
-        "Consulta veterinaria gratuita cada 6 meses",
-        "Baño y corte de uñas gratuito una vez al mes",
-        "Atención prioritaria en emergencias"
-      ]
-    },
-    {
-      "name": "Pet VIP",
-      "price": 29.99,
-      "benefits": [
-        "Descuento del 15% en productos de la tienda",
-        "Consulta veterinaria gratuita cada 3 meses",
-        "Baño y peluquería gratis una vez al mes",
-        "Envío gratuito en compras online",
-        "Acceso exclusivo a eventos y talleres para dueños de mascotas"
-      ]
-    }
-  ]
+  {
+    "name": "Free Plan",
+    "price": 0,
+    "benefits": [
+      "Geolocalizacion precisa para mostrar las veterinarias cercanas",
+      "Limite de registro de mascotas: 2 por usuario",
+      "No se puede solicitar atencion prioritaria via chat"
+    ],
+    "image": "https://res.cloudinary.com/dwc27kmja/image/upload/v1741203914/memberships/r4a1akoan5r6xg8jsu8z.png"
+  },
+  {
+    "name": "Pet Lover Premium",
+    "price": 9.99,
+    "benefits": [
+      "Sin numero de restriccion para el registro de mascotas",
+      "Geolocalizacion precisa para mostrar las veterinarias cercanas y solicitar emergencias de ser necesario",
+      "Atencion prioritaria en emergencias via chat"
+    ],
+    "image": "https://res.cloudinary.com/dwc27kmja/image/upload/v1741203914/memberships/hj6ucgmfeqkpbpgtzicg.png"
+  }
+]

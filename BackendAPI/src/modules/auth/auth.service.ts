@@ -41,18 +41,27 @@ export class AuthService {
 
   async signIn(email: string, password: string) {
     try {
-      const user = await this.usersRepository.getUserByEmail(email)
-      if (user && await bcrypt.compare(password, user.password)) {
-        const token = this.generateJwt(user)
+      const user = await this.usersRepository.getUserByEmail(email);
+      if (user && (await bcrypt.compare(password, user.password))) {
+        const token = this.generateJwt(user);
         const { password: userPassword, ...userWithoutPassword } = user;
-        return { success: 'El usuario se ha logueado exitosamente', user: userWithoutPassword, token };
+        return {
+          success: 'El usuario se ha logueado exitosamente',
+          user: userWithoutPassword,
+          token,
+        };
       }
 
-      const petShop = await this.petShopRepository.getPetShopByEmail(email)
-      if (petShop && await bcrypt.compare(password, petShop.password)) {
-        const token = this.generateJwt(petShop)
-        const { password: petShopPassword, ...petShopWithoutPassword } = petShop;
-        return { success: 'El usuario se ha logueado exitosamente', user: petShopWithoutPassword, token };
+      const petShop = await this.petShopRepository.getPetShopByEmail(email);
+      if (petShop && (await bcrypt.compare(password, petShop.password))) {
+        const token = this.generateJwt(petShop);
+        const { password: petShopPassword, ...petShopWithoutPassword } =
+          petShop;
+        return {
+          success: 'El usuario se ha logueado exitosamente',
+          user: petShopWithoutPassword,
+          token,
+        };
       }
       throw new UnauthorizedException('Credenciales inválidas');
     } catch (error) {
@@ -68,18 +77,14 @@ export class AuthService {
       userType: user instanceof Users ? 'user' : 'petShop',
       role: user.role,
       isAdmin: user.isAdmin,
+      isActive: user.isActive,
     };
     return this.jwtService.sign(payload);
   }
 
-  async exchangeCodeForToken(code: string): Promise<{ token: string }>{
+  async exchangeCodeForToken(code: string): Promise<{ token: string }> {
     try {
       console.log('Exchanging code for token. Code:', code);
-
-      const clientId = process.env.GOOGLE_CLIENT_ID;
-      const clientSecret = process.env.GOOGLE_SECRET;
-      const redirectUri = process.env.GOOGLE_CALLBACK_URL;
-
       const tokenResponse = await axios.post(
         'https://oauth2.googleapis.com/token',
         {
@@ -182,9 +187,10 @@ export class AuthService {
 
   async signUp(newUser: SignUpUserDto) {
     try {
-      const emailFound = await this.usersRepository.getUserByEmail(
-        newUser.email,
-      );
+      const normalizedEmail = newUser.email.trim().toLowerCase();
+
+      const emailFound =
+        await this.usersRepository.getUserByEmail(normalizedEmail);
       if (emailFound) {
         throw new BadRequestException(
           'El correo electronico ya esta registrado',
@@ -253,9 +259,9 @@ export class AuthService {
 
   async signUpPetShop(newPetShop: SignUpPetShopDto) {
     try {
-      const emailFound = await this.petShopRepository.getPetShopByEmail(
-        newPetShop.email,
-      );
+      const normalizedEmail = newPetShop.email.trim().toLowerCase();
+      const emailFound =
+        await this.petShopRepository.getPetShopByEmail(normalizedEmail);
       if (emailFound) {
         throw new BadRequestException(
           'El correo electronico ya esta registrado',
