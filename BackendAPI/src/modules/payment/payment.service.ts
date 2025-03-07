@@ -145,14 +145,26 @@ export class PaymentService {
     }
   }
 
-  async getUsersPremium(): Promise<number> {
-    let count = 0;
+  async getUsersPremium() {
+    const users = await this.usersService.usersFilteredByOrder();
 
-    const users = await this.usersService.getAllUsers();
+    const premiumUsers = users.filter((user) => user.isPremium);
 
-    for (const user of users) {
-      if (user.isPremium === true) count++;
-    }
-    return count;
+    const mappedUsers = premiumUsers.map((user) => {
+      let orderDate: Date | undefined;
+      if (user.order) {
+        orderDate = user.order.sort(
+          (a, b) => b.orderDate.getTime() - a.orderDate.getTime(),
+        )[0].orderDate;
+      }
+      return {
+        name: user.name,
+        lastName: user.lastName,
+        email: user.email,
+        orderDate,
+      };
+    });
+
+    return mappedUsers;
   }
 }
