@@ -9,8 +9,6 @@ import { Role } from '../common/enums/roles.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Admin } from 'src/decorators/roles/admin.decorator';
 import { PetsAssociatedException } from '../common/exceptions/petAssociatedException';
-import { Public } from 'src/decorators/public-routes/public-routes.decorator';
-
 
 @ApiTags('Users')
 @Controller('users')
