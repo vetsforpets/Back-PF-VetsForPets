@@ -135,4 +135,18 @@ export class UsersService {
       );
     }
   }
+
+  async usersFilteredByOrder(){
+    try {
+      return this.usersRepository.getUsersFileredByOrder()
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Error al obtener el usuario. Verifique los datos ingresados.',
+      );
+    }
+  }
 }

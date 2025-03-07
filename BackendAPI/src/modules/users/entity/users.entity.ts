@@ -59,8 +59,8 @@ export class Users {
   @JoinColumn({ name: "membership" })
   userMembership: UserMembership
 
-  @OneToMany(() => Order, (order) => order.userId)
-  order: Order
+  @OneToMany(() => Order, (order) => order.userId, {eager: true})
+  order: Order[]
 
   @OneToMany(() => Location, (location) => location.user, { cascade: true })
   location: Location[]

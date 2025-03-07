@@ -21,6 +21,12 @@ export class UsersRepository {
     });
   }
 
+
+  async getUsersFileredByOrder(){
+    const users = await this.usersRepository.find({relations: ['order']})
+    return users
+  }
+
   async getUserById(id: string): Promise<Users | null> {
     return this.usersRepository.findOne({
       where: { id },

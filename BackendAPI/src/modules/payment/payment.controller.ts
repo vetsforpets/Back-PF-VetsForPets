@@ -89,6 +89,10 @@ export class PaymentController {
   }
 
   @Public()
+  @ApiUnauthorizedResponse({ description: 'No autorizado' })
+  @ApiInternalServerErrorResponse({
+    description: 'Error interno de la API de Stripe',
+  })
   @Get('admin/reports/balance')
   adminBalanceRecord() {
     try {
@@ -104,10 +108,34 @@ export class PaymentController {
   }
 
   @Public()
+  @ApiUnauthorizedResponse({ description: 'No autorizado' })
+  @ApiInternalServerErrorResponse({
+    description: 'Error interno de la API de Stripe',
+  })
   @Get('admin/reports/transactions')
   adminBalanceTransactions(@Param() limitPage: number) {
     try {
       return this.paymentService.getTransactionsReport(limitPage);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      throw new BadRequestException(
+        `Se ha encontrado un error desde el lado del cliente ${error.message}`,
+      );
+    }
+  }
+
+  @Public()
+  @ApiUnauthorizedResponse({ description: 'No autorizado' })
+  @ApiInternalServerErrorResponse({
+    description: 'Error interno de la API de Stripe',
+  })
+  @Get('admin/reports/premium')
+  adminUsersPremiumCount() {
+    try {
+      return this.paymentService.getUsersPremium();
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
