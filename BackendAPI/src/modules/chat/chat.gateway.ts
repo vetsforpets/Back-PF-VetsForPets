@@ -23,7 +23,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   afterInit() {
 
-    console.log("Esto se ejecuta cuando inicia");
+    // console.log("Esto se ejecuta cuando inicia");
   }
 
   // @UseGuards(WsAuthGuard)
@@ -87,14 +87,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         client.emit("error", { message: "Chat no encontrado" })
       }
 
-      const roomId = `chat_${chat.id}`
 
-
-      client.join(roomId)
+      client.join(chat.id)
 
       console.log(`El usuario ${user.email} ha ingresado a la sala`)
 
-      client.emit('joinedRoom', { roomId })
+      client.emit('joinedRoom', chat.id)
 
       const messages = await this.chatService.findAll(chat.id)
 
@@ -115,9 +113,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleJoinRoomPetshop(@ConnectedSocket() client: Socket, @MessageBody() chatId: string) {
 
     const petshop = client.data.user
-    const roomId = `chat_${chatId}`
 
-    client.join(roomId)
+    client.join(chatId)
 
     const messages = await this.chatService.findAll(chatId)
     client.emit('messageHistory', messages)
@@ -148,12 +145,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     try {
       const { user } = client.data
-      const chatId = payload.roomId.split('_')[1];
 
 
-      console.log('chat id:', chatId)
+      console.log('chat id:', payload.roomId)
 
-      const message = await this.chatService.saveMessage(chatId, user.sub, payload.message)
+      const message = await this.chatService.saveMessage(payload.roomId, user.sub, payload.message)
 
 
       client.broadcast.to(payload.roomId).emit('message', { sender: user.email, message: message.content, senderType: message.senderType })
