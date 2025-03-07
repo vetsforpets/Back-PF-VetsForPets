@@ -118,5 +118,5 @@ export class UpdatePetShopDto {
     default: [],
   })
   @IsArray()
-  emergencies: { userId: string; pet: Partial<Pets>; chatId: string }[];
+  emergencies?: { userId: string; pet: Partial<Pets>; chatId: string }[];
 }

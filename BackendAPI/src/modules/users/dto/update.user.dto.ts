@@ -7,7 +7,8 @@ import {
   IsString,
   MaxLength,
   MinLength,
-} from 'class-validator'; // Removed password-related validators
+} from 'class-validator';
+import { Pets } from 'src/modules/pets/entity/pets.entity';
 
 export class UpdateUserDto {
   @ApiProperty({
@@ -84,7 +85,7 @@ export class UpdateUserDto {
   @IsBoolean()
   @IsOptional()
   isAdmin?: boolean;
-  
+
   @ApiProperty({
     description: 'Ubicación de la veterinaria',
     example: [{ latitude: 40.73061, longitude: -73.935242 }],
@@ -92,4 +93,12 @@ export class UpdateUserDto {
   @IsArray()
   @IsOptional()
   location?: [{ latitude: number; longitude: number }];
+
+  @ApiProperty({
+    description: 'Notificaciones emergentes urgentes',
+    default: [],
+  })
+  @IsArray()
+  @IsOptional()
+  emergencies?: { vetId: string; pet: Partial<Pets>; chatId: string }[];
 }
