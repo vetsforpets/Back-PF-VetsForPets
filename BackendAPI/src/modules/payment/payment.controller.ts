@@ -16,8 +16,12 @@ import {
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
   ApiUnauthorizedResponse,
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
 } from '@nestjs/swagger';
 
+@ApiTags('Payments')
 @Controller('payments')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
@@ -26,6 +30,8 @@ export class PaymentController {
   @ApiUnauthorizedResponse({ description: 'No autorizado' })
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBadRequestResponse({ description: 'La informacion enviada es invalida ' })
+  @ApiOperation({ summary: 'Webhook de Stripe' })
+  @ApiOkResponse({ description: 'Webhook recibido con éxito' })
   @Post('webhook')
   async handleStripeWebhook(
     @Req() req: RawBodyRequest<Request>,
@@ -93,6 +99,8 @@ export class PaymentController {
   @ApiInternalServerErrorResponse({
     description: 'Error interno de la API de Stripe',
   })
+  @ApiOperation({ summary: 'Obtener reporte de balance administrativo' })
+  @ApiOkResponse({ description: 'Reporte de balance obtenido con éxito' })
   @Get('admin/reports/balance')
   adminBalanceRecord() {
     try {
@@ -112,6 +120,8 @@ export class PaymentController {
   @ApiInternalServerErrorResponse({
     description: 'Error interno de la API de Stripe',
   })
+  @ApiOperation({ summary: 'Obtener reporte de transacciones administrativas' })
+  @ApiOkResponse({ description: 'Reporte de transacciones obtenido con éxito' })
   @Get('admin/reports/transactions')
   adminBalanceTransactions(@Param() limitPage: number) {
     try {
@@ -132,6 +142,8 @@ export class PaymentController {
   @ApiInternalServerErrorResponse({
     description: 'Error interno de la API de Stripe',
   })
+  @ApiOperation({ summary: 'Obtener conteo de usuarios premium administrativo' })
+  @ApiOkResponse({ description: 'Conteo de usuarios premium obtenido con éxito' })
   @Get('admin/reports/premium')
   adminUsersPremiumCount() {
     try {

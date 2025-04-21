@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsEmail,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   Matches,
@@ -119,4 +120,26 @@ export class UpdatePetShopDto {
   })
   @IsArray()
   emergencies?: { userId: string; pet: Partial<Pets>; chatId: string }[];
+
+  @ApiProperty({
+    description: 'El horario de atención de la veterinaria/petshop.',
+    example: {
+      monday: { opening: '08:00', closure: '18:00' },
+      tuesday: { opening: '08:00', closure: '18:00' },
+      wednesday: { opening: '08:00', closure: '18:00' },
+      thursday: { opening: '08:00', closure: '18:00' },
+      friday: { opening: '08:00', closure: '18:00' },
+      saturday: { opening: '10:00', closure: '14:00' },
+      sunday: { opening: 'Closed', closure: 'Closed' },
+    },
+    required: false,
+  })
+  @IsOptional()
+  @IsObject()
+  businessHours?: {
+    [day: string]: {
+      opening: string;
+      closure: string;
+    };
+  };
 }

@@ -9,8 +9,6 @@ import { Role } from '../common/enums/roles.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Admin } from 'src/decorators/roles/admin.decorator';
 import { PetsAssociatedException } from '../common/exceptions/petAssociatedException';
-import { Public } from 'src/decorators/public-routes/public-routes.decorator';
-
 
 @ApiTags('Users')
 @Controller('users')
@@ -49,7 +47,7 @@ export class UsersController {
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBearerAuth()
   @Admin()
-  @Roles(Role.USER)
+  @Roles(Role.USER, Role.PETSHOP)
   @Put(':id')
   updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() userData: UpdateUserDto, @Request() req: ExpressRequest & { user: Users }) {
     return this.usersService.updateUser(id, userData);

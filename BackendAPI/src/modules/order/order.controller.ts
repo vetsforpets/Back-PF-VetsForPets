@@ -21,6 +21,7 @@ import {
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
+  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { CreateOrderDto } from './dto/createOrder.dto';
 import { Roles } from 'src/decorators/roles/roles.decorator';
@@ -28,7 +29,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Role } from '../common/enums/roles.enum';
 import { Admin } from 'src/decorators/roles/admin.decorator';
 
-@ApiTags('Order')
+@ApiTags('Orders')
 @UseGuards(RolesGuard)
 @Controller('order')
 export class OrderController {
@@ -62,7 +63,7 @@ export class OrderController {
   @ApiOperation({
     summary: 'Crea una nueva orden con la informacion del usuario y membresia',
   })
-  @ApiOkResponse({ description: 'Orden creada con exito' })
+  @ApiCreatedResponse({ description: 'Orden creada con exito' })
   @ApiUnauthorizedResponse({ description: 'No autorizado' })
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBody({ type: CreateOrderDto })
@@ -84,6 +85,11 @@ export class OrderController {
   @Delete(':id')
   @ApiBearerAuth()
   @Admin()
+  @ApiOperation({ summary: 'Elimina una orden por ID' })
+  @ApiOkResponse({ description: 'Orden eliminada con éxito' })
+  @ApiNotFoundResponse({ description: 'Orden no encontrada' })
+  @ApiUnauthorizedResponse({ description: 'No autorizado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   deleteOrder(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
       return this.orderService.deleteOrder(orderId);
@@ -101,6 +107,11 @@ export class OrderController {
   @Get(':id')
   @ApiBearerAuth()
   @Admin()
+  @ApiOperation({ summary: 'Obtiene una orden por ID' })
+  @ApiOkResponse({ description: 'Orden encontrada con éxito' })
+  @ApiNotFoundResponse({ description: 'Orden no encontrada' })
+  @ApiUnauthorizedResponse({ description: 'No autorizado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   getOneOrderBy(@Param('id', ParseUUIDPipe) orderId: string) {
     try {
       return this.orderService.getOrderById(orderId);
