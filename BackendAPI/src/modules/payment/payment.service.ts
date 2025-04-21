@@ -46,7 +46,7 @@ export class PaymentService {
         mode: 'payment',
         line_items: lineItems,
         success_url:
-          'https://front-pf-vets-for-pets.vercel.app/success-transaction',
+          'https://front-pf-vets-for-pets-main.vercel.app/',
         cancel_url:
           'https://front-pf-vets-for-pets.vercel.app/canceled-transaction',
         metadata: {
